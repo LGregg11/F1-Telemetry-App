@@ -1,4 +1,4 @@
-﻿namespace F1_Telemetry_App
+﻿namespace F1TelemetryApp
 {
     using System.Windows;
 

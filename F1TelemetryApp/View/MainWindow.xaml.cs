@@ -1,7 +1,7 @@
-﻿namespace F1_Telemetry_App.View
+﻿namespace F1TelemetryApp.View
 {
     using System.Windows;
-    using F1_Telemetry_App.ViewModel;
+    using F1TelemetryApp.ViewModel;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml

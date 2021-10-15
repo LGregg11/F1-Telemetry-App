@@ -1,9 +1,8 @@
-﻿namespace F1_Telemetry_App.ViewModel
+﻿namespace F1TelemetryApp.ViewModel
 {
     using GalaSoft.MvvmLight;
     using System.Net;
     using System.Net.Sockets;
-    using System.Text;
     using System.Threading;
     using log4net;
 
@@ -32,7 +31,7 @@
                 if (value != nMessages)
                 {
                     nMessages = value;
-                    RaisePropertyChanged("NMessages");
+                    RaisePropertyChanged(nameof(NMessages));
                 }
             }
         }
@@ -45,7 +44,7 @@
                 if (value != isTelemetryFeedRunning)
                 {
                     isTelemetryFeedRunning = !isTelemetryFeedRunning;
-                    RaisePropertyChanged("IsTelemetryFeedRunning");
+                    RaisePropertyChanged(nameof(IsTelemetryFeedRunning));
                 }
             }
         }
@@ -90,8 +89,8 @@
                 try
                 {
                     byte[] receiveBytes = client.Receive(ref ep);
-                    string message = Encoding.ASCII.GetString(receiveBytes);
-                    NMessages++;
+                    if (receiveBytes != null && receiveBytes.Length > 0)
+                        NMessages++;
                 }
                 catch (SocketException ex)
                 {
