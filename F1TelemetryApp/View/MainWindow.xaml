@@ -22,16 +22,18 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="30" Margin="0,5">
             <Button Content="Start Telemetry Feed" Click="StartTelemetryFeed"/>
             <Button Content="Stop Telemetry Feed" Click="StopTelemetryFeed"/>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                           FontSize="15"
-                           Text="Messages: "/>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                           FontSize="15"
-                           Text="{Binding NMessages}"/>
         </StackPanel>
-        
+
         <GroupBox Grid.Row="1" Header="F1 Telemetry" FontSize="20">
-            <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <DataGrid HorizontalAlignment="Stretch"
+                      AutoGenerateColumns="False"
+                      GridLinesVisibility="None"
+                      ItemsSource="{Binding NMessages}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="*" Header="Packet Id" Binding="{Binding PacketId}"/>
+                    <DataGridTextColumn Width="*" Header="Messages" Binding="{Binding Messages}"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </GroupBox>
             
     </Grid>

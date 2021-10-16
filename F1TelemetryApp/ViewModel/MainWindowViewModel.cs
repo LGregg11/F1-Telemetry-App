@@ -1,29 +1,38 @@
 ﻿namespace F1TelemetryApp.ViewModel
 {
+    using F1_Telemetry_App.Model;
     using GalaSoft.MvvmLight;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading;
     using log4net;
+    using UdpTelemetryFeed;
+    using System.Linq;
+    using UdpPackets;
+    using System;
+    using System.Collections.ObjectModel;
 
     public class MainWindowViewModel : ViewModelBase
     {
         private const int port = 20777;
 
-        private bool isTelemetryFeedRunning = false;
-        private int nMessages = 0;
-        private UdpClient client;
-        private Thread listenerThread;
+        private ObservableCollection<TelemetryMessages> nMessages;
+        private IUdpTelemetryFeed telemetryFeed;
 
         public MainWindowViewModel()
         {
             log4net.Config.XmlConfigurator.Configure();
             Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+            var packetIds = Enum.GetValues(typeof(TelemetryReader.PacketIds));
+            nMessages = new ObservableCollection<TelemetryMessages>();
+            foreach(TelemetryReader.PacketIds id in packetIds)
+                nMessages.Add(new TelemetryMessages { PacketId = id, Messages = 0 });
+
+            telemetryFeed = new UdpTelemetryFeed(port);
+            telemetryFeed.TelemetryReceived += OnTelemetryReceived;
         }
 
         public ILog Log { get; set; }
 
-        public int NMessages
+        public ObservableCollection<TelemetryMessages> NMessages
         {
             get => nMessages;
             set
@@ -31,77 +40,48 @@
                 if (value != nMessages)
                 {
                     nMessages = value;
-                    RaisePropertyChanged(nameof(NMessages));
-                }
-            }
-        }
-
-        public bool IsTelemetryFeedRunning
-        {
-            get => isTelemetryFeedRunning;
-            set
-            {
-                if (value != isTelemetryFeedRunning)
-                {
-                    isTelemetryFeedRunning = !isTelemetryFeedRunning;
-                    RaisePropertyChanged(nameof(IsTelemetryFeedRunning));
                 }
             }
         }
 
         public void StartTelemetryFeed()
         {
-            if (IsTelemetryFeedRunning)
-                return;
-
             Log.Debug("Starting Telemetry Feed");
-            listenerThread = new Thread(new ThreadStart(TelemetryListener))
-            {
-                Name = "Listener Thread"
-            };
-            listenerThread.Start();
+            telemetryFeed.Start();
             Log.Info("Started Telemetry Feed");
-            IsTelemetryFeedRunning = true;
         }
 
         public void StopTelemetryFeed()
         {
-            if (!IsTelemetryFeedRunning)
-                return;
-
             Log.Debug("Stopping Telemetry Feed");
-            client.Close();
-            listenerThread.Abort();
-            listenerThread.Join(5000);
-            listenerThread = null;
+            telemetryFeed.Stop();
             Log.Info("Stopped Telemetry Feed");
-            IsTelemetryFeedRunning = false;
         }
 
-        private void TelemetryListener()
+        private void OnTelemetryReceived(object source, UdpTelemetryEventArgs e)
         {
-            Log.Debug($"Creating UDP Client to listen to UDP on port {port}");
-            client = new UdpClient(port);
-            IPEndPoint ep = new IPEndPoint(IPAddress.Any, port);
+            UdpPacketHeader udpPacketHeader = TelemetryReader.ByteArrayToUdpPacketHeader(e.Message);
+            byte[] data = e.Message.Skip(TelemetryReader.TELEMETRY_HEADER_SIZE).ToArray();
+            var telemetryMessage = NMessages.Where(t => t.PacketId == (TelemetryReader.PacketIds)udpPacketHeader.packetId).FirstOrDefault();
+            telemetryMessage.Messages++;
 
-            while (true)
+            App.Current.Dispatcher.Invoke(delegate
             {
-                try
+                UpdateNMessages(telemetryMessage);
+            });
+            
+        }
+
+        private void UpdateNMessages(TelemetryMessages message)
+        {
+            for (int i = 0; i < NMessages.Count; i++)
+            {
+                if (NMessages[i].PacketId == message.PacketId)
                 {
-                    byte[] receiveBytes = client.Receive(ref ep);
-                    if (receiveBytes != null && receiveBytes.Length > 0)
-                        NMessages++;
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.ErrorCode != 10060)
-                        Log.Error($"TelemetryListener - {ex.ErrorCode}");
-                    else
-                        Log.Warn("TelemetryListener - Expected timeout");
+                    NMessages[i] = message;
+                    break;
                 }
             }
         }
-
-        
     }
 }

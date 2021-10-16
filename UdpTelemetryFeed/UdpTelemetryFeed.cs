@@ -1,5 +1,6 @@
 ﻿namespace UdpTelemetryFeed
 {
+    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -13,11 +14,9 @@
         public UdpTelemetryFeed(int port)
         {
             this.port = port;
-            listenerThread = new Thread(new ThreadStart(TelemetryListener))
-            {
-                Name = "Telemetry Listener Thread"
-            };
         }
+
+        public event UdpTelemetryEventHandler TelemetryReceived;
 
         public int Port => port;
 
@@ -27,26 +26,33 @@
 
         public void Start()
         {
-            if (ListenerThread.IsAlive)
+            if (ListenerThread != null && ListenerThread.IsAlive)
                 return;
 
+            if (Client == null)
+                client = new UdpClient(Port);
+
+            listenerThread = new Thread(new ThreadStart(TelemetryListener))
+            {
+                Name = "Telemetry Listener Thread"
+            };
             listenerThread.Start();
         }
 
         public void Stop()
         {
-            if (!ListenerThread.IsAlive)
+            if (ListenerThread == null || !ListenerThread.IsAlive)
                 return;
             
-            client.Close();
-            listenerThread.Interrupt();
+            if (Client != null)
+                client.Close();
+            listenerThread.Abort();
             listenerThread.Join(5000);
-            client = null;
+            listenerThread = null;
         }
 
         public void TelemetryListener()
         {
-            client = new UdpClient(port);
             IPEndPoint ep = new IPEndPoint(IPAddress.Any, port);
 
             while (true)
@@ -55,14 +61,11 @@
                 {
                     byte[] receiveBytes = client.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
-                        continue;
-                        // Send an event here
+                        TelemetryReceived(this, new UdpTelemetryEventArgs(receiveBytes));
                 }
                 catch (SocketException ex)
                 {
-                    if (ex.ErrorCode != 10060)
-                        throw ex;
-                    Stop();
+                    Console.WriteLine(ex.Message);
                 }
             }
         }

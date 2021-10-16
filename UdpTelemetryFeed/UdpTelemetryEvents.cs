@@ -11,6 +11,6 @@
         {
             this.message = message;
         }
-        public byte[] GetMessage() => message;
+        public byte[] Message => message;
     }
 }

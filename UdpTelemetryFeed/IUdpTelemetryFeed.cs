@@ -5,6 +5,7 @@
 
     public interface IUdpTelemetryFeed
     {
+        event UdpTelemetryEventHandler TelemetryReceived;
         int Port { get; }
         Thread ListenerThread { get; }
         UdpClient Client { get; }

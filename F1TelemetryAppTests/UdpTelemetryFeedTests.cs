@@ -41,10 +41,10 @@ namespace F1TelemetryAppTests
             // Act
             // Arrange
             cut.Start();
+            Task.Delay(1000);
 
             // Assert
             Assert.IsNotNull(cut.Client);
-            Assert.IsTrue(cut.Client.Client.Connected);
         }
     }
 }
