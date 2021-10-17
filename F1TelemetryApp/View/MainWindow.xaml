@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
-        xmlns:local="clr-namespace:F1TelemetryApp"
         mc:Ignorable="d"
         Title="F1 Telemetry" Height="450" Width="800">
     <Window.DataContext>

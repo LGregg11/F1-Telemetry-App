@@ -1,0 +1,37 @@
+name: Build F1 Telemetry App
+
+on:
+  push:
+    branches: [ main, bug/*, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    env:
+        working-directory: ./F1TelemetryApp
+
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout Code
+    
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.3
+       
+    - name: Restore NuGet Packages
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.NuGetAPIKey }}
+        nuget-version: '5.x'
+    - run: nuget restore F1TelemetryApp.sln
+      working-directory: ${{env.working-directory}}
+ 
+    - name: Build App
+      run: msbuild F1TelemetryApp.sln /p:Configuration=Release
+      working-directory: ${{env.working-directory}}
+      
+    - name: Run NUnit Tests
+      run: packages/NUnit.ConsoleRunner.3.12.0/tools/nunit3-console.exe ../bin/Release/F1TelemetryAppTests.dll
+      working-directory: ${{env.working-directory}}
