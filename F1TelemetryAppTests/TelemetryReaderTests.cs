@@ -19,7 +19,7 @@
             var result = TR.ByteArrayToUdpPacketHeader(input);
 
             // Assert
-            Assert.AreEqual(result.GetType(), typeof(UdpPacketHeader));
+            Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
         }
 
         [Test]
@@ -32,8 +32,8 @@
             var result = TR.ByteArrayToUdpPacketHeader(input);
 
             // Assert
-            Assert.AreEqual(result.GetType(), typeof(UdpPacketHeader));
-            Assert.AreEqual(result.packetFormat, 2021);
+            Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
+            Assert.AreEqual(2021, result.packetFormat);
         }
 
         [Test]
@@ -46,8 +46,8 @@
             var result = TR.ByteArrayToUdpPacketHeader(input);
 
             // Assert
-            Assert.AreEqual(result.GetType(), typeof(UdpPacketHeader));
-            Assert.AreEqual((TR.PacketIds)result.packetId, TR.PacketIds.Event);
+            Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
+            Assert.AreEqual(TR.PacketIds.Event, (TR.PacketIds)result.packetId);
         }
 
         [Test]
@@ -61,7 +61,7 @@
             var result = TR.GetEventType(input);
 
             // Assert
-            Assert.AreEqual((TR.EventType)result, TR.EventType.Buttons);
+            Assert.AreEqual(TR.EventType.BUTN, result);
         }
     }
 }

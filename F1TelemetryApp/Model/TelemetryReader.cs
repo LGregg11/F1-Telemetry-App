@@ -1,6 +1,10 @@
 ﻿namespace F1_Telemetry_App.Model
 {
+    using System;
+    using System.ComponentModel;
+    using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Text;
     using UdpPackets;
 
     public static class TelemetryReader
@@ -19,6 +23,24 @@
                 handle.Free();
             }
             return header;
+        }
+
+        public static EventType GetEventType(byte[] remainingPacket)
+        {
+            try 
+            {
+                return (EventType)Enum.Parse(
+                    typeof(EventType),
+                    Encoding.ASCII.GetString(remainingPacket.Take(4).ToArray())
+                    );
+            }
+            catch
+            {
+                // Return an unknown event type instead of an error
+                return EventType.UNKNOWN;
+            }
+
+            
         }
 
         #region Enums
@@ -59,6 +81,63 @@
 
             // Lap and tyre data for session
             SessionHistory = 11
+        }
+
+        public enum EventType
+        {
+            [Description("Unknown Event Type")]
+            UNKNOWN,
+
+            [Description("Session Started")]
+            SSTA,
+
+            [Description("Session Ended")]
+            SEND,
+
+            [Description("Fastest Lap")]
+            FTLP,
+
+            [Description("Retirement")]
+            RTMT,
+
+            [Description("DRS Enabled")]
+            DRSE,
+
+            [Description("DRS Disabled")]
+            DRSD,
+
+            [Description("Team mate in pits")]
+            TMPT,
+
+            [Description("Chequered flag")]
+            CHQF,
+
+            [Description("Race Winner")]
+            RCWN,
+
+            [Description("Penalty Issued")]
+            PENA,
+
+            [Description("Speed Trap Triggered")]
+            SPTP,
+
+            [Description("Start lights")]
+            STLG,
+
+            [Description("Lights out")]
+            LGOT,
+
+            [Description("Drive through served")]
+            DTSV,
+            
+            [Description("Stop go served")]
+            SGSV,
+
+            [Description("Flashback")]
+            FLBK,
+
+            [Description("Button status")]
+            BUTN
         }
         #endregion
     }
