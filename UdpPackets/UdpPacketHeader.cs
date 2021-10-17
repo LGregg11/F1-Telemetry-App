@@ -1,7 +1,7 @@
-﻿using System.Runtime.InteropServices;
-
-namespace UdpPackets
+﻿namespace UdpPackets
 {
+    using System.Runtime.InteropServices;
+
     #region Structs
 
     [StructLayout(LayoutKind.Explicit, Pack = 0, Size = 24)]
