@@ -69,7 +69,6 @@
             {
                 UpdateNMessages(telemetryMessage);
             });
-            
         }
 
         private void UpdateNMessages(TelemetryMessages message)
