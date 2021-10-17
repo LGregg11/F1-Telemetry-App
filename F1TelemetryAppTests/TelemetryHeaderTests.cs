@@ -6,12 +6,9 @@
     [TestFixture]
     public class TelemetryHeaderTests
     {
-        private TelemetryReader cut;
-
         [SetUp]
         public void Setup()
         {
-
         }
 
         [Test]
