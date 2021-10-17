@@ -1,4 +1,4 @@
-name: .NET
+name: Build F1 Telemetry App
 
 on:
   push:
@@ -9,17 +9,23 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      name: Checkout Code
+    
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.3
+       
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+     
+    - name: Restore NuGet Packages
+      run: nuget restore ./F1TelemetryApp/F1TelemetryApp.sln
+ 
+    - name: Build App
+      run: msbuild F1TelemetryApp/F1TelemetryApp.sln /p:Configuration=Release
+      
+    - name: Run NUnit Tests
+      run: ./F1TelemetryApp/packages/NUnit.ConsoleRunner.3.12.0/tools/nunit3-console.exe .F1TelemetryApp/bin/Release/F1TelemetryAppTests.dll
