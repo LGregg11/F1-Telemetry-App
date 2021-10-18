@@ -1,8 +1,6 @@
 ﻿namespace F1TelemetryAppTests
 {
-    using F1_Telemetry_App.Model;
     using NUnit.Framework;
-    using System.Linq;
     using System.Text;
     using UdpPackets;
     using TR = F1_Telemetry_App.Model.TelemetryReader;
@@ -10,28 +8,29 @@
     [TestFixture]
     public class TelemetryReaderTests
     {
-        #region ByteArrayToUdpPacketHeader
+        #region ByteArrayToUdpPacket
+
         [Test]
-        public void ByteArrayToUdpPacketHeader_ShouldReturnTelemetryHeaderObject_WhenHeaderIsValid()
+        public void ByteArrayToUdpPacketStruct_ShouldReturnUdpPacketHeaderStruct_WhenPacketIsValid()
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketHeader(input);
+            var result = TR.ByteArrayToUdpPacketStruct<UdpPacketHeader>(input);
 
             // Assert
             Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
         }
 
         [Test]
-        public void ByteArrayToUdpPacketHeader_ShouldReturn2021PacketFormat_WhenHeaderIsValidAndOf2021Format()
+        public void ByteArrayToUdpPacketStruct_ShouldReturnUdpPacketHeaderFormat_WhenPacketIsValidUdpPacketHeader()
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketHeader(input);
+            var result = TR.ByteArrayToUdpPacketStruct<UdpPacketHeader>(input);
 
             // Assert
             Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
@@ -39,17 +38,16 @@
         }
 
         [Test]
-        public void ByteArrayToUdpPacketHeader_ShouldReturnEventPacketIdType_WhenHeaderIsValidAndOfEventType()
+        public void ByteArrayToUdpPacketStruct_ShouldReturnCorrectEventStruct_WhenPacketIsValid()
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketHeader(input);
+            var result = TR.ByteArrayToUdpPacketStruct<UdpPacketHeader>(input);
 
             // Assert
             Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
-            Assert.AreEqual(TR.PacketIds.Event, (TR.PacketIds)result.packetId);
         }
 
         #endregion

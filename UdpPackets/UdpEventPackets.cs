@@ -2,7 +2,7 @@
 {
     using System.Runtime.InteropServices;
 
-    #region Structs
+    #region Event Structs
 
     [StructLayout(LayoutKind.Explicit, Pack = 0, Size = 5)]
     public struct FastestLap

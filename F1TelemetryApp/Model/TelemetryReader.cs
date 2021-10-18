@@ -10,20 +10,6 @@
     public static class TelemetryReader
     {
         public static int TELEMETRY_HEADER_SIZE = 24;
-        public static UdpPacketHeader ByteArrayToUdpPacketHeader(byte[] packet)
-        {
-            GCHandle handle = GCHandle.Alloc(packet, GCHandleType.Pinned);
-            UdpPacketHeader header;
-            try
-            {
-                header = (UdpPacketHeader)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(UdpPacketHeader));
-            }
-            finally
-            {
-                handle.Free();
-            }
-            return header;
-        }
 
         public static EventType GetEventType(byte[] remainingPacket)
         {
@@ -39,8 +25,21 @@
                 // Return an unknown event type instead of an error
                 return EventType.UNKNOWN;
             }
+        }
 
-            
+        public static T ByteArrayToUdpPacketStruct<T>(byte[] remainingPacket)
+        {
+            GCHandle handle = GCHandle.Alloc(remainingPacket, GCHandleType.Pinned);
+            T packet;
+            try
+            {
+                packet = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
+            }
+            finally
+            {
+                handle.Free();
+            }
+            return packet;
         }
 
         #region Enums

@@ -83,7 +83,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Model\TelemetryMessages.cs" />
+    <Compile Include="Model\EventMessage.cs" />
+    <Compile Include="Model\HeaderMessage.cs" />
     <Compile Include="Model\TelemetryReader.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
