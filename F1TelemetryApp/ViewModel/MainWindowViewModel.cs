@@ -9,6 +9,7 @@
     using System;
     using System.Collections.ObjectModel;
     using static F1_Telemetry_App.Model.TelemetryReader;
+    using System.Text;
 
     public class MainWindowViewModel : ViewModelBase
     {

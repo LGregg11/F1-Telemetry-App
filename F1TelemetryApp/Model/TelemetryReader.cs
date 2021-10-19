@@ -42,6 +42,45 @@
             return packet;
         }
 
+        public static object GetEventStructType(byte[] remainingPacket)
+        {
+            EventType eventType = GetEventType(remainingPacket);
+            switch (eventType)
+            {
+                case EventType.BUTN:
+                    return ByteArrayToUdpPacketStruct<Buttons>(remainingPacket);
+                case EventType.DTSV:
+                    return ByteArrayToUdpPacketStruct<DriveThroughPenaltyServed>(remainingPacket);
+                case EventType.FLBK:
+                    return ByteArrayToUdpPacketStruct<Flashback>(remainingPacket);
+                case EventType.FTLP:
+                    return ByteArrayToUdpPacketStruct<FastestLap>(remainingPacket);
+                case EventType.PENA:
+                    return ByteArrayToUdpPacketStruct<Penalty>(remainingPacket);
+                case EventType.RCWN:
+                    return ByteArrayToUdpPacketStruct<RaceWinner>(remainingPacket);
+                case EventType.RTMT:
+                    return ByteArrayToUdpPacketStruct<Retirement>(remainingPacket);
+                case EventType.SGSV:
+                    return ByteArrayToUdpPacketStruct<StopGoPenaltyServed>(remainingPacket);
+                case EventType.SPTP:
+                    return ByteArrayToUdpPacketStruct<SpeedTrap>(remainingPacket);
+                case EventType.STLG:
+                    return ByteArrayToUdpPacketStruct<StartLights>(remainingPacket);
+                case EventType.TMPT:
+                    return ByteArrayToUdpPacketStruct<TeamMateInPits>(remainingPacket);
+                case EventType.SSTA:
+                case EventType.LGOT:
+                case EventType.DRSE:
+                case EventType.DRSD:
+                case EventType.CHQF:
+                case EventType.SEND:
+                case EventType.UNKNOWN:
+                default:
+                    return null;
+            }
+        }
+
         #region Enums
         public enum PacketIds : byte
         {
