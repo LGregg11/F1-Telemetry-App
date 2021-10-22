@@ -49,32 +49,38 @@
             {
                 case EventType.BUTN:
                     return ByteArrayToUdpPacketStruct<Buttons>(remainingPacket);
-                case EventType.DTSV:
-                    return ByteArrayToUdpPacketStruct<DriveThroughPenaltyServed>(remainingPacket);
                 case EventType.FLBK:
                     return ByteArrayToUdpPacketStruct<Flashback>(remainingPacket);
+                case EventType.STLG:
+                    return ByteArrayToUdpPacketStruct<StartLights>(remainingPacket);
+                case EventType.LGOT:
+                    return ByteArrayToUdpPacketStruct<StartLights>(remainingPacket);
+                case EventType.SPTP:
+                    return ByteArrayToUdpPacketStruct<SpeedTrap>(remainingPacket);
                 case EventType.FTLP:
                     return ByteArrayToUdpPacketStruct<FastestLap>(remainingPacket);
-                case EventType.PENA:
-                    return ByteArrayToUdpPacketStruct<Penalty>(remainingPacket);
+                case EventType.TMPT:
+                    return ByteArrayToUdpPacketStruct<TeamMateInPits>(remainingPacket);
                 case EventType.RCWN:
                     return ByteArrayToUdpPacketStruct<RaceWinner>(remainingPacket);
                 case EventType.RTMT:
                     return ByteArrayToUdpPacketStruct<Retirement>(remainingPacket);
+                case EventType.PENA:
+                    return ByteArrayToUdpPacketStruct<Penalty>(remainingPacket);
                 case EventType.SGSV:
                     return ByteArrayToUdpPacketStruct<StopGoPenaltyServed>(remainingPacket);
-                case EventType.SPTP:
-                    return ByteArrayToUdpPacketStruct<SpeedTrap>(remainingPacket);
-                case EventType.STLG:
-                    return ByteArrayToUdpPacketStruct<StartLights>(remainingPacket);
-                case EventType.TMPT:
-                    return ByteArrayToUdpPacketStruct<TeamMateInPits>(remainingPacket);
+                case EventType.DTSV:
+                    return ByteArrayToUdpPacketStruct<DriveThroughPenaltyServed>(remainingPacket);
                 case EventType.SSTA:
-                case EventType.LGOT:
-                case EventType.DRSE:
-                case EventType.DRSD:
-                case EventType.CHQF:
+                    // Session Started
                 case EventType.SEND:
+                    // Session End
+                case EventType.DRSE:
+                    // DRS Enabled
+                case EventType.DRSD:
+                    // DRS Disabled
+                case EventType.CHQF:
+                    // Chequered Flag
                 case EventType.UNKNOWN:
                 default:
                     return null;
