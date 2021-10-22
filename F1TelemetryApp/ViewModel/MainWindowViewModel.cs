@@ -8,23 +8,23 @@
     using UdpPackets;
     using System;
     using System.Collections.ObjectModel;
+    using static F1_Telemetry_App.Model.TelemetryReader;
+    using System.Text;
 
     public class MainWindowViewModel : ViewModelBase
     {
         private const int port = 20777;
 
-        private ObservableCollection<TelemetryMessages> nMessages;
+        private ObservableCollection<HeaderMessage> headerMessages;
+        private ObservableCollection<EventMessage> eventMessages;
         private IUdpTelemetryFeed telemetryFeed;
 
         public MainWindowViewModel()
         {
             log4net.Config.XmlConfigurator.Configure();
             Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-            var packetIds = Enum.GetValues(typeof(TelemetryReader.PacketIds));
-            nMessages = new ObservableCollection<TelemetryMessages>();
-            foreach(TelemetryReader.PacketIds id in packetIds)
-                nMessages.Add(new TelemetryMessages { PacketId = id, Messages = 0 });
+            PopulateHeaderMessages();
+            PopulateEventMessages();
 
             telemetryFeed = new UdpTelemetryFeed(port);
             telemetryFeed.TelemetryReceived += OnTelemetryReceived;
@@ -32,14 +32,26 @@
 
         public ILog Log { get; set; }
 
-        public ObservableCollection<TelemetryMessages> NMessages
+        public ObservableCollection<HeaderMessage> HeaderMessages
         {
-            get => nMessages;
+            get => headerMessages;
             set
             {
-                if (value != nMessages)
+                if (value != headerMessages)
                 {
-                    nMessages = value;
+                    headerMessages = value;
+                }
+            }
+        }
+
+        public ObservableCollection<EventMessage> EventMessages
+        {
+            get => eventMessages;
+            set
+            {
+                if (value != eventMessages)
+                {
+                    eventMessages = value;
                 }
             }
         }
@@ -58,29 +70,93 @@
             Log.Info("Stopped Telemetry Feed");
         }
 
+        #region Telemetry Handler
+
         private void OnTelemetryReceived(object source, UdpTelemetryEventArgs e)
         {
-            UdpPacketHeader udpPacketHeader = TelemetryReader.ByteArrayToUdpPacketHeader(e.Message);
-            byte[] data = e.Message.Skip(TelemetryReader.TELEMETRY_HEADER_SIZE).ToArray();
-            var telemetryMessage = NMessages.Where(t => t.PacketId == (TelemetryReader.PacketIds)udpPacketHeader.packetId).FirstOrDefault();
-            telemetryMessage.Messages++;
+            UdpPacketHeader udpPacketHeader = ByteArrayToUdpPacketStruct<UdpPacketHeader>(e.Message);
+            byte[] remainingPacket = e.Message.Skip(TELEMETRY_HEADER_SIZE).ToArray();
 
             App.Current.Dispatcher.Invoke(delegate
             {
-                UpdateNMessages(telemetryMessage);
+                UpdateNMessages(udpPacketHeader);
+
+                switch ((PacketIds)udpPacketHeader.packetId)
+                {
+                    case PacketIds.Event:
+                        UpdateEvents(remainingPacket);
+                        break;
+                    case PacketIds.Motion:
+                    case PacketIds.Session:
+                    case PacketIds.LapData:
+                    case PacketIds.Participants:
+                    case PacketIds.CarSetups:
+                    case PacketIds.CarTelemetry:
+                    case PacketIds.CarStatus:
+                    case PacketIds.FinalClassification:
+                    case PacketIds.LobbyInfo:
+                    case PacketIds.CarDamage:
+                    case PacketIds.SessionHistory:
+                    default:
+                        break;
+                }
             });
+
         }
 
-        private void UpdateNMessages(TelemetryMessages message)
+        #endregion
+
+        #region Populators
+        private void PopulateHeaderMessages()
         {
-            for (int i = 0; i < NMessages.Count; i++)
+            var packetIds = Enum.GetValues(typeof(PacketIds));
+            headerMessages = new ObservableCollection<HeaderMessage>();
+            foreach (PacketIds id in packetIds)
+                headerMessages.Add(new HeaderMessage { PacketId = id, Total = 0 });
+        }
+
+        private void PopulateEventMessages()
+        {
+            var eventTypes = Enum.GetValues(typeof(EventType));
+            eventMessages = new ObservableCollection<EventMessage>();
+            foreach (EventType eventType in eventTypes)
+                eventMessages.Add(new EventMessage { EventType = eventType, Total = 0 });
+        }
+        #endregion
+
+        #region Update Fields
+
+        private void UpdateNMessages(UdpPacketHeader udpPacketHeader)
+        {
+            for (int i = 0; i < HeaderMessages.Count; i++)
             {
-                if (NMessages[i].PacketId == message.PacketId)
+                if (HeaderMessages[i].PacketId == (PacketIds)udpPacketHeader.packetId)
                 {
-                    NMessages[i] = message;
+                    HeaderMessage headerMessage = HeaderMessages[i];
+                    headerMessage.Total++;
+
+                    HeaderMessages[i] = headerMessage;
                     break;
                 }
             }
         }
+
+        private void UpdateEvents(byte[] eventPacket)
+        {
+            EventType eventType = GetEventType(eventPacket);
+            for (int i = 0; i < EventMessages.Count; i++)
+            {
+                if (EventMessages[i].EventType == eventType)
+                {
+                    EventMessage eventMessage = EventMessages[i];
+                    eventMessage.Total++;
+
+                    EventMessages[i] = eventMessage;
+                    break;
+                }
+            }
+        }
+
+        #endregion
     }
 }

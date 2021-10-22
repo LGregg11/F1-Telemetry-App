@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
         mc:Ignorable="d"
-        Title="F1 Telemetry" Height="450" Width="800">
+        Title="F1 Telemetry" Width="800" Height="800">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
@@ -24,15 +24,30 @@
         </StackPanel>
 
         <GroupBox Grid.Row="1" Header="F1 Telemetry" FontSize="20">
-            <DataGrid HorizontalAlignment="Stretch"
+            <TabControl>
+                <TabItem Header="Overall">
+                    <DataGrid HorizontalAlignment="Stretch"
                       AutoGenerateColumns="False"
                       GridLinesVisibility="None"
-                      ItemsSource="{Binding NMessages}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Width="*" Header="Packet Id" Binding="{Binding PacketId}"/>
-                    <DataGridTextColumn Width="*" Header="Messages" Binding="{Binding Messages}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+                      ItemsSource="{Binding HeaderMessages}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="*" Header="Packet Id" Binding="{Binding PacketId}"/>
+                            <DataGridTextColumn Width="*" Header="Total" Binding="{Binding Total}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Events">
+                    <DataGrid HorizontalAlignment="Stretch"
+                      AutoGenerateColumns="False"
+                      GridLinesVisibility="None"
+                      ItemsSource="{Binding EventMessages}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="*" Header="EventType" Binding="{Binding EventType}"/>
+                            <DataGridTextColumn Width="*" Header="Total" Binding="{Binding Total}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
         </GroupBox>
             
     </Grid>

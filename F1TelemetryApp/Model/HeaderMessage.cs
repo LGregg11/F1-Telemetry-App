@@ -1,8 +1,8 @@
 ﻿namespace F1_Telemetry_App.Model
 {
-    public struct TelemetryMessages
+    public struct HeaderMessage
     {
         public TelemetryReader.PacketIds PacketId { get; set; }
-        public int Messages { get; set; }
+        public int Total { get; set; }
     }
 }
