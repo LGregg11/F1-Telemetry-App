@@ -7,8 +7,8 @@
     <ProjectGuid>{8526E5B0-0081-46DA-98FC-B284036DA37E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UdpTelemetryFeed</RootNamespace>
-    <AssemblyName>UdpTelemetryFeed</AssemblyName>
+    <RootNamespace>F1GameTelemetry</RootNamespace>
+    <AssemblyName>F1GameTelemetry</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -33,9 +33,6 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\F1TelemetryApp\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -48,13 +45,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IUdpTelemetryFeed.cs" />
-    <Compile Include="UdpTelemetryEvents.cs" />
-    <Compile Include="UdpTelemetryFeed.cs" />
+    <Compile Include="Packets\Event.cs" />
+    <Compile Include="Packets\Header.cs" />
+    <Compile Include="Listener\ITelemetryListener.cs" />
+    <Compile Include="Reader\TelemetryReader.cs" />
+    <Compile Include="Listener\TelemetryEvents.cs" />
+    <Compile Include="Listener\TelemetryListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

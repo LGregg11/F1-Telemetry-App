@@ -1,4 +1,4 @@
-﻿namespace UdpPackets
+﻿namespace F1GameTelemetry.Packets
 {
     using System.Runtime.InteropServices;
 
