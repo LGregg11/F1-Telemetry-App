@@ -1,16 +1,16 @@
-﻿namespace UdpTelemetryFeed
+﻿namespace F1GameTelemetry.Listener
 {
     using System.Net.Sockets;
     using System.Threading;
 
-    public interface IUdpTelemetryFeed
+    public interface ITelemetryListener
     {
-        event UdpTelemetryEventHandler TelemetryReceived;
+        event TelemetryEventHandler TelemetryReceived;
         int Port { get; }
         Thread ListenerThread { get; }
         UdpClient Client { get; }
         void Start();
         void Stop();
-        void TelemetryListener();
+        void TelemetrySubscriber();
     }
 }

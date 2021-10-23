@@ -2,18 +2,18 @@ namespace F1TelemetryAppTests
 {
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using UdpTelemetryFeed;
+    using F1GameTelemetry.Listener;
 
     public class UdpTelemetryFeedTests
     {
-        private UdpTelemetryFeed cut;
+        private TelemetryListener cut;
         private int portMock = 10101;
 
         [SetUp]
         public void Setup()
         {
             Task.Delay(500);
-            cut = new UdpTelemetryFeed(portMock);
+            cut = new TelemetryListener(portMock);
         }
 
         [TearDown]

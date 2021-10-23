@@ -85,7 +85,6 @@
     </Compile>
     <Compile Include="Model\EventMessage.cs" />
     <Compile Include="Model\HeaderMessage.cs" />
-    <Compile Include="Model\TelemetryReader.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -124,15 +123,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\UdpPackets\UdpPackets.csproj">
-      <Project>{1d8bf266-281f-4354-a60c-1635a62cf240}</Project>
-      <Name>UdpPackets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UdpTelemetryFeed\UdpTelemetryFeed.csproj">
+    <ProjectReference Include="..\F1GameTelemetry\F1GameTelemetry.csproj">
       <Project>{8526e5b0-0081-46da-98fc-b284036da37e}</Project>
-      <Name>UdpTelemetryFeed</Name>
+      <Name>F1GameTelemetry</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

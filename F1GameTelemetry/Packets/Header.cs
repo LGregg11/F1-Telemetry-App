@@ -1,11 +1,11 @@
-﻿namespace UdpPackets
+﻿namespace F1GameTelemetry.Packets
 {
     using System.Runtime.InteropServices;
 
     #region Structs
 
     [StructLayout(LayoutKind.Explicit, Pack = 0, Size = 24)]
-    public struct UdpPacketHeader
+    public struct Header
     {
         [FieldOffset(0)]
         public ushort packetFormat; // 2021
