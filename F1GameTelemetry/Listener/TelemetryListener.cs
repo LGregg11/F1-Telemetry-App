@@ -1,22 +1,22 @@
-﻿namespace UdpTelemetryFeed
+﻿namespace F1GameTelemetry.Listener
 {
     using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
 
-    public class UdpTelemetryFeed : IUdpTelemetryFeed
+    public class TelemetryListener : ITelemetryListener
     {
         private int port;
         private Thread listenerThread;
         private UdpClient client;
 
-        public UdpTelemetryFeed(int port)
+        public TelemetryListener(int port)
         {
             this.port = port;
         }
 
-        public event UdpTelemetryEventHandler TelemetryReceived;
+        public event TelemetryEventHandler TelemetryReceived;
 
         public int Port => port;
 
@@ -32,7 +32,7 @@
             if (Client == null)
                 client = new UdpClient(Port);
 
-            listenerThread = new Thread(new ThreadStart(TelemetryListener))
+            listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
             {
                 Name = "Telemetry Listener Thread"
             };
@@ -51,7 +51,7 @@
             listenerThread = null;
         }
 
-        public void TelemetryListener()
+        public void TelemetrySubscriber()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Any, port);
 
@@ -61,7 +61,7 @@
                 {
                     byte[] receiveBytes = client.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
-                        TelemetryReceived(this, new UdpTelemetryEventArgs(receiveBytes));
+                        TelemetryReceived(this, new TelemetryEventArgs(receiveBytes));
                 }
                 catch (SocketException ex)
                 {

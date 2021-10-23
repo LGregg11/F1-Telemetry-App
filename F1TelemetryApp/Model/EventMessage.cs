@@ -1,5 +1,7 @@
-﻿namespace F1_Telemetry_App.Model
+﻿namespace F1TelemetryApp.Model
 {
+    using F1GameTelemetry.Reader;
+
     public struct EventMessage
     {
         public TelemetryReader.EventType EventType { get; set; }

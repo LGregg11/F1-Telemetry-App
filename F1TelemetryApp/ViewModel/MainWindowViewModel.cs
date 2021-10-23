@@ -1,15 +1,16 @@
 ﻿namespace F1TelemetryApp.ViewModel
 {
-    using F1_Telemetry_App.Model;
+    using F1GameTelemetry.Packets;
+    using F1GameTelemetry.Listener;
+    using F1TelemetryApp.Model;
+
     using GalaSoft.MvvmLight;
     using log4net;
-    using UdpTelemetryFeed;
     using System.Linq;
-    using UdpPackets;
     using System;
     using System.Collections.ObjectModel;
-    using static F1_Telemetry_App.Model.TelemetryReader;
-    using System.Text;
+
+    using static F1GameTelemetry.Reader.TelemetryReader;
 
     public class MainWindowViewModel : ViewModelBase
     {
@@ -17,7 +18,7 @@
 
         private ObservableCollection<HeaderMessage> headerMessages;
         private ObservableCollection<EventMessage> eventMessages;
-        private IUdpTelemetryFeed telemetryFeed;
+        private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
         {
@@ -26,8 +27,8 @@
             PopulateHeaderMessages();
             PopulateEventMessages();
 
-            telemetryFeed = new UdpTelemetryFeed(port);
-            telemetryFeed.TelemetryReceived += OnTelemetryReceived;
+            telemetryListener = new TelemetryListener(port);
+            telemetryListener.TelemetryReceived += OnTelemetryReceived;
         }
 
         public ILog Log { get; set; }
@@ -59,34 +60,36 @@
         public void StartTelemetryFeed()
         {
             Log.Debug("Starting Telemetry Feed");
-            telemetryFeed.Start();
+            telemetryListener.Start();
             Log.Info("Started Telemetry Feed");
         }
 
         public void StopTelemetryFeed()
         {
             Log.Debug("Stopping Telemetry Feed");
-            telemetryFeed.Stop();
+            telemetryListener.Stop();
             Log.Info("Stopped Telemetry Feed");
         }
 
         #region Telemetry Handler
 
-        private void OnTelemetryReceived(object source, UdpTelemetryEventArgs e)
+        private void OnTelemetryReceived(object source, TelemetryEventArgs e)
         {
-            UdpPacketHeader udpPacketHeader = ByteArrayToUdpPacketStruct<UdpPacketHeader>(e.Message);
+            Header header = ByteArrayToUdpPacketStruct<Header>(e.Message);
             byte[] remainingPacket = e.Message.Skip(TELEMETRY_HEADER_SIZE).ToArray();
 
             App.Current.Dispatcher.Invoke(delegate
             {
-                UpdateNMessages(udpPacketHeader);
+                UpdateNMessages(header);
 
-                switch ((PacketIds)udpPacketHeader.packetId)
+                switch ((PacketIds)header.packetId)
                 {
                     case PacketIds.Event:
                         UpdateEvents(remainingPacket);
                         break;
                     case PacketIds.Motion:
+                        Log.Debug($"same Motion packet - new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        break;
                     case PacketIds.Session:
                     case PacketIds.LapData:
                     case PacketIds.Participants:
@@ -126,7 +129,7 @@
 
         #region Update Fields
 
-        private void UpdateNMessages(UdpPacketHeader udpPacketHeader)
+        private void UpdateNMessages(Header udpPacketHeader)
         {
             for (int i = 0; i < HeaderMessages.Count; i++)
             {

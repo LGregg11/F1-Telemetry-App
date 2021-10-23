@@ -1,10 +1,13 @@
 ﻿namespace F1TelemetryAppTests
 {
+    using F1GameTelemetry.Packets;
+
     using NUnit.Framework;
     using System;
     using System.Text;
-    using UdpPackets;
-    using TR = F1_Telemetry_App.Model.TelemetryReader;
+
+    using TR = F1GameTelemetry.Reader.TelemetryReader;
+
 
     [TestFixture]
     public class TelemetryReaderTests
@@ -18,10 +21,10 @@
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketStruct<UdpPacketHeader>(input);
+            var result = TR.ByteArrayToUdpPacketStruct<Header>(input);
 
             // Assert
-            Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
+            Assert.AreEqual(typeof(Header), result.GetType());
         }
 
         [Test]
@@ -31,10 +34,10 @@
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketStruct<UdpPacketHeader>(input);
+            var result = TR.ByteArrayToUdpPacketStruct<Header>(input);
 
             // Assert
-            Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
+            Assert.AreEqual(typeof(Header), result.GetType());
             Assert.AreEqual(2021, result.packetFormat);
         }
 
@@ -45,10 +48,10 @@
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketStruct<UdpPacketHeader>(input);
+            var result = TR.ByteArrayToUdpPacketStruct<Header>(input);
 
             // Assert
-            Assert.AreEqual(typeof(UdpPacketHeader), result.GetType());
+            Assert.AreEqual(typeof(Header), result.GetType());
         }
 
         #region EventStructs

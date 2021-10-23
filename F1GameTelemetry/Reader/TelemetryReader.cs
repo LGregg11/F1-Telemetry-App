@@ -1,11 +1,11 @@
-﻿namespace F1_Telemetry_App.Model
+﻿namespace F1GameTelemetry.Reader
 {
+    using F1GameTelemetry.Packets;
     using System;
     using System.ComponentModel;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
-    using UdpPackets;
 
     public static class TelemetryReader
     {
@@ -13,7 +13,7 @@
 
         public static EventType GetEventType(byte[] remainingPacket)
         {
-            try 
+            try
             {
                 return (EventType)Enum.Parse(
                     typeof(EventType),
@@ -42,7 +42,7 @@
             return packet;
         }
 
-        public static object GetEventStructType(byte[] remainingPacket)
+        public static object GetEventStruct(byte[] remainingPacket)
         {
             EventType eventType = GetEventType(remainingPacket);
             switch (eventType)
@@ -72,15 +72,15 @@
                 case EventType.DTSV:
                     return ByteArrayToUdpPacketStruct<DriveThroughPenaltyServed>(remainingPacket);
                 case EventType.SSTA:
-                    // Session Started
+                // Session Started
                 case EventType.SEND:
-                    // Session End
+                // Session End
                 case EventType.DRSE:
-                    // DRS Enabled
+                // DRS Enabled
                 case EventType.DRSD:
-                    // DRS Disabled
+                // DRS Disabled
                 case EventType.CHQF:
-                    // Chequered Flag
+                // Chequered Flag
                 case EventType.UNKNOWN:
                 default:
                     return null;
@@ -173,7 +173,7 @@
 
             [Description("Drive through served")]
             DTSV,
-            
+
             [Description("Stop go served")]
             SGSV,
 

@@ -54,17 +54,13 @@
     <Compile Include="UdpTelemetryFeedTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\F1GameTelemetry\F1GameTelemetry.csproj">
+      <Project>{8526e5b0-0081-46da-98fc-b284036da37e}</Project>
+      <Name>F1GameTelemetry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\F1TelemetryApp\F1TelemetryApp.csproj">
       <Project>{ef0d2939-1531-46b5-80e0-598cbf814905}</Project>
       <Name>F1TelemetryApp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UdpPackets\UdpPackets.csproj">
-      <Project>{1d8bf266-281f-4354-a60c-1635a62cf240}</Project>
-      <Name>UdpPackets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UdpTelemetryFeed\UdpTelemetryFeed.csproj">
-      <Project>{8526e5b0-0081-46da-98fc-b284036da37e}</Project>
-      <Name>UdpTelemetryFeed</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
