@@ -11,6 +11,7 @@
     using System.Collections.ObjectModel;
 
     using static F1GameTelemetry.Reader.TelemetryReader;
+    using static F1GameTelemetry.Converters.Converter;
 
     public class MainWindowViewModel : ViewModelBase
     {
@@ -18,6 +19,8 @@
 
         private ObservableCollection<HeaderMessage> headerMessages;
         private ObservableCollection<EventMessage> eventMessages;
+        private MotionMessage motionMessage;
+
         private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
@@ -26,6 +29,7 @@
             Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             PopulateHeaderMessages();
             PopulateEventMessages();
+            PopulateMotionMessage();
 
             telemetryListener = new TelemetryListener(port);
             telemetryListener.TelemetryReceived += OnTelemetryReceived;
@@ -56,6 +60,8 @@
                 }
             }
         }
+
+        public string Speed => $"{motionMessage.Speed:#0.00} m/s (or km/h)";
 
         public void StartTelemetryFeed()
         {
@@ -88,7 +94,7 @@
                         UpdateEvents(remainingPacket);
                         break;
                     case PacketIds.Motion:
-                        Log.Debug($"same Motion packet - new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateMotion(remainingPacket);
                         break;
                     case PacketIds.Session:
                     case PacketIds.LapData:
@@ -125,6 +131,11 @@
             foreach (EventType eventType in eventTypes)
                 eventMessages.Add(new EventMessage { EventType = eventType, Total = 0 });
         }
+
+        private void PopulateMotionMessage()
+        {
+            motionMessage = new MotionMessage { Speed = 0.0d };
+        }
         #endregion
 
         #region Update Fields
@@ -158,6 +169,13 @@
                     break;
                 }
             }
+        }
+
+        private void UpdateMotion(byte[] motionPacket)
+        {
+            var motion = GetMotionStruct(motionPacket);
+            motionMessage.Speed = GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            RaisePropertyChanged(nameof(Speed));
         }
 
         #endregion

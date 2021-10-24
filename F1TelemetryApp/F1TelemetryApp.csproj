@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EF0D2939-1531-46B5-80E0-598CBF814905}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>F1_Telemetry_App</RootNamespace>
+    <RootNamespace>F1TelemetryApp</RootNamespace>
     <AssemblyName>F1-Telemetry-App</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="Model\EventMessage.cs" />
     <Compile Include="Model\HeaderMessage.cs" />
+    <Compile Include="Model\MotionMessage.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
