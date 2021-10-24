@@ -1,4 +1,4 @@
-﻿namespace F1TelemetryAppTests
+﻿namespace F1TelemetryAppTests.F1GameTelemetryTests
 {
     using F1GameTelemetry.Packets;
 
@@ -75,6 +75,7 @@
         #endregion
 
         #region GetEventType
+
         [TestCase("BUTN", TR.EventType.BUTN)]
         [TestCase("CHQF", TR.EventType.CHQF)]
         [TestCase("DRSD", TR.EventType.DRSD)]
@@ -147,7 +148,7 @@
         public void GetMotionType_ShouldReturnCorrectMotionStruct_WhenUdpPacketIsValidAndOfMotionType()
         {
             // Arrange - 20 cars in Imola (starting grid)
-            byte[] motionInput = new byte[] { 215, 251, 158, 67, 43, 142, 30, 66, 48, 159, 176, 195, 222, 172, 224, 57, 120, 93, 129, 60, 184, 22, 195,
+            byte[] input = new byte[] { 215, 251, 158, 67, 43, 142, 30, 66, 48, 159, 176, 195, 222, 172, 224, 57, 120, 93, 129, 60, 184, 22, 195,
                 187, 6, 128, 119, 0, 245, 253, 11, 2, 221, 255, 6, 128, 121, 217, 82, 188, 106, 158, 59, 60, 109, 56, 188, 61, 88, 27, 203, 191, 0, 138,
                 112, 59, 126, 249, 143, 58, 178, 71, 146, 67, 91, 242, 30, 66, 160, 78, 173, 195, 0, 23, 189, 58, 177, 69, 155, 59, 20, 77, 243, 187, 2,
                 128, 135, 0, 94, 255, 162, 0, 36, 0, 2, 128, 112, 216, 13, 189, 29, 41, 156, 187, 128, 217, 30, 61, 62, 178, 201, 191, 0, 30, 135, 59, 64,
@@ -193,13 +194,13 @@
                 52, 186, 35, 58, 42, 147, 224, 60, 97, 55, 68, 58, 92, 114, 87, 57, 99, 32, 34, 245, 52, 40, 41, 241, 113, 57, 24, 60, 0, 0, 0, 128 };
 
             // Act
-            var result = TR.GetMotionStruct(motionInput);
+            var result = TR.GetMotionStruct(input);
 
             // Assert
-            Assert.AreEqual(typeof(FullMotionData), result.GetType());
-            Assert.AreEqual(typeof(CarMotionData[]), ((FullMotionData)result).CarMotionData.GetType());
-            Assert.AreEqual(20, ((FullMotionData)result).CarMotionData.Length);
-        
+            Assert.AreEqual(typeof(Motion), result.GetType());
+            Assert.AreEqual(typeof(CarMotionData[]), result.carMotionData.GetType());
+            Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carMotionData.Length);
+            Assert.AreEqual(typeof(ExtraCarMotionData), result.extraCarMotionData.GetType());
         }
         
         #endregion

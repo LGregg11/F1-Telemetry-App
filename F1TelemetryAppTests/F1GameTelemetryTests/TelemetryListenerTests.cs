@@ -1,10 +1,10 @@
-namespace F1TelemetryAppTests
+namespace F1TelemetryAppTests.F1GameTelemetryTests
 {
     using NUnit.Framework;
     using System.Threading.Tasks;
     using F1GameTelemetry.Listener;
 
-    public class UdpTelemetryFeedTests
+    public class TelemetryListenerTests
     {
         private TelemetryListener cut;
         private int portMock = 10101;
