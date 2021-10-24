@@ -10,6 +10,8 @@
     public static class TelemetryReader
     {
         public static int TELEMETRY_HEADER_SIZE = 24;
+        public static int TELEMETRY_CARMOTIONDATA_SIZE = 60;
+        public static int MAX_CARS_PER_RACE = 22;
 
         public static EventType GetEventType(byte[] remainingPacket)
         {
@@ -85,6 +87,26 @@
                 default:
                     return null;
             }
+        }
+
+        public static Motion GetMotionStruct(byte[] remainingPacket)
+        {
+            CarMotionData[] carMotionData = new CarMotionData[22];
+
+            for (int i=1; i<=MAX_CARS_PER_RACE; i++)
+            {
+
+                CarMotionData carData = ByteArrayToUdpPacketStruct<CarMotionData>(remainingPacket.Skip(i*TELEMETRY_CARMOTIONDATA_SIZE).ToArray());
+                carMotionData[i-1] = carData;
+            }
+            ExtraCarMotionData extraCarMotionData = ByteArrayToUdpPacketStruct<ExtraCarMotionData>(
+                remainingPacket.Skip(MAX_CARS_PER_RACE*TELEMETRY_CARMOTIONDATA_SIZE).ToArray());
+
+            return new Motion
+            {
+                carMotionData = carMotionData,
+                extraCarMotionData = extraCarMotionData
+            };
         }
 
         #region Enums
