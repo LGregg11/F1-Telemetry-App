@@ -202,7 +202,7 @@
             Assert.AreEqual(typeof(CarMotionData[]), result.carMotionData.GetType());
             Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carMotionData.Length);
             Assert.AreEqual(typeof(ExtraCarMotionData), result.extraCarMotionData.GetType());
-            Assert.AreEqual(0.00, TC.GetMagnitudeFromVectorData(result.extraCarMotionData.localVelocity));
+            Assert.AreEqual(0.0, Math.Round(TC.GetMagnitudeFromVectorData(result.extraCarMotionData.localVelocity), 1));
         }
         
         #endregion
