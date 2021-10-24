@@ -6,11 +6,12 @@
     using System;
     using System.Text;
 
+    using TC = F1GameTelemetry.Converters.Converter;
     using TR = F1GameTelemetry.Reader.TelemetryReader;
 
 
     [TestFixture]
-    public class TelemetryReaderTests
+    public class ReaderTests
     {
         #region ByteArrayToUdpPacket
 
@@ -201,6 +202,7 @@
             Assert.AreEqual(typeof(CarMotionData[]), result.carMotionData.GetType());
             Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carMotionData.Length);
             Assert.AreEqual(typeof(ExtraCarMotionData), result.extraCarMotionData.GetType());
+            Assert.AreEqual(0.00, TC.GetMagnitudeFromVectorData(result.extraCarMotionData.localVelocity));
         }
         
         #endregion

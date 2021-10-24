@@ -4,7 +4,7 @@ namespace F1TelemetryAppTests.F1GameTelemetryTests
     using System.Threading.Tasks;
     using F1GameTelemetry.Listener;
 
-    public class TelemetryListenerTests
+    public class ListenerTests
     {
         private TelemetryListener cut;
         private int portMock = 10101;
