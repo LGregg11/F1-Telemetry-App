@@ -86,6 +86,7 @@
     <Compile Include="Model\EventMessage.cs" />
     <Compile Include="Model\HeaderMessage.cs" />
     <Compile Include="Model\MotionMessage.cs" />
+    <Compile Include="Model\TelemetryMessage.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
