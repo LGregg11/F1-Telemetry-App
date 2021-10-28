@@ -51,7 +51,37 @@
                     <TextBlock HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                FontSize="40"
-                               Text="{Binding Speed}"/>
+                               Text="{Binding LocalSpeed}"/>
+                </TabItem>
+                <TabItem Header="Telemetry">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Speed"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Speed}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Throttle"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Throttle}"/>
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Brake"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Brake}"/>
+                        
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Gear"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Gear}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Steer"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Steer}"/>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </GroupBox>

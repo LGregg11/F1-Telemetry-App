@@ -1,8 +1,9 @@
 ﻿namespace F1TelemetryApp.ViewModel
 {
-    using F1GameTelemetry.Packets;
     using F1GameTelemetry.Listener;
     using F1TelemetryApp.Model;
+    using F1GameTelemetry.Packets;
+    using F1GameTelemetry.Packets.Enums;
 
     using GalaSoft.MvvmLight;
     using log4net;
@@ -20,6 +21,7 @@
         private ObservableCollection<HeaderMessage> headerMessages;
         private ObservableCollection<EventMessage> eventMessages;
         private MotionMessage motionMessage;
+        private TelemetryMessage telemetryMessage;
 
         private TelemetryListener telemetryListener;
 
@@ -27,9 +29,7 @@
         {
             log4net.Config.XmlConfigurator.Configure();
             Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            PopulateHeaderMessages();
-            PopulateEventMessages();
-            PopulateMotionMessage();
+            PopulateMessages();
 
             telemetryListener = new TelemetryListener(port);
             telemetryListener.TelemetryReceived += OnTelemetryReceived;
@@ -61,7 +61,17 @@
             }
         }
 
-        public string Speed => $"{motionMessage.Speed:#0.00} m/s (or km/h)";
+        public string LocalSpeed => $"{motionMessage.Speed:#0.00} m/s";
+
+        public string Speed => $"{telemetryMessage.Speed} km/h";
+
+        public string Throttle => $"{telemetryMessage.Throttle}";
+
+        public string Brake => $"{telemetryMessage.Brake}";
+
+        public string Gear => $"{telemetryMessage.Gear}";
+
+        public string Steer => $"{telemetryMessage.Steer}";
 
         public void StartTelemetryFeed()
         {
@@ -96,11 +106,13 @@
                     case PacketIds.Motion:
                         UpdateMotion(remainingPacket);
                         break;
+                    case PacketIds.CarTelemetry:
+                        UpdateTelemetry(remainingPacket);
+                        break;
                     case PacketIds.Session:
                     case PacketIds.LapData:
                     case PacketIds.Participants:
                     case PacketIds.CarSetups:
-                    case PacketIds.CarTelemetry:
                     case PacketIds.CarStatus:
                     case PacketIds.FinalClassification:
                     case PacketIds.LobbyInfo:
@@ -116,6 +128,15 @@
         #endregion
 
         #region Populators
+
+        private void PopulateMessages()
+        {
+            PopulateHeaderMessages();
+            PopulateEventMessages();
+            PopulateMotionMessage();
+            PopulateTelemetryMessage();
+        }
+
         private void PopulateHeaderMessages()
         {
             var packetIds = Enum.GetValues(typeof(PacketIds));
@@ -135,6 +156,11 @@
         private void PopulateMotionMessage()
         {
             motionMessage = new MotionMessage { Speed = 0.0d };
+        }
+
+        private void PopulateTelemetryMessage()
+        {
+            telemetryMessage = new TelemetryMessage { Speed = 0, Brake = 0.0f, Throttle = 0.0f, Gear = 0, Steer = 0.0f };
         }
         #endregion
 
@@ -175,7 +201,22 @@
         {
             var motion = GetMotionStruct(motionPacket);
             motionMessage.Speed = GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            RaisePropertyChanged(nameof(LocalSpeed));
+        }
+
+        private void UpdateTelemetry(byte[] carTelemetryPacket)
+        {
+            var carTelemetry = GetCarTelemetryStruct(carTelemetryPacket);
+            telemetryMessage.Speed = carTelemetry.carTelemetryData[0].speed;
+            telemetryMessage.Throttle = carTelemetry.carTelemetryData[0].throttle;
+            telemetryMessage.Brake = carTelemetry.carTelemetryData[0].brake;
+            telemetryMessage.Gear = carTelemetry.carTelemetryData[0].gear;
+            telemetryMessage.Steer = carTelemetry.carTelemetryData[0].steer;
             RaisePropertyChanged(nameof(Speed));
+            RaisePropertyChanged(nameof(Throttle));
+            RaisePropertyChanged(nameof(Brake));
+            RaisePropertyChanged(nameof(Gear));
+            RaisePropertyChanged(nameof(Steer));
         }
 
         #endregion

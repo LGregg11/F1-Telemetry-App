@@ -1,7 +1,7 @@
 ﻿namespace F1TelemetryAppTests.F1GameTelemetryTests
 {
     using F1GameTelemetry.Packets;
-
+    using F1GameTelemetry.Packets.Enums;
     using NUnit.Framework;
     using System;
     using System.Text;
@@ -77,24 +77,24 @@
 
         #region GetEventType
 
-        [TestCase("BUTN", TR.EventType.BUTN)]
-        [TestCase("CHQF", TR.EventType.CHQF)]
-        [TestCase("DRSD", TR.EventType.DRSD)]
-        [TestCase("DRSE", TR.EventType.DRSE)]
-        [TestCase("DTSV", TR.EventType.DTSV)]
-        [TestCase("FLBK", TR.EventType.FLBK)]
-        [TestCase("FTLP", TR.EventType.FTLP)]
-        [TestCase("LGOT", TR.EventType.LGOT)]
-        [TestCase("PENA", TR.EventType.PENA)]
-        [TestCase("RCWN", TR.EventType.RCWN)]
-        [TestCase("RTMT", TR.EventType.RTMT)]
-        [TestCase("SEND", TR.EventType.SEND)]
-        [TestCase("SGSV", TR.EventType.SGSV)]
-        [TestCase("SPTP", TR.EventType.SPTP)]
-        [TestCase("SSTA", TR.EventType.SSTA)]
-        [TestCase("STLG", TR.EventType.STLG)]
-        [TestCase("TMPT", TR.EventType.TMPT)]
-        public void GetEventType_ShouldReturnCorrectEventType_WhenUdpPacketIsValidAndOfEventType(string inputString, TR.EventType expected)
+        [TestCase("BUTN", EventType.BUTN)]
+        [TestCase("CHQF", EventType.CHQF)]
+        [TestCase("DRSD", EventType.DRSD)]
+        [TestCase("DRSE", EventType.DRSE)]
+        [TestCase("DTSV", EventType.DTSV)]
+        [TestCase("FLBK", EventType.FLBK)]
+        [TestCase("FTLP", EventType.FTLP)]
+        [TestCase("LGOT", EventType.LGOT)]
+        [TestCase("PENA", EventType.PENA)]
+        [TestCase("RCWN", EventType.RCWN)]
+        [TestCase("RTMT", EventType.RTMT)]
+        [TestCase("SEND", EventType.SEND)]
+        [TestCase("SGSV", EventType.SGSV)]
+        [TestCase("SPTP", EventType.SPTP)]
+        [TestCase("SSTA", EventType.SSTA)]
+        [TestCase("STLG", EventType.STLG)]
+        [TestCase("TMPT", EventType.TMPT)]
+        public void GetEventType_ShouldReturnCorrectEventType_WhenUdpPacketIsValidAndOfEventType(string inputString, EventType expected)
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = Encoding.ASCII.GetBytes(inputString);
@@ -106,8 +106,8 @@
             Assert.AreEqual(expected, result);
         }
 
-        [TestCase("AAAA", TR.EventType.UNKNOWN)]
-        public void GetEventType_ShouldReturnUnknownEventType_WhenUdpPacketIsValidAndEventTypeIsUnknown(string inputString, TR.EventType expected)
+        [TestCase("AAAA", EventType.UNKNOWN)]
+        public void GetEventType_ShouldReturnUnknownEventType_WhenUdpPacketIsValidAndEventTypeIsUnknown(string inputString, EventType expected)
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = Encoding.ASCII.GetBytes(inputString);
@@ -255,9 +255,9 @@
 
             // Assert
             Assert.AreEqual(typeof(CarTelemetry), result.GetType());
-            Assert.AreEqual(typeof(CarTelemetryData[], result.carTelemetryData.GetType()));
-            Assert.AreEqual(22, result.carTelemetryData.Length);
-            Assert.AreEqual(MfdType.Closed, result.mfdPanelIndex);
+            Assert.AreEqual(typeof(CarTelemetryData[]), result.carTelemetryData.GetType());
+            Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carTelemetryData.Length);
+            Assert.AreEqual(MFDPanelIndexTypes.Damage, result.mfdPanelIndex);
         }
 
         #endregion
