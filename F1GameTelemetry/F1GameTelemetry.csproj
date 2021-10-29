@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\Converter.cs" />
+    <Compile Include="Packets\CarStatus.cs" />
     <Compile Include="Packets\CarTelemetry.cs" />
     <Compile Include="Packets\Common.cs" />
     <Compile Include="Packets\Enums\Enums.cs" />
