@@ -133,4 +133,90 @@
         Temperatures = 4
     }
     #endregion
+
+    #region TyreCompoundTypes
+    public enum TyreCompoundTypes : byte
+    {
+        // F1 Modern
+        C5 = 16,
+        C4 = 17,
+        C3 = 18,
+        C2 = 19,
+        C1 = 20,
+        Intermediate = 7,
+        Wet = 8,
+
+        // F1 Classic
+        ClassicDry = 9,
+        ClassicWet = 10,
+
+        // F2
+        F2SuperSoft = 11,
+        F2Soft = 12,
+        F2Medium = 13,
+        F2Hard = 14,
+        F2Wet = 15
+    }
+    #endregion
+
+    #region TyreVisualTypes
+    public enum TyreVisualTypes : byte
+    {
+        // F1 Modern & Classic
+        Soft =  16,
+        Medium = 17,
+        Hard = 18,
+        Intermediate = 7,
+        Wet = 8,
+
+        // F2 '19
+        F2Wet = 15,
+        F2SuperSoft = 19,
+        F2Soft = 20,
+        F2Medium = 21,
+        F2Hard = 22
+
+    }
+    #endregion
+
+    #region FiaFlagTypes
+    public enum FiaFlagTypes : sbyte
+    {
+        Unknown = -1,
+        None = 0,
+        Greed = 1,
+        Blue = 2,
+        Yellow = 3,
+        Red = 4
+    }
+    #endregion
+
+    #region ErsDeploymentModes
+    public enum ErsDeploymentModes : byte
+    {
+        None = 0,
+        Medium = 1,
+        Hotlap = 2,
+        Overtake = 3
+    }
+    #endregion
+
+    #region TractionControlTypes
+    public enum TractionControlTypes : byte
+    {
+        Off = 0,
+        Medium = 1,
+        Full = 2
+    }
+    #endregion
+
+    #region FuelMix
+    public enum FuelMix : byte
+    {
+        Lean = 0,
+        Standard = 1,
+        Rich = 2,
+        Max = 3
+    }
+    #endregion
 }

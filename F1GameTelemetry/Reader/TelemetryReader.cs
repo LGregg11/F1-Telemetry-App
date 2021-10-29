@@ -109,9 +109,8 @@
 
             for (int i=0; i<MAX_CARS_PER_RACE; i++)
             {
-                CarMotionData carData = ByteArrayToUdpPacketStruct<CarMotionData>(
-                    remainingPacket.Skip(i*CARMOTIONDATA_SIZE).ToArray());
-                carMotionData[i] = carData;
+                carMotionData[i] = ByteArrayToUdpPacketStruct<CarMotionData>(
+                    remainingPacket.Skip(i * CARMOTIONDATA_SIZE).ToArray());
             }
             ExtraCarMotionData extraCarMotionData = ByteArrayToUdpPacketStruct<ExtraCarMotionData>(
                 remainingPacket.Skip(MAX_CARS_PER_RACE*CARMOTIONDATA_SIZE).ToArray());
@@ -128,10 +127,8 @@
             CarTelemetryData[] carTelemetryData = new CarTelemetryData[MAX_CARS_PER_RACE];
             for (int i=0; i<MAX_CARS_PER_RACE; i++)
             {
-                CarTelemetryData telemetryData = ByteArrayToUdpPacketStruct<CarTelemetryData>(
+                carTelemetryData[i] = ByteArrayToUdpPacketStruct<CarTelemetryData>(
                     remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
-
-                carTelemetryData[i] = telemetryData;
             }
             remainingPacket = remainingPacket.Skip(MAX_CARS_PER_RACE * CARTELEMETRYDATA_SIZE).ToArray();
             MFDPanelIndexTypes mfdPanelIndex = GetMfdPanelIndexType(remainingPacket);
@@ -146,6 +143,18 @@
                 mfdPanelIndexSecondaryPlayer = mfdPanelIndexSecondaryType,
                 suggestedGear = suggestedGear
             };
+        }
+
+        public static CarStatus GetCarStatusStruct(byte[] remainingPacket)
+        {
+            CarStatusData[] carStatusData = new CarStatusData[MAX_CARS_PER_RACE];
+            for (int i = 0; i < MAX_CARS_PER_RACE; i++)
+            {
+                carStatusData[i] = ByteArrayToUdpPacketStruct<CarStatusData>(
+                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
+            }
+
+            return new CarStatus { carStatusData = carStatusData };
         }
     }
 }
