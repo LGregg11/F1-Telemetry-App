@@ -2,7 +2,7 @@ name: Build F1 Telemetry App
 
 on:
   push:
-    branches: [ main, bug/*, feature/* ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
