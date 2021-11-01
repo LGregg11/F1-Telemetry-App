@@ -22,7 +22,7 @@
 
         public byte numberPitStops;
 
-        public ResultStatusTypes resultStatus;
+        public ResultStatus resultStatus;
 
         public uint bestLapTime; // In milliseconds
 

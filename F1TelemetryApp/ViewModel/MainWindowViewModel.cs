@@ -112,8 +112,11 @@
                     case PacketIds.CarStatus:
                         break;
                     case PacketIds.FinalClassification:
-                    case PacketIds.Session:
+                        break;
                     case PacketIds.LapData:
+                        Log.Debug($"LapData packet - new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        break;
+                    case PacketIds.Session:
                     case PacketIds.Participants:
                     case PacketIds.CarSetups:
                     
