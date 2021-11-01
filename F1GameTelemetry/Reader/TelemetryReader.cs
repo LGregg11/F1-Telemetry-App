@@ -156,5 +156,24 @@
 
             return new CarStatus { carStatusData = carStatusData };
         }
+
+        public static FinalClassification GetFinalClassificationStruct(byte[] remainingPacket)
+        {
+            byte numberCars = remainingPacket.FirstOrDefault();
+            remainingPacket = remainingPacket.Skip(1).ToArray();
+
+            FinalClassificationData[] finalClassificationData = new FinalClassificationData[MAX_CARS_PER_RACE];
+            for (int i = 0; i < MAX_CARS_PER_RACE; i++)
+            {
+                finalClassificationData[i] = ByteArrayToUdpPacketStruct<FinalClassificationData>(
+                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
+            }
+
+            return new FinalClassification
+            {
+                numberCars = numberCars,
+                finalClassificationData = finalClassificationData
+            };
+        }
     }
 }

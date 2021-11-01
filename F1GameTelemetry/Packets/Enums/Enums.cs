@@ -219,4 +219,18 @@
         Max = 3
     }
     #endregion
+
+    #region ResultStatusTypes
+    public enum ResultStatusTypes : byte
+    {
+        Invalid = 0,
+        Inactive = 1,
+        Active = 2,
+        Finished = 3,
+        DNF = 4,
+        DSQ = 5,
+        NotClassified = 6,
+        Retired = 7
+    }
+    #endregion
 }
