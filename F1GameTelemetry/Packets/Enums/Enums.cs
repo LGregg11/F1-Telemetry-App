@@ -2,7 +2,6 @@
 {
     using System.ComponentModel;
 
-    #region  PacketIds
     public enum PacketIds : byte
     {
         // Contains all motion data for player's car - only sent while player is in control
@@ -41,9 +40,7 @@
         // Lap and tyre data for session
         SessionHistory = 11
     }
-    #endregion
 
-    #region EventType
     public enum EventType
     {
         [Description("Unknown Event Type")]
@@ -100,9 +97,7 @@
         [Description("Button status")]
         BUTN
     }
-    #endregion
 
-    #region SurfaceTypes
     public enum SurfaceTypes : byte
     {
         Tarmac = 0,
@@ -118,9 +113,7 @@
         Metal = 10,
         Ridged = 11
     }
-    #endregion
 
-    #region MFDPanelIndexTypes
     public enum MFDPanelIndexTypes : byte
     {
         Closed = 255,
@@ -132,9 +125,7 @@
         Engine = 3,
         Temperatures = 4
     }
-    #endregion
 
-    #region TyreCompoundTypes
     public enum TyreCompoundTypes : byte
     {
         // F1 Modern
@@ -157,9 +148,7 @@
         F2Hard = 14,
         F2Wet = 15
     }
-    #endregion
 
-    #region TyreVisualTypes
     public enum TyreVisualTypes : byte
     {
         // F1 Modern & Classic
@@ -177,9 +166,7 @@
         F2Hard = 22
 
     }
-    #endregion
 
-    #region FiaFlagTypes
     public enum FiaFlagTypes : sbyte
     {
         Unknown = -1,
@@ -189,9 +176,7 @@
         Yellow = 3,
         Red = 4
     }
-    #endregion
 
-    #region ErsDeploymentModes
     public enum ErsDeploymentModes : byte
     {
         None = 0,
@@ -199,18 +184,14 @@
         Hotlap = 2,
         Overtake = 3
     }
-    #endregion
 
-    #region TractionControlTypes
     public enum TractionControlTypes : byte
     {
         Off = 0,
         Medium = 1,
         Full = 2
     }
-    #endregion
 
-    #region FuelMix
     public enum FuelMix : byte
     {
         Lean = 0,
@@ -218,10 +199,8 @@
         Rich = 2,
         Max = 3
     }
-    #endregion
 
-    #region ResultStatusTypes
-    public enum ResultStatusTypes : byte
+    public enum ResultStatus : byte
     {
         Invalid = 0,
         Inactive = 1,
@@ -232,5 +211,27 @@
         NotClassified = 6,
         Retired = 7
     }
-    #endregion
+
+    public enum PitStatus : byte
+    {
+        None = 0,
+        Pitting = 1,
+        InPitArea = 2
+    }
+
+    public enum Sector : byte
+    {
+        Sector1 = 0,
+        Sector2 = 1,
+        Sector3 = 2
+    }
+
+    public enum DriverStatus : byte
+    {
+        InGarage = 0,
+        FlyingLap = 1,
+        InLap = 2,
+        OutLap = 3,
+        OnTrack = 4
+    }
 }
