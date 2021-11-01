@@ -175,5 +175,17 @@
                 finalClassificationData = finalClassificationData
             };
         }
+
+        public static LapData GetLapDataStruct(byte[] remainingPacket)
+        {
+            CarLapData[] carLapData = new CarLapData[MAX_CARS_PER_RACE];
+            for (int i = 0; i < MAX_CARS_PER_RACE; i++)
+            {
+                carLapData[i] = ByteArrayToUdpPacketStruct<CarLapData>(
+                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
+            }
+
+            return new LapData { carLapData = carLapData };
+        }
     }
 }
