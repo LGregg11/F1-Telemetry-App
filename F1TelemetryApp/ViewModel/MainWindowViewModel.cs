@@ -110,13 +110,13 @@
                         UpdateTelemetry(remainingPacket);
                         break;
                     case PacketIds.CarStatus:
-                        // Log.Debug($"Car Status packet - new byte[] {{ {string.Join(", ", remainingPacket)} }}");
-                        // break;
+                        break;
+                    case PacketIds.FinalClassification:
                     case PacketIds.Session:
                     case PacketIds.LapData:
                     case PacketIds.Participants:
                     case PacketIds.CarSetups:
-                    case PacketIds.FinalClassification:
+                    
                     case PacketIds.LobbyInfo:
                     case PacketIds.CarDamage:
                     case PacketIds.SessionHistory:
