@@ -56,11 +56,21 @@
     <Compile Include="Listener\ITelemetryListener.cs" />
     <Compile Include="Packets\LapData.cs" />
     <Compile Include="Packets\Motion.cs" />
+    <Compile Include="Packets\Session.cs" />
     <Compile Include="Reader\TelemetryReader.cs" />
     <Compile Include="Listener\TelemetryEvents.cs" />
     <Compile Include="Listener\TelemetryListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net">
+      <Version>2.0.14</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
