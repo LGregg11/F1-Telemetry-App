@@ -3,66 +3,57 @@
     using F1GameTelemetry.Packets.Enums;
     using System.Runtime.InteropServices;
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1323)]
     public struct CarTelemetry
     {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public CarTelemetryData[] carTelemetryData;
 
-        public MFDPanelIndexTypes mfdPanelIndex;
+        public MFDPanelIndexType mfdPanelIndex;
 
-        public MFDPanelIndexTypes mfdPanelIndexSecondaryPlayer;
+        public MFDPanelIndexType mfdPanelIndexSecondaryPlayer;
 
-        public int suggestedGear; // 1-8 (0 if no gear suggested)
+        public sbyte suggestedGear; // 1-8 (0 if no gear suggested)
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 60)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 60)]
     public struct CarTelemetryData
     {
-        [FieldOffset(0)]
         public ushort speed; // km/h
 
-        [FieldOffset(2)]
         public float throttle; // 0.0 - 1.0
 
-        [FieldOffset(6)]
         public float steer; // -1.0 (full lock left) - 1.0 (full lock right)
 
-        [FieldOffset(10)]
         public float brake; // 0.0 - 1.0
 
-        [FieldOffset(14)]
         public byte clutch; // 0 - 100
 
-        [FieldOffset(15)]
         public sbyte gear; // Gears=1-8 Neutral=0, Reverse=-1
 
-        [FieldOffset(16)]
         public ushort engineRPM;
 
-        [FieldOffset(18)]
         public byte drs; // 0 = Off, 1 = On
 
-        [FieldOffset(19)]
         public byte revLightsPercent;
 
-        [FieldOffset(20)]
         public ushort revLightsBitValue; // bit 0 = leftmost LED, bit 14 = rightmost LED
 
-        [FieldOffset(22)]
-        public BrakeData brakesTemperature;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public ushort[] brakesTemperature;
 
-        [FieldOffset(30)]
-        public TyreTemperatureData tyresSurfaceTemperature;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public byte[] tyresSurfaceTemperature;
 
-        [FieldOffset(34)]
-        public TyreTemperatureData tyresInnerTemperature;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public byte[] tyresInnerTemperature;
 
-        [FieldOffset(38)]
         public ushort engineTemperature;
 
-        [FieldOffset(40)]
-        public TyrePressureData tyrePressure;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public float[] tyrePressure;
 
-        [FieldOffset(56)]
-        public SurfaceTypeData surfaceType;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public SurfaceType[] surfaceType;
     }
 }

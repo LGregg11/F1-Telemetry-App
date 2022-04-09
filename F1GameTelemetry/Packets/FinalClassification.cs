@@ -3,9 +3,12 @@
     using F1GameTelemetry.Packets.Enums;
     using System.Runtime.InteropServices;
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 814)]
     public struct FinalClassification
     {
         public byte numberCars;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public FinalClassificationData[] finalClassificationData;
     }
 
@@ -35,9 +38,9 @@
         public byte numberTyreStints;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public TyreCompoundTypes[] tyreStintsActual; // Max expected length = 8
+        public TyreCompoundType[] tyreStintsActual; // Max expected length = 8
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public TyreVisualTypes[] tyreStintsVisual; // Max expected length = 8
+        public TyreVisualType[] tyreStintsVisual; // Max expected length = 8
     }
 }
