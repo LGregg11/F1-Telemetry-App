@@ -9,13 +9,14 @@
 
     public class TelemetryListener : ITelemetryListener
     {
-        private int port;
-        private Thread listenerThread;
-        private UdpClient client;
+        private int _port;
+        private Thread _listenerThread;
+        private UdpClient _client;
 
         public TelemetryListener(int port)
         {
-            this.port = port;
+            _port = port;
+
             Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         }
 
@@ -23,72 +24,62 @@
 
         public ILog Log { get; set; }
 
-        public int Port => port;
+        public int Port => _port;
 
-        public Thread ListenerThread => listenerThread;
+        public Thread ListenerThread => _listenerThread;
 
-        public UdpClient Client => client;
+        public UdpClient Client => _client;
+
+        public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
         public void Start()
         {
-            if (ListenerThread != null && ListenerThread.IsAlive)
+            if (IsListenerRunning)
             {
-                Log?.Debug("Client already started");
+                Log?.Debug("Listener already running");
                 return;
             }
 
-            if (Client != null)
-            {
-                Log?.Debug("Client already started");
-                return;
-            }
-            
-            client = new UdpClient(Port);
-            listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
+            _client = new UdpClient(Port);
+            _listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
             {
                 Name = "Telemetry Listener Thread"
             };
 
             Log?.Info("Starting Telemetry listener");
-            listenerThread.Start();
+            _listenerThread.Start();
         }
 
         public void Stop()
         {
-            if (ListenerThread == null || !ListenerThread.IsAlive)
+            if (!IsListenerRunning)
             {
-                Log?.Debug("Thread is not active");
-                return;
-            }
-            
-            if (Client == null)
-            {
-                Log?.Debug("Client is null");
+                Log?.Debug("Listener is not running");
                 return;
             }
 
             Log?.Info("Stopping Telemetry listener");
-            client.Close();
-            listenerThread.Join();
-            listenerThread = null;
-            client = null;
+            _client?.Close();
+            _listenerThread?.Join();
+            _listenerThread = null;
+            _client = null;
         }
 
         public void TelemetrySubscriber()
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Any, port);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Any, _port);
 
             while (true)
             {
                 try
                 {
-                    byte[] receiveBytes = client.Receive(ref ep);
+                    byte[] receiveBytes = _client.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
                         TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }
                 catch (SocketException)
                 {
-                    Log?.Debug("Closing TelemetrySubscriber");
+                    Log?.Debug("Ending TelemetrySubscriber");
                     break;
                 }
             }
