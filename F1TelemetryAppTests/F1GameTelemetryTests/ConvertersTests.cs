@@ -12,12 +12,7 @@
         public void GetMagnitudeFromVectorData_ShouldReturnCorrectValue_WhenVectorDataIsValid(float x, float y, float z, double expected)
         {
             // Arrange
-            var input = new VectorData
-            {
-                x = x,
-                y = y,
-                z = z
-            };
+            var input = new float[] { x, y, z };
 
             // Act
             var result = Converter.GetMagnitudeFromVectorData(input);
