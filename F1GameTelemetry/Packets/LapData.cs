@@ -26,7 +26,7 @@
         public float lapDistance; // distance around lap in metres
 
         public float totalDistance; // metres
-
+      
         public float safetyCarDelta; // seconds
 
         public byte carPosition;
