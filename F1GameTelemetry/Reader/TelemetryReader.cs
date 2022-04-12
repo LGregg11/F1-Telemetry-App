@@ -133,5 +133,10 @@
         {
             return ByteArrayToUdpPacketStruct<Session>(remainingPacket);
         }
+
+        public static Participant GetParticipantStruct(byte[] remainingPacket)
+        {
+            return ByteArrayToUdpPacketStruct<Participant>(remainingPacket);
+        }
     }
 }

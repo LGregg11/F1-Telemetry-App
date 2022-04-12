@@ -55,6 +55,7 @@
     <Compile Include="Listener\ITelemetryListener.cs" />
     <Compile Include="Packets\LapData.cs" />
     <Compile Include="Packets\Motion.cs" />
+    <Compile Include="Packets\Participants.cs" />
     <Compile Include="Packets\Session.cs" />
     <Compile Include="Reader\TelemetryReader.cs" />
     <Compile Include="Listener\TelemetryEvents.cs" />
