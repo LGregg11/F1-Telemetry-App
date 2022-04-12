@@ -3,81 +3,60 @@
     using F1GameTelemetry.Packets.Enums;
     using System.Runtime.InteropServices;
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1034)]
     public struct CarStatus
     {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public CarStatusData[] carStatusData;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 47)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 47)]
     public struct CarStatusData
     {
-        [FieldOffset(0)]
-        public TractionControlTypes trackionControl;
+        public TractionControlType trackionControl;
 
-        [FieldOffset(1)]
         public FuelMix antiLockBrakes;
 
-        [FieldOffset(2)]
         public byte fuelMix;
 
-        [FieldOffset(3)]
         public byte frontBrakeBias;
 
-        [FieldOffset(4)]
         public byte pitLimiterStatus;
 
-        [FieldOffset(5)]
         public float fuelInTank;
 
-        [FieldOffset(9)]
         public float fuelCapacity;
 
-        [FieldOffset(13)]
         public float fuelRemainingLaps;
 
-        [FieldOffset(17)]
         public ushort maxRPM;
 
-        [FieldOffset(19)]
         public ushort idleRPM;
 
-        [FieldOffset(21)]
         public byte maxGears;
 
-        [FieldOffset(22)]
         public byte drsAllowed;
 
-        [FieldOffset(23)]
         public ushort drsActivationDistance;
 
-        [FieldOffset(25)]
-        public TyreCompoundTypes actualTyreCompound;
+        public TyreCompoundType actualTyreCompound;
 
-        [FieldOffset(26)]
-        public TyreVisualTypes visualTyreCompound;
+        public TyreVisualType visualTyreCompound;
 
-        [FieldOffset(27)]
         public byte tyresAgeLaps;
 
-        [FieldOffset(28)]
-        public FiaFlagTypes vehicleFiaFlags;
+        public FiaFlagType vehicleFiaFlags;
 
-        [FieldOffset(29)]
         public float ersStoreEnergy;
 
-        [FieldOffset(33)]
-        public ErsDeploymentModes ersDeployMode;
+        public ErsDeploymentMode ersDeployMode;
 
-        [FieldOffset(34)]
         public float ersHarvestedThisLapMGUK;
 
-        [FieldOffset(38)]
         public float ersHarvestedThisLapMGUH;
 
-        [FieldOffset(42)]
         public float ersDeployedThisLap;
 
-        [FieldOffset(46)]
         public byte networkPaused;
     }
 }

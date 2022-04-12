@@ -2,63 +2,65 @@
 {
     using System.Runtime.InteropServices;
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1436)]
     public struct Motion
     {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public CarMotionData[] carMotionData;
 
         public ExtraCarMotionData extraCarMotionData;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 60)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 60)]
     public struct CarMotionData
     {
         // Spec says to divide normalised vectors by 32767.0f to convert to floats
         // (assumes that direction values are always between -1.0f and 1.0f)
 
-        [FieldOffset(0)]
-        public VectorData worldPosition;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] worldPosition; // x, y, z
 
-        [FieldOffset(12)]
-        public VectorData worldVelocity;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] worldVelocity;
 
-        [FieldOffset(24)]
-        public NormalisedVectorData worldForwardDir; // Normalised
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public short[] worldForwardDir; // Normalised
 
-        [FieldOffset(30)]
-        public NormalisedVectorData worldRightDir; // Normalised
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public short[] worldRightDir; // Normalised
 
-        [FieldOffset(36)]
-        public CoordinateData gForce;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] gForce; // lat, lon, vert
 
-        [FieldOffset(48)]
-        public RotationData rotation;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] rotation; // roll, pitch, yaw
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 116)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 116)]
     public struct ExtraCarMotionData
     {
-        [FieldOffset(0)]
-        public WheelData suspensionPosition;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public float[] suspensionPosition; // rear left, rear right, front left, front right
 
-        [FieldOffset(16)]
-        public WheelData suspensionVelocity;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public float[] suspensionVelocity;
 
-        [FieldOffset(32)]
-        public WheelData suspensionAcceleration;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public float[] suspensionAcceleration;
 
-        [FieldOffset(48)]
-        public WheelData wheelSpeed;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public float[] wheelSpeed;
 
-        [FieldOffset(64)]
-        public WheelData wheelSlip;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public float[] wheelSlip;
 
-        [FieldOffset(80)]
-        public VectorData localVelocity;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] localVelocity; // x, y, z
 
-        [FieldOffset(92)]
-        public VectorData angularVelocity;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] angularVelocity;
 
-        [FieldOffset(104)]
-        public VectorData angularAcceleration;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public float[] angularAcceleration;
     }
 }

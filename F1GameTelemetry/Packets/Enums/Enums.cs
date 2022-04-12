@@ -98,7 +98,7 @@
         BUTN
     }
 
-    public enum SurfaceTypes : byte
+    public enum SurfaceType : byte
     {
         Tarmac = 0,
         RumbleStrip = 1,
@@ -114,7 +114,7 @@
         Ridged = 11
     }
 
-    public enum MFDPanelIndexTypes : byte
+    public enum MFDPanelIndexType : byte
     {
         Closed = 255,
 
@@ -126,7 +126,7 @@
         Temperatures = 4
     }
 
-    public enum TyreCompoundTypes : byte
+    public enum TyreCompoundType : byte
     {
         // F1 Modern
         C5 = 16,
@@ -149,7 +149,7 @@
         F2Wet = 15
     }
 
-    public enum TyreVisualTypes : byte
+    public enum TyreVisualType : byte
     {
         // F1 Modern & Classic
         Soft =  16,
@@ -167,7 +167,7 @@
 
     }
 
-    public enum FiaFlagTypes : sbyte
+    public enum FiaFlagType : sbyte
     {
         Unknown = -1,
         None = 0,
@@ -177,7 +177,7 @@
         Red = 4
     }
 
-    public enum ErsDeploymentModes : byte
+    public enum ErsDeploymentMode : byte
     {
         None = 0,
         Medium = 1,
@@ -185,7 +185,7 @@
         Overtake = 3
     }
 
-    public enum TractionControlTypes : byte
+    public enum TractionControlType : byte
     {
         Off = 0,
         Medium = 1,
@@ -233,5 +233,138 @@
         InLap = 2,
         OutLap = 3,
         OnTrack = 4
+    }
+
+    public enum Weather : byte
+    {
+        Unknown = 255,
+
+        Clear = 0,
+        LightCloud = 1,
+        Overcast = 2,
+        LightRain = 3,
+        HeavyRain = 4,
+        Storm = 5
+    }
+
+    public enum SessionType : byte
+    {
+        Unknown = 0,
+        P1 = 1,
+        P2 = 2,
+        P3 = 3,
+        ShortP = 4,
+        Q1 = 5,
+        Q2 = 6,
+        Q3 = 7,
+        ShortQ = 8,
+        OSQ = 9,
+        R = 10,
+        R2 = 11,
+        R3 = 12,
+        TimeTrial = 13
+    }
+
+    public enum Track : sbyte
+    {
+        Unknown = -1,
+
+        Melbourne = 0,
+        PaulRicard = 1,
+        Shanghai = 2,
+        Sakhir = 3,
+        Catalunya = 4,
+        Moncao = 5,
+        Montreal = 6,
+        Silverstone = 7,
+        Hockenheim = 8,
+        Hungaroring = 9,
+        Spa = 10,
+        Monza = 11,
+        Singapore = 12,
+        Suzuka = 13,
+        AbuDhabi = 14,
+        Texas = 15,
+        Brazil = 16,
+        Austria = 17,
+        Sochi = 18,
+        Mexico = 19,
+        Baku = 20,
+        SakhirShort = 21,
+        SilverstoneShort = 22,
+        TexasShort = 23,
+        SuzukaShort = 24,
+        Hanoi = 25,
+        Zandvoort = 26,
+        Imola = 27,
+        Portimao = 28,
+        Jeddah = 29
+    }
+
+    public enum Formula : byte
+    {
+        F1Modern = 0,
+        F1Classic = 1,
+        F2 = 2,
+        F1Generic = 3
+    }
+
+    public enum SafetyCarStatus : byte
+    {
+        None = 0,
+        Full = 1,
+        Virtual = 2,
+        FormationLap = 3
+    }
+
+    public enum BasicAssist : byte
+    {
+        Off = 0,
+        On = 1
+    }
+
+    public enum BrakingAssist : byte
+    {
+        Off = 0,
+        Low = 1,
+        Medium = 2,
+        High = 3
+    }
+
+    public enum GearboxAssist : byte
+    {
+        Manual = 1,
+        ManualAndSuggested = 2,
+        Auto = 3
+    }
+
+    public enum DynamicRacingLine : byte
+    {
+        Off = 0,
+        CornersOnly = 1,
+        Full = 2
+    }
+    
+    public enum DynamicRacingLineType : byte
+    {
+        TwoD = 0,
+        ThreeD = 1
+    }
+
+    public enum ZoneFlag : sbyte
+    {
+        Unknown = -1,
+        None = 0,
+        Green = 1,
+        Blue = 2,
+        Yellow = 3,
+        Red = 4
+    }
+
+    public enum TemperatureChange : sbyte
+    {
+        Up = 0,
+        Down = 1,
+        NoChange = 2
     }
 }
