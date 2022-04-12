@@ -13,6 +13,7 @@
         public static int TELEMETRY_HEADER_SIZE = 24;
         public static int CARMOTIONDATA_SIZE = 60;
         public static int CARTELEMETRYDATA_SIZE = 60;
+        public static int LAPDATA_SIZE = 43;
 
         public static EventType GetEventType(byte[] remainingPacket)
         {
@@ -30,16 +31,16 @@
             }
         }
 
-        public static MFDPanelIndexTypes GetMfdPanelIndexType(byte[] remainingPacket)
+        public static MFDPanelIndexType GetMfdPanelIndexType(byte[] remainingPacket)
         {
             try
             {
-                return (MFDPanelIndexTypes)remainingPacket.FirstOrDefault();
+                return (MFDPanelIndexType)remainingPacket.FirstOrDefault();
             }
             catch
             {
                 // Return 'closed' instead of an error
-                return MFDPanelIndexTypes.Closed;
+                return MFDPanelIndexType.Closed;
             }
         }
 
@@ -105,87 +106,32 @@
 
         public static Motion GetMotionStruct(byte[] remainingPacket)
         {
-            CarMotionData[] carMotionData = new CarMotionData[MAX_CARS_PER_RACE];
-
-            for (int i=0; i<MAX_CARS_PER_RACE; i++)
-            {
-                carMotionData[i] = ByteArrayToUdpPacketStruct<CarMotionData>(
-                    remainingPacket.Skip(i * CARMOTIONDATA_SIZE).ToArray());
-            }
-            ExtraCarMotionData extraCarMotionData = ByteArrayToUdpPacketStruct<ExtraCarMotionData>(
-                remainingPacket.Skip(MAX_CARS_PER_RACE*CARMOTIONDATA_SIZE).ToArray());
-
-            return new Motion
-            {
-                carMotionData = carMotionData,
-                extraCarMotionData = extraCarMotionData
-            };
+            return ByteArrayToUdpPacketStruct<Motion>(remainingPacket);
         }
 
         public static CarTelemetry GetCarTelemetryStruct(byte[] remainingPacket)
         {
-            CarTelemetryData[] carTelemetryData = new CarTelemetryData[MAX_CARS_PER_RACE];
-            for (int i=0; i<MAX_CARS_PER_RACE; i++)
-            {
-                carTelemetryData[i] = ByteArrayToUdpPacketStruct<CarTelemetryData>(
-                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
-            }
-            remainingPacket = remainingPacket.Skip(MAX_CARS_PER_RACE * CARTELEMETRYDATA_SIZE).ToArray();
-            MFDPanelIndexTypes mfdPanelIndex = GetMfdPanelIndexType(remainingPacket);
-            remainingPacket = remainingPacket.Skip(1).ToArray();
-            MFDPanelIndexTypes mfdPanelIndexSecondaryType = GetMfdPanelIndexType(remainingPacket);
-            int suggestedGear = Convert.ToInt32(remainingPacket.Skip(1).ToArray().FirstOrDefault());
-
-            return new CarTelemetry
-            {
-                carTelemetryData = carTelemetryData,
-                mfdPanelIndex = mfdPanelIndex,
-                mfdPanelIndexSecondaryPlayer = mfdPanelIndexSecondaryType,
-                suggestedGear = suggestedGear
-            };
+            return ByteArrayToUdpPacketStruct<CarTelemetry>(remainingPacket);
         }
 
         public static CarStatus GetCarStatusStruct(byte[] remainingPacket)
         {
-            CarStatusData[] carStatusData = new CarStatusData[MAX_CARS_PER_RACE];
-            for (int i = 0; i < MAX_CARS_PER_RACE; i++)
-            {
-                carStatusData[i] = ByteArrayToUdpPacketStruct<CarStatusData>(
-                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
-            }
-
-            return new CarStatus { carStatusData = carStatusData };
+            return ByteArrayToUdpPacketStruct<CarStatus>(remainingPacket);
         }
 
         public static FinalClassification GetFinalClassificationStruct(byte[] remainingPacket)
         {
-            byte numberCars = remainingPacket.FirstOrDefault();
-            remainingPacket = remainingPacket.Skip(1).ToArray();
-
-            FinalClassificationData[] finalClassificationData = new FinalClassificationData[MAX_CARS_PER_RACE];
-            for (int i = 0; i < MAX_CARS_PER_RACE; i++)
-            {
-                finalClassificationData[i] = ByteArrayToUdpPacketStruct<FinalClassificationData>(
-                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
-            }
-
-            return new FinalClassification
-            {
-                numberCars = numberCars,
-                finalClassificationData = finalClassificationData
-            };
+            return ByteArrayToUdpPacketStruct<FinalClassification>(remainingPacket);
         }
 
         public static LapData GetLapDataStruct(byte[] remainingPacket)
         {
-            CarLapData[] carLapData = new CarLapData[MAX_CARS_PER_RACE];
-            for (int i = 0; i < MAX_CARS_PER_RACE; i++)
-            {
-                carLapData[i] = ByteArrayToUdpPacketStruct<CarLapData>(
-                    remainingPacket.Skip(i * CARTELEMETRYDATA_SIZE).ToArray());
-            }
+            return ByteArrayToUdpPacketStruct<LapData>(remainingPacket);
+        }
 
-            return new LapData { carLapData = carLapData };
+        public static Session GetSessionStruct(byte[] remainingPacket)
+        {
+            return ByteArrayToUdpPacketStruct<Session>(remainingPacket);
         }
     }
 }

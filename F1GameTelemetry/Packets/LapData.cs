@@ -6,7 +6,7 @@
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 946)]
     public struct LapData
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 946)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public CarLapData[] carLapData;
     }
 
@@ -25,6 +25,8 @@
 
         public float lapDistance; // distance around lap in metres
 
+        public float totalDistance; // metres
+      
         public float safetyCarDelta; // seconds
 
         public byte carPosition;

@@ -1,71 +1,71 @@
 ﻿namespace F1GameTelemetry.Listener
 {
-    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
 
     public class TelemetryListener : ITelemetryListener
     {
-        private int port;
-        private Thread listenerThread;
-        private UdpClient client;
+        private int _port;
+        private Thread _listenerThread;
+        private UdpClient _client;
 
         public TelemetryListener(int port)
         {
-            this.port = port;
+            _port = port;
         }
 
         public event TelemetryEventHandler TelemetryReceived;
 
-        public int Port => port;
+        public int Port => _port;
 
-        public Thread ListenerThread => listenerThread;
+        public Thread ListenerThread => _listenerThread;
 
-        public UdpClient Client => client;
+        public UdpClient Client => _client;
+
+        public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
         public void Start()
         {
-            if (ListenerThread != null && ListenerThread.IsAlive)
+            if (IsListenerRunning)
                 return;
 
-            if (Client == null)
-                client = new UdpClient(Port);
-
-            listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
+            _client = new UdpClient(Port);
+            _listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
             {
                 Name = "Telemetry Listener Thread"
             };
-            listenerThread.Start();
+
+            _listenerThread.Start();
         }
 
         public void Stop()
         {
-            if (ListenerThread == null || !ListenerThread.IsAlive)
+            if (!IsListenerRunning)
                 return;
-            
-            if (Client != null)
-                client.Close();
-            listenerThread.Abort();
-            listenerThread.Join(5000);
-            listenerThread = null;
+
+            _client?.Close();
+            _listenerThread?.Join();
+            _listenerThread = null;
+            _client = null;
         }
 
         public void TelemetrySubscriber()
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Any, port);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Any, _port);
 
             while (true)
             {
                 try
                 {
-                    byte[] receiveBytes = client.Receive(ref ep);
+                    byte[] receiveBytes = _client.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
-                        TelemetryReceived(this, new TelemetryEventArgs(receiveBytes));
+                        TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }
-                catch (SocketException ex)
+                catch (SocketException)
                 {
-                    Console.WriteLine(ex.Message);
+                    // Client closed - stop the thread
+                    break;
                 }
             }
         }
