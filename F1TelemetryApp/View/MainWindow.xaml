@@ -19,8 +19,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="30" Margin="0,5">
-            <Button Content="Start Telemetry Feed" Click="StartTelemetryFeed"/>
-            <Button Content="Stop Telemetry Feed" Click="StopTelemetryFeed"/>
+            <Button x:Name="TelemetryFeedBtn" Content="Start Telemetry Feed" Click="StartTelemetryFeed"/>
         </StackPanel>
 
         <GroupBox Grid.Row="1" Header="F1 Telemetry" FontSize="20">
@@ -81,6 +80,51 @@
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Steer"/>
                         <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Steer}"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Lap Data" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Last lap time"/>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding LastLapTime}"/>
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Session">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Track: "/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TrackName}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Weather: "/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding WeatherStatus}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Total Laps: "/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TotalLaps}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Track Temp (deg C): "/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TrackTemperature}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Air Temp (deg C): "/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding AirTemperature}"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="AI Difficulty: "/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding AiDifficulty}"/>
                     </Grid>
                 </TabItem>
             </TabControl>

@@ -1,18 +1,19 @@
 ﻿namespace F1TelemetryApp.ViewModel
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+
+    using GalaSoft.MvvmLight;
+    using log4net;
+
     using F1GameTelemetry.Listener;
     using F1TelemetryApp.Model;
     using F1GameTelemetry.Packets;
     using F1GameTelemetry.Packets.Enums;
-
-    using GalaSoft.MvvmLight;
-    using log4net;
-    using System.Linq;
-    using System;
-    using System.Collections.ObjectModel;
+    using F1GameTelemetry.Converters;
 
     using static F1GameTelemetry.Reader.TelemetryReader;
-    using static F1GameTelemetry.Converters.Converter;
 
     public class MainWindowViewModel : ViewModelBase
     {
@@ -22,7 +23,8 @@
         private ObservableCollection<EventMessage> eventMessages;
         private MotionMessage motionMessage;
         private TelemetryMessage telemetryMessage;
-
+        private LapDataMessage lapDataMessage;
+        private SessionMessage sessionMessage;
         private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
@@ -61,6 +63,8 @@
             }
         }
 
+        public bool IsListenerRunning => telemetryListener.IsListenerRunning;
+
         public string LocalSpeed => $"{motionMessage.Speed:#0.00} m/s";
 
         public string Speed => $"{telemetryMessage.Speed} km/h";
@@ -73,18 +77,35 @@
 
         public string Steer => $"{telemetryMessage.Steer}";
 
+        public string LastLapTime => lapDataMessage.LastLapTime.ToTelemetryTime();
+
+        public string TrackName => Enum.GetName(typeof(Track), sessionMessage.Track);
+
+        public string WeatherStatus => Enum.GetName(typeof(Weather), sessionMessage.Weather);
+
+        public string TrackTemperature => $"{Convert.ToInt32(sessionMessage.TrackTemperature)}";
+        public string AirTemperature => $"{Convert.ToInt32(sessionMessage.AirTemperature)}";
+
+        public string TotalLaps => $"{sessionMessage.TotalLaps}";
+
+        public string AiDifficulty => $"{Convert.ToUInt32(sessionMessage.AiDifficulty)}";
+
         public void StartTelemetryFeed()
         {
-            Log.Debug("Starting Telemetry Feed");
-            telemetryListener.Start();
-            Log.Info("Started Telemetry Feed");
+            if (telemetryListener.IsListenerRunning)
+            {
+                Log?.Info("Starting Telemetry feed");
+                telemetryListener.Start();
+            }
         }
 
         public void StopTelemetryFeed()
         {
-            Log.Debug("Stopping Telemetry Feed");
-            telemetryListener.Stop();
-            Log.Info("Stopped Telemetry Feed");
+            if (telemetryListener.IsListenerRunning)
+            {
+                Log?.Info("Stopping Telemetry feed");
+                telemetryListener.Stop();
+            }
         }
 
         #region Telemetry Handler
@@ -114,9 +135,12 @@
                     case PacketIds.FinalClassification:
                         break;
                     case PacketIds.LapData:
-                        Log.Debug($"LapData packet - new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateLapData(remainingPacket);
                         break;
                     case PacketIds.Session:
+                        Log?.Debug($"New Session packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateSession(remainingPacket);
+                        break;
                     case PacketIds.Participants:
                     case PacketIds.CarSetups:
                     
@@ -127,7 +151,6 @@
                         break;
                 }
             });
-
         }
 
         #endregion
@@ -140,6 +163,8 @@
             PopulateEventMessages();
             PopulateMotionMessage();
             PopulateTelemetryMessage();
+            PopulateLapDataMessage();
+            PopulateSessionMessage();
         }
 
         private void PopulateHeaderMessages()
@@ -166,6 +191,16 @@
         private void PopulateTelemetryMessage()
         {
             telemetryMessage = new TelemetryMessage { Speed = 0, Brake = 0.0f, Throttle = 0.0f, Gear = 0, Steer = 0.0f };
+        }
+
+        private void PopulateLapDataMessage()
+        {
+            lapDataMessage = new LapDataMessage { LastLapTime = 0 };
+        }
+
+        private void PopulateSessionMessage()
+        {
+            sessionMessage = new SessionMessage { Track = Track.Unknown, Weather = Weather.Unknown, TotalLaps = 0, TrackTemperature = 0, AirTemperature = 0, AiDifficulty = 0 };
         }
         #endregion
 
@@ -205,7 +240,7 @@
         private void UpdateMotion(byte[] motionPacket)
         {
             var motion = GetMotionStruct(motionPacket);
-            motionMessage.Speed = GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
             RaisePropertyChanged(nameof(LocalSpeed));
         }
 
@@ -222,6 +257,31 @@
             RaisePropertyChanged(nameof(Brake));
             RaisePropertyChanged(nameof(Gear));
             RaisePropertyChanged(nameof(Steer));
+        }
+
+        private void UpdateLapData(byte[] lapDataPacket)
+        {
+            var lapData = GetLapDataStruct(lapDataPacket);
+            // TODO: 0 isn't the index of 'my' car - is there a way of knowing?
+            lapDataMessage.LastLapTime = lapData.carLapData[0].lastLapTime;
+            RaisePropertyChanged(nameof(LastLapTime));
+        }
+
+        private void UpdateSession(byte[] sessionPacket)
+        {
+            var session = GetSessionStruct(sessionPacket);
+            sessionMessage.Track = session.trackId;
+            sessionMessage.Weather = session.weather;
+            sessionMessage.TrackTemperature = session.trackTemperature;
+            sessionMessage.AirTemperature = session.airTemperature;
+            sessionMessage.AiDifficulty = session.aiDifficulty;
+            sessionMessage.TotalLaps = session.totalLaps;
+            RaisePropertyChanged(nameof(TrackName));
+            RaisePropertyChanged(nameof(WeatherStatus));
+            RaisePropertyChanged(nameof(TotalLaps));
+            RaisePropertyChanged(nameof(TrackTemperature));
+            RaisePropertyChanged(nameof(AirTemperature));
+            RaisePropertyChanged(nameof(AiDifficulty));
         }
 
         #endregion
