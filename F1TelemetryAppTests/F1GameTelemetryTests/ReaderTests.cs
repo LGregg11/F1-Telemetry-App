@@ -475,7 +475,7 @@
             // Assert
             Assert.AreEqual(typeof(Participant), result.GetType());
             Assert.AreEqual(typeof(ParticipantData), result.participants.FirstOrDefault().GetType());
-            Assert.AreEqual("HAMILTON", name);
+            Assert.AreEqual("HAMILTON", result.participants.FirstOrDefault().name);
         }
 
         #endregion
