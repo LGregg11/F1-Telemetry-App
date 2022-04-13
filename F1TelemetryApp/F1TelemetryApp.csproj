@@ -86,6 +86,7 @@
     <Compile Include="Model\LapDataMessage.cs" />
     <Compile Include="Model\EventMessage.cs" />
     <Compile Include="Model\HeaderMessage.cs" />
+    <Compile Include="Model\LobbyInfoMessage.cs" />
     <Compile Include="Model\MotionMessage.cs" />
     <Compile Include="Model\ParticipantMessage.cs" />
     <Compile Include="Model\SessionMessage.cs" />

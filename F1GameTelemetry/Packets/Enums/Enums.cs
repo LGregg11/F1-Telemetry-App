@@ -492,6 +492,7 @@
     public enum Team : byte
     {
         // TODO: Add descriptions to all thesse..
+        Unknown = 255,
 
         // F1 Latest
         Mercedes = 0,
@@ -645,5 +646,12 @@
     {
         Restricted = 0,
         Public = 1
+    }
+
+    public enum ReadyStatus : byte
+    {
+        NotReady = 0,
+        Ready = 1,
+        Spectating = 2
     }
 }

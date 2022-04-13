@@ -71,10 +71,10 @@
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Throttle"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Throttle}"/>
-                        
+
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Brake"/>
                         <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Brake}"/>
-                        
+
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Gear"/>
                         <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Gear}"/>
 
@@ -149,8 +149,33 @@
                               HorizontalAlignment="Stretch">
                     </DataGrid>
                 </TabItem>
+                <TabItem Header="Lobby Info">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Players:"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LobbyPlayers}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LobbyName}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Team:"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LobbyTeam}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Nationality:"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LobbyNationality}"/>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </GroupBox>
-            
     </Grid>
 </Window>

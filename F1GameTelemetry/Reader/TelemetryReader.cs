@@ -143,5 +143,10 @@
         {
             return ByteArrayToUdpPacketStruct<SessionHistory>(remainingPacket);
         }
+
+        public static LobbyInfo GetLobbyInfoStruct(byte[] remainingPacket)
+        {
+            return ByteArrayToUdpPacketStruct<LobbyInfo>(remainingPacket);
+        }
     }
 }
