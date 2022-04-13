@@ -15,6 +15,7 @@
 
     using static F1GameTelemetry.Reader.TelemetryReader;
     using System.Collections.Generic;
+    using System.Data;
 
     public class MainWindowViewModel : ViewModelBase
     {
@@ -26,6 +27,7 @@
         private TelemetryMessage telemetryMessage;
         private LapDataMessage lapDataMessage;
         private SessionMessage sessionMessage;
+        private DataTable sessionHistoryTable;
         private ParticipantMessage participantMessage;
         private TelemetryListener telemetryListener;
 
@@ -95,6 +97,8 @@
 
         public Dictionary<string, string> Participants => participantMessage.Participants;
 
+        public DataTable SessionHistory => sessionHistoryTable;
+
 
         public void StartTelemetryFeed()
         {
@@ -149,10 +153,13 @@
                     case PacketIds.Participants:
                         UpdateParticipants(remainingPacket);
                         break;
+                    case PacketIds.SessionHistory:
+                        Log?.Debug($"New session history packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateSessionHistory(remainingPacket);
+                        break;
                     case PacketIds.CarSetups:
                     case PacketIds.LobbyInfo:
                     case PacketIds.CarDamage:
-                    case PacketIds.SessionHistory:
                     default:
                         break;
                 }
@@ -172,6 +179,7 @@
             PopulateLapDataMessage();
             PopulateSessionMessage();
             PopulateParticipantMessage();
+            PopulateSessionHistoryMessage();
         }
 
         private void PopulateHeaderMessages()
@@ -213,6 +221,18 @@
         private void PopulateParticipantMessage()
         {
             participantMessage = new ParticipantMessage { Participants = new Dictionary<string, string>() };
+        }
+
+        private void PopulateSessionHistoryMessage()
+        {
+            sessionHistoryTable = new DataTable();
+            sessionHistoryTable.Columns.Add("Pos", typeof(int));
+            sessionHistoryTable.Columns.Add("Name", typeof(string));
+            sessionHistoryTable.Columns.Add("Laps", typeof(int));
+            sessionHistoryTable.Columns.Add("Sector 1", typeof(float));
+            sessionHistoryTable.Columns.Add("Sector 2", typeof(float));
+            sessionHistoryTable.Columns.Add("Sector 3", typeof(float));
+            sessionHistoryTable.Columns.Add("Last Lap", typeof(string));
         }
         #endregion
 
@@ -310,6 +330,47 @@
             RaisePropertyChanged(nameof(Participants));
         }
 
+        private void UpdateSessionHistory(byte[] sessionHistoryPacket)
+        {
+            var history = GetSessionHistoryStruct(sessionHistoryPacket);
+            // TODO: Add converter for sector time like this (00.000)
+
+            var name = ((int)history.carIdx).ToString();
+
+            
+            DataRow row = sessionHistoryTable.Select($"Name='{name}'").FirstOrDefault();
+            if (row == null)
+            {
+                row = sessionHistoryTable.NewRow();
+                row["Last Lap"] = 0f.ToTelemetryTime();
+                sessionHistoryTable.Rows.Add(row);
+            }
+
+            row["Pos"] = 0;
+            row["Name"] = name;
+            row["Laps"] = history.numLaps;
+            var i = history.numLaps - 1;
+            var sector = (float)history.lapHistoryData[i].sector1Time;
+            if (sector > 0)
+                row["Sector 1"] = sector/1000;
+
+            sector = history.lapHistoryData[i].sector2Time;
+            if (sector > 0)
+                row["Sector 2"] = sector / 1000;
+
+            if (i < 2) return;
+
+            i = i - 1;
+            sector = history.lapHistoryData[i].sector3Time;
+            if (sector > 0)
+                row["Sector 3"] = sector / 1000;
+
+            sector = history.lapHistoryData[i].lapTime;
+            if (sector > 0)
+                row["Last Lap"] = sector.ToTelemetryTime();
+
+            RaisePropertyChanged(nameof(SessionHistory));
+        }
         #endregion
     }
 }

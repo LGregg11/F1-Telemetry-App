@@ -138,5 +138,10 @@
         {
             return ByteArrayToUdpPacketStruct<Participant>(remainingPacket);
         }
+
+        public static SessionHistory GetSessionHistoryStruct(byte[] remainingPacket)
+        {
+            return ByteArrayToUdpPacketStruct<SessionHistory>(remainingPacket);
+        }
     }
 }
