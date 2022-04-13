@@ -127,6 +127,18 @@
                         <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding AiDifficulty}"/>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Participants">
+                    <ListBox ItemsSource="{Binding Path=Participants}" Margin="5" FontSize="10">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding Key}"/>
+                                    <TextBlock Text="{Binding Value}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
             </TabControl>
         </GroupBox>
             

@@ -41,5 +41,7 @@
                 timeStr = string.Format("{0:D2}:", t.Hours) + timeStr;
             return timeStr;
         }
+
+        public static string ToName(this char[] chars) => new string(chars);
     }
 }

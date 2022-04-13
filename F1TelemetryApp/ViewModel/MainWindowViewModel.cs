@@ -14,6 +14,7 @@
     using F1GameTelemetry.Converters;
 
     using static F1GameTelemetry.Reader.TelemetryReader;
+    using System.Collections.Generic;
 
     public class MainWindowViewModel : ViewModelBase
     {
@@ -25,6 +26,7 @@
         private TelemetryMessage telemetryMessage;
         private LapDataMessage lapDataMessage;
         private SessionMessage sessionMessage;
+        private ParticipantMessage participantMessage;
         private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
@@ -84,15 +86,19 @@
         public string WeatherStatus => Enum.GetName(typeof(Weather), sessionMessage.Weather);
 
         public string TrackTemperature => $"{Convert.ToInt32(sessionMessage.TrackTemperature)}";
+
         public string AirTemperature => $"{Convert.ToInt32(sessionMessage.AirTemperature)}";
 
         public string TotalLaps => $"{sessionMessage.TotalLaps}";
 
         public string AiDifficulty => $"{Convert.ToUInt32(sessionMessage.AiDifficulty)}";
 
+        public Dictionary<string, string> Participants => participantMessage.Participants;
+
+
         public void StartTelemetryFeed()
         {
-            if (telemetryListener.IsListenerRunning)
+            if (!telemetryListener.IsListenerRunning)
             {
                 Log?.Info("Starting Telemetry feed");
                 telemetryListener.Start();
@@ -138,12 +144,12 @@
                         UpdateLapData(remainingPacket);
                         break;
                     case PacketIds.Session:
-                        Log?.Debug($"New Session packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
                         UpdateSession(remainingPacket);
                         break;
                     case PacketIds.Participants:
+                        UpdateParticipants(remainingPacket);
+                        break;
                     case PacketIds.CarSetups:
-                    
                     case PacketIds.LobbyInfo:
                     case PacketIds.CarDamage:
                     case PacketIds.SessionHistory:
@@ -165,6 +171,7 @@
             PopulateTelemetryMessage();
             PopulateLapDataMessage();
             PopulateSessionMessage();
+            PopulateParticipantMessage();
         }
 
         private void PopulateHeaderMessages()
@@ -201,6 +208,11 @@
         private void PopulateSessionMessage()
         {
             sessionMessage = new SessionMessage { Track = Track.Unknown, Weather = Weather.Unknown, TotalLaps = 0, TrackTemperature = 0, AirTemperature = 0, AiDifficulty = 0 };
+        }
+
+        private void PopulateParticipantMessage()
+        {
+            participantMessage = new ParticipantMessage { Participants = new Dictionary<string, string>() };
         }
         #endregion
 
@@ -282,6 +294,20 @@
             RaisePropertyChanged(nameof(TrackTemperature));
             RaisePropertyChanged(nameof(AirTemperature));
             RaisePropertyChanged(nameof(AiDifficulty));
+        }
+
+        private void UpdateParticipants(byte[] participantPacket)
+        {
+            var participant = GetParticipantStruct(participantPacket);
+            var participants = new Dictionary<string, string>();
+            foreach (var p in participant.participants)
+            {
+                if (!string.IsNullOrEmpty(p.name))
+                    participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality));
+            }
+
+            participantMessage.Participants = participants;
+            RaisePropertyChanged(nameof(Participants));
         }
 
         #endregion
