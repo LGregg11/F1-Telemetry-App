@@ -29,6 +29,7 @@
         private SessionMessage sessionMessage;
         private DataTable sessionHistoryTable;
         private ParticipantMessage participantMessage;
+        private LobbyInfoMessage lobbyInfoMessage;
         private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
@@ -99,6 +100,14 @@
 
         public DataTable SessionHistory => sessionHistoryTable;
 
+        public string LobbyPlayers => $"{lobbyInfoMessage.Players}";
+
+        public string LobbyName => lobbyInfoMessage.Name;
+
+        public string LobbyTeam => Enum.GetName(typeof(Team), lobbyInfoMessage.Team);
+
+        public string LobbyNationality => Enum.GetName(typeof(Nationality), lobbyInfoMessage.Nationality);
+
 
         public void StartTelemetryFeed()
         {
@@ -154,11 +163,13 @@
                         UpdateParticipants(remainingPacket);
                         break;
                     case PacketIds.SessionHistory:
-                        Log?.Debug($"New session history packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
                         UpdateSessionHistory(remainingPacket);
                         break;
-                    case PacketIds.CarSetups:
                     case PacketIds.LobbyInfo:
+                        Log?.Debug($"New lobby info packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateLobbyInfo(remainingPacket);
+                        break;
+                    case PacketIds.CarSetups:
                     case PacketIds.CarDamage:
                     default:
                         break;
@@ -180,6 +191,7 @@
             PopulateSessionMessage();
             PopulateParticipantMessage();
             PopulateSessionHistoryMessage();
+            PopulateLobbyInfoMessage();
         }
 
         private void PopulateHeaderMessages()
@@ -221,6 +233,11 @@
         private void PopulateParticipantMessage()
         {
             participantMessage = new ParticipantMessage { Participants = new Dictionary<string, string>() };
+        }
+
+        private void PopulateLobbyInfoMessage()
+        {
+            lobbyInfoMessage = new LobbyInfoMessage { Players = 0, Name = "", Nationality = Nationality.Unknown, Team = Team.Unknown };
         }
 
         private void PopulateSessionHistoryMessage()
@@ -370,6 +387,19 @@
                 row["Last Lap"] = sector.ToTelemetryTime();
 
             RaisePropertyChanged(nameof(SessionHistory));
+        }
+
+        private void UpdateLobbyInfo(byte[] infoPacket)
+        {
+            var info = GetLobbyInfoStruct(infoPacket);
+            lobbyInfoMessage.Players = info.numPlayers;
+            lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
+            lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
+            lobbyInfoMessage.Team = info.lobbyPlayers.FirstOrDefault().teamId;
+            RaisePropertyChanged(nameof(LobbyPlayers));
+            RaisePropertyChanged(nameof(LobbyName));
+            RaisePropertyChanged(nameof(LobbyNationality));
+            RaisePropertyChanged(nameof(LobbyTeam));
         }
         #endregion
     }

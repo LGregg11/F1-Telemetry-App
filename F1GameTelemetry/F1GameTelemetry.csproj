@@ -54,6 +54,7 @@
     <Compile Include="Packets\Header.cs" />
     <Compile Include="Listener\ITelemetryListener.cs" />
     <Compile Include="Packets\LapData.cs" />
+    <Compile Include="Packets\LobbyInfo.cs" />
     <Compile Include="Packets\Motion.cs" />
     <Compile Include="Packets\Participants.cs" />
     <Compile Include="Packets\Session.cs" />
