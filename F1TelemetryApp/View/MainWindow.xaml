@@ -139,6 +139,16 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
+                <TabItem Header="Session History">
+                    <DataGrid ItemsSource="{Binding SessionHistory}"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              FontSize="12"
+                              GridLinesVisibility="None"
+                              CanUserResizeColumns="False"
+                              HorizontalAlignment="Stretch">
+                    </DataGrid>
+                </TabItem>
             </TabControl>
         </GroupBox>
             
