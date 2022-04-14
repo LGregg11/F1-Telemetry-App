@@ -1,7 +1,7 @@
 ﻿namespace F1GameTelemetry.Reader
 {
     using F1GameTelemetry.Packets;
-    using F1GameTelemetry.Packets.Enums;
+    using F1GameTelemetry.Enums;
     using System;
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -10,6 +10,7 @@
     public static class TelemetryReader
     {
         public static int MAX_CARS_PER_RACE = 22;
+        public static int TELEMETRY_HEADER_SIZE = 24;
 
         public static EventType GetEventType(byte[] remainingPacket)
         {

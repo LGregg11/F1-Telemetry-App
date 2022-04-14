@@ -2,8 +2,6 @@
 {
     using System.Runtime.InteropServices;
 
-    #region Structs
-
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
     public struct Header
     {
@@ -27,5 +25,4 @@
 
         public byte secondaryPlayerCarIndex; // Index of secondary player's car in the array (splitscreen) - 255 if no second player
     }
-    #endregion
 }

@@ -1,4 +1,4 @@
-﻿namespace F1GameTelemetry.Packets.Enums
+﻿namespace F1GameTelemetry.Enums
 {
     using System.ComponentModel;
 

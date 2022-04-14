@@ -1,7 +1,7 @@
 ﻿namespace F1TelemetryAppTests.F1GameTelemetryTests
 {
+    using F1GameTelemetry.Enums;
     using F1GameTelemetry.Packets;
-    using F1GameTelemetry.Packets.Enums;
     using NUnit.Framework;
     using System;
     using System.Linq;
@@ -14,10 +14,10 @@
     [TestFixture]
     public class ReaderTests
     {
-        #region ByteArrayToUdpPacket
+        #region BytesToPacket
 
         [Test]
-        public void ByteArrayToUdpPacketStruct_ShouldReturnUdpPacketHeaderStruct_WhenPacketIsValid()
+        public void BytesToPacket_ShouldReturnUdpPacketHeader_WhenPacketIsValid()
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
@@ -30,7 +30,7 @@
         }
 
         [Test]
-        public void ByteArrayToUdpPacketStruct_ShouldReturnUdpPacketHeaderFormat_WhenPacketIsValidUdpPacketHeader()
+        public void BytesToPacket_ShouldReturnHeaderPacket_WhenPacketIsValid()
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
@@ -44,7 +44,7 @@
         }
 
         [Test]
-        public void ByteArrayToUdpPacketStruct_ShouldReturnCorrectEventStruct_WhenPacketIsValid()
+        public void BytesToPacket_ShouldReturnCorrectEvent_WhenPacketIsValid()
         {
             // Arrange - Byte array was taken from a button event
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
@@ -56,10 +56,10 @@
             Assert.AreEqual(typeof(Header), result.GetType());
         }
 
-        #region EventStructs
+        #region Events
 
         [Test]
-        public void ByteArrayToUdpPacketStruct_ShouldReturnButtonsStruct_WhenPacketIsValid()
+        public void ByteArrayToUdpPacket_ShouldReturnButtons_WhenPacketIsValid()
         {
             // Arrange - remaining packet of a button press
             byte[] input = new byte[] { 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
@@ -122,7 +122,7 @@
 
         #endregion
 
-        #region GetEventStruct
+        #region GetEvent
 
         [TestCase(new byte[] { 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 }, typeof(Buttons))]
         [TestCase(new byte[] { 83, 84, 76, 71, 1, 0, 0, 0, 0, 0, 0, 0 }, typeof(StartLights))]
@@ -131,7 +131,7 @@
         [TestCase(new byte[] { 82, 67, 87, 78, 11, 26, 1, 0, 0, 0, 0, 0 }, typeof(RaceWinner))]
         [TestCase(new byte[] { 80, 69, 78, 65, 5, 4, 15, 19, 255, 1, 0, 0 }, typeof(Penalty))]
         [TestCase(new byte[] { 83, 80, 84, 80, 12, 210, 38, 147, 67, 1, 1, 0 }, typeof(SpeedTrap))]
-        public void GetEventStruct_ShouldReturnCorrectStruct_WhenPacketIsValid(byte[] input, Type expectedType)
+        public void GetEvent_ShouldReturnCorrect_WhenPacketIsValid(byte[] input, Type expectedType)
         {
             // Arrange
             // Act
@@ -144,10 +144,10 @@
 
         #endregion
 
-        #region GetMotionStruct
+        #region GetMotion
 
         [Test]
-        public void GetMotionStruct_ShouldReturnCorrectMotionStruct_WhenUdpPacketIsValidAndOfMotionType()
+        public void GetMotion_ShouldReturnCorrectMotion_WhenUdpPacketIsValidAndOfMotionType()
         {
             // Arrange - 20 cars in Imola (starting grid)
             byte[] input = new byte[] { 215, 251, 158, 67, 43, 142, 30, 66, 48, 159, 176, 195, 222, 172, 224, 57, 120, 93, 129, 60, 184, 22, 195,
@@ -208,10 +208,10 @@
 
         #endregion
 
-        #region GetCarTelemetryStruct
+        #region GetCarTelemetry
 
         [Test]
-        public void GetCarTelemetryStruct_ShouldReturnCarTelemetryStruct_WhenPacketIsValid()
+        public void GetCarTelemetry_ShouldReturnCarTelemetry_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] { 73, 0, 0, 0, 0, 0, 8, 232, 37, 191, 0, 0, 0, 0, 0, 1, 6, 36, 0, 0, 0, 0, 218, 3, 220, 3, 239, 3, 241, 3, 76, 79, 84,
@@ -264,10 +264,10 @@
 
         #endregion
 
-        #region GetCarStatusStruct
+        #region GetCarStatus
 
         [Test]
-        public void GetCarStatusStruct_ShouldReturnCarStatusStruct_WhenPacketIsValid()
+        public void GetCarStatus_ShouldReturnCarStatus_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] { 0, 1, 1, 60, 0, 133, 55, 74, 65, 0, 0, 220, 66, 224, 222, 148, 63, 200, 50, 204, 16, 9, 0, 0, 0,
@@ -314,10 +314,10 @@
 
         #endregion
 
-        #region GetFinalClassificationStruct
+        #region GetFinalClassification
 
         [Test]
-        public void GetFinalClassificationStruct_ShouldReturnFinalClassificationStruct_WhenPacketIsValid()
+        public void GetFinalClassification_ShouldReturnFinalClassification_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] { 20, 20, 3, 19, 0, 0, 3, 16, 61, 1, 0, 0, 0, 0, 128, 79, 203, 111, 64, 0, 0, 1, 17, 0, 0, 0, 0, 0,
@@ -355,10 +355,10 @@
 
         #endregion
 
-        #region GetLapDataStruct
+        #region GetLapData
 
         [Test]
-        public void GetLapDataStruct_ShouldReturnLapDataStruct_WhenPacketIsValid()
+        public void GetLapData_ShouldReturnLapData_WhenPacketIsValid()
         {
             // Arrange
             // Race, Sector 3, Austria, ~65.5s into the lap, lap 5 of 5 (finished 7th?)
@@ -403,10 +403,10 @@
 
         #endregion
 
-        #region GetSessionStruct
+        #region GetSession
 
         [Test]
-        public void GetSessionStruct_ShouldReturnSessionStruct_WhenPacketIsValid()
+        public void GetSession_ShouldReturnSession_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] {
@@ -434,10 +434,10 @@
 
         #endregion
         
-        #region GetParticipantStruct
+        #region GetParticipant
 
         [Test]
-        public void GetParticipantStruct_ShouldReturnParticipantStruct_WhenPacketIsValid()
+        public void GetParticipant_ShouldReturnParticipant_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] { 20, 1, 7, 255, 0, 0, 44, 10, 72, 65, 77, 73, 76, 84, 79, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -480,10 +480,10 @@
 
         #endregion
 
-        #region GetSessionHistoryStruct
+        #region GetSessionHistory
 
         [Test]
-        public void GetSessionHistoryStruct_ShouldReturnSessionHistoryStruct_WhenPacketIsValid()
+        public void GetSessionHistory_ShouldReturnSessionHistory_WhenPacketIsValid()
         {
             // Arrange
             // id = 2, laps = 3, last lap = 01:15:276
@@ -531,10 +531,10 @@
 
         #endregion
 
-        #region GetLobbyInfoStruct
+        #region GetLobbyInfo
 
         [Test]
-        public void GetLobbyInfoStruct_ShouldReturnLobbyInfoStruct_WhenPacketIsValid()
+        public void GetLobbyInfo_ShouldReturnLobbyInfo_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] {
@@ -584,10 +584,10 @@
 
         #endregion
 
-        #region GetCarDamageStruct
+        #region GetCarDamage
 
         [Test]
-        public void GetCarDamageStruct_ShouldReturnCarDamageStruct_WhenPacketIsValid()
+        public void GetCarDamage_ShouldReturnCarDamage_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] {
@@ -629,10 +629,10 @@
 
         #endregion
 
-        #region GetCarSetupStruct
+        #region GetCarSetup
 
         [Test]
-        public void GetCarSetupStruct_ShouldReturnCarSetupStruct_WhenPacketIsValid()
+        public void GetCarSetup_ShouldReturnCarSetup_WhenPacketIsValid()
         {
             // Arrange
             byte[] input = new byte[] {

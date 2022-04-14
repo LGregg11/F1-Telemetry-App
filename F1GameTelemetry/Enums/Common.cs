@@ -1,5 +1,7 @@
-﻿namespace F1GameTelemetry.Packets.Enums
+﻿namespace F1GameTelemetry.Enums
 {
+    using System.ComponentModel;
+
     public enum PacketIds : byte
     {
         // Contains all motion data for player's car - only sent while player is in control

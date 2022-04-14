@@ -2,7 +2,7 @@
 {
     using System.Runtime.InteropServices;
 
-    using F1GameTelemetry.Packets.Enums;
+    using F1GameTelemetry.Enums;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 858)]
     public struct CarDamage

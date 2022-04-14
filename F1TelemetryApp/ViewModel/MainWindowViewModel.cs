@@ -10,7 +10,7 @@
     using F1GameTelemetry.Listener;
     using F1TelemetryApp.Model;
     using F1GameTelemetry.Packets;
-    using F1GameTelemetry.Packets.Enums;
+    using F1GameTelemetry.Enums;
     using F1GameTelemetry.Converters;
 
     using static F1GameTelemetry.Reader.TelemetryReader;

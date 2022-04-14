@@ -1,8 +1,7 @@
 ﻿namespace F1GameTelemetry.Packets
 {
+    using F1GameTelemetry.Enums;
     using System.Runtime.InteropServices;
-
-    using F1GameTelemetry.Packets.Enums;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1131)]
     public struct SessionHistory

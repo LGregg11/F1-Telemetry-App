@@ -1,6 +1,6 @@
 ﻿namespace F1GameTelemetry.Packets
 {
-    using F1GameTelemetry.Packets.Enums;
+    using F1GameTelemetry.Enums;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 814)]

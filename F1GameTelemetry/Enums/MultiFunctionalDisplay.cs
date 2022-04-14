@@ -1,6 +1,5 @@
-﻿namespace F1GameTelemetry.Packets.Enums
+﻿namespace F1GameTelemetry.Enums
 {
-    // All things MFD
     public enum MFDPanelIndexType : byte
     {
         Closed = 255,
