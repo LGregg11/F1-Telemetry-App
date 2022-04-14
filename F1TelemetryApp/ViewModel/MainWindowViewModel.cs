@@ -372,7 +372,7 @@
             var participants = new Dictionary<string, string>();
             foreach (var p in participant.participants)
             {
-                if (!string.IsNullOrEmpty(p.name))
+                if (!string.IsNullOrEmpty(p.name) && !participants.ContainsKey(p.name))
                     participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality));
             }
 

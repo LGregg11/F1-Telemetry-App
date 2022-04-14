@@ -221,7 +221,7 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Text="Ballast:"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Ballast}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding BrakeBias}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="Fuel Load:"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FuelLoad}"/>
