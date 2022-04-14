@@ -23,7 +23,7 @@
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketStruct<Header>(input);
+            var result = TR.BytesToPacket<Header>(input);
 
             // Assert
             Assert.AreEqual(typeof(Header), result.GetType());
@@ -36,7 +36,7 @@
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketStruct<Header>(input);
+            var result = TR.BytesToPacket<Header>(input);
 
             // Assert
             Assert.AreEqual(typeof(Header), result.GetType());
@@ -50,7 +50,7 @@
             byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.ByteArrayToUdpPacketStruct<Header>(input);
+            var result = TR.BytesToPacket<Header>(input);
 
             // Assert
             Assert.AreEqual(typeof(Header), result.GetType());
@@ -65,7 +65,7 @@
             byte[] input = new byte[] { 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.GetEventStruct(input);
+            var result = TR.GetEvent(input);
 
             // Assert
             Assert.AreEqual(typeof(Buttons), result.GetType());
@@ -135,7 +135,7 @@
         {
             // Arrange
             // Act
-            var result = TR.GetEventStruct(input);
+            var result = TR.GetEvent(input);
 
             // Assert
             Assert.AreEqual(expectedType, result.GetType());
@@ -196,7 +196,7 @@
                 52, 186, 35, 58, 42, 147, 224, 60, 97, 55, 68, 58, 92, 114, 87, 57, 99, 32, 34, 245, 52, 40, 41, 241, 113, 57, 24, 60, 0, 0, 0, 128 };
 
             // Act
-            var result = TR.GetMotionStruct(input);
+            var result = TR.GetMotion(input);
 
             // Assert
             Assert.AreEqual(typeof(Motion), result.GetType());
@@ -252,7 +252,7 @@
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 2 };
 
             // Act
-            var result = TR.GetCarTelemetryStruct(input);
+            var result = TR.GetCarTelemetry(input);
 
             // Assert
             Assert.AreEqual(typeof(CarTelemetry), result.GetType());
@@ -305,7 +305,7 @@
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
             // Act
-            var result = TR.GetCarStatusStruct(input);
+            var result = TR.GetCarStatus(input);
 
             // Assert
             Assert.AreEqual(typeof(CarStatus), result.GetType());
@@ -345,7 +345,7 @@
                 0, 0, 0 };
 
             // Act
-            var result = TR.GetFinalClassificationStruct(input);
+            var result = TR.GetFinalClassification(input);
 
             // Assert
             Assert.AreEqual(typeof(FinalClassification), result.GetType());
@@ -388,7 +388,7 @@
             };
 
             // Act
-            var result = TR.GetLapDataStruct(input);
+            var result = TR.GetLapData(input);
             var myResult = result.carLapData[TR.MAX_CARS_PER_RACE - 1];
 
             // Assert
@@ -426,7 +426,7 @@
             };
 
             // Act
-            var result = TR.GetSessionStruct(input);
+            var result = TR.GetSession(input);
 
             // Assert
             Assert.AreEqual(typeof(Session), result.GetType());
@@ -470,7 +470,7 @@
             };
 
             // Act
-            var result = TR.GetParticipantStruct(input);
+            var result = TR.GetParticipant(input);
 
             // Assert
             Assert.AreEqual(typeof(Participant), result.GetType());
@@ -520,7 +520,7 @@
             };
 
             // Act
-            var result = TR.GetSessionHistoryStruct(input);
+            var result = TR.GetSessionHistory(input);
 
             // Assert
             Assert.AreEqual(typeof(SessionHistory), result.GetType());
@@ -573,7 +573,7 @@
             };
 
             // Act
-            var result = TR.GetLobbyInfoStruct(input);
+            var result = TR.GetLobbyInfo(input);
 
             // Assert
             Assert.AreEqual(typeof(LobbyInfo), result.GetType());
@@ -618,7 +618,7 @@
             };
 
             // Act
-            var result = TR.GetCarDamageStruct(input);
+            var result = TR.GetCarDamage(input);
 
             // Assert
             Assert.AreEqual(typeof(CarDamage), result.GetType());
@@ -673,10 +673,11 @@
             };
 
             // Act
-            var result = TR.GetCarSetupStruct(input);
+            var result = TR.GetCarSetup(input);
 
             // Assert
             Assert.AreEqual(typeof(CarSetup), result.GetType());
+            Assert.AreEqual(58, result.carSetupData.FirstOrDefault().brakeBias);
         }
 
         #endregion

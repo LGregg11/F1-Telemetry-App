@@ -122,7 +122,7 @@
 
         public string FrontRightWingDamage => $"{carDamageMessage.FrontRightWingDamage:F1}%";
 
-        public string Ballast => $"{carSetupMessage.Ballast}";
+        public string BrakeBias => $"{carSetupMessage.BrakeBias}";
 
         public string FuelLoad => $"{carSetupMessage.FuelLoad:F2}";
 
@@ -149,7 +149,7 @@
 
         private void OnTelemetryReceived(object source, TelemetryEventArgs e)
         {
-            Header header = ByteArrayToUdpPacketStruct<Header>(e.Message);
+            Header header = BytesToPacket<Header>(e.Message);
             byte[] remainingPacket = e.Message.Skip(TELEMETRY_HEADER_SIZE).ToArray();
 
             App.Current.Dispatcher.Invoke(delegate
@@ -282,7 +282,7 @@
 
         private void PopularCarSetupMessage()
         {
-            carSetupMessage = new CarSetupMessage { Ballast = 0, FuelLoad = 0f };
+            carSetupMessage = new CarSetupMessage { BrakeBias = 0, FuelLoad = 0f };
         }
         #endregion
 
@@ -321,14 +321,14 @@
 
         private void UpdateMotion(byte[] motionPacket)
         {
-            var motion = GetMotionStruct(motionPacket);
+            var motion = GetMotion(motionPacket);
             motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
             RaisePropertyChanged(nameof(LocalSpeed));
         }
 
         private void UpdateTelemetry(byte[] carTelemetryPacket)
         {
-            var carTelemetry = GetCarTelemetryStruct(carTelemetryPacket);
+            var carTelemetry = GetCarTelemetry(carTelemetryPacket);
             telemetryMessage.Speed = carTelemetry.carTelemetryData[0].speed;
             telemetryMessage.Throttle = carTelemetry.carTelemetryData[0].throttle;
             telemetryMessage.Brake = carTelemetry.carTelemetryData[0].brake;
@@ -343,7 +343,7 @@
 
         private void UpdateLapData(byte[] lapDataPacket)
         {
-            var lapData = GetLapDataStruct(lapDataPacket);
+            var lapData = GetLapData(lapDataPacket);
             // TODO: 0 isn't the index of 'my' car - is there a way of knowing?
             lapDataMessage.LastLapTime = lapData.carLapData[0].lastLapTime;
             RaisePropertyChanged(nameof(LastLapTime));
@@ -351,7 +351,7 @@
 
         private void UpdateSession(byte[] sessionPacket)
         {
-            var session = GetSessionStruct(sessionPacket);
+            var session = GetSession(sessionPacket);
             sessionMessage.Track = session.trackId;
             sessionMessage.Weather = session.weather;
             sessionMessage.TrackTemperature = session.trackTemperature;
@@ -368,7 +368,7 @@
 
         private void UpdateParticipants(byte[] participantPacket)
         {
-            var participant = GetParticipantStruct(participantPacket);
+            var participant = GetParticipant(participantPacket);
             var participants = new Dictionary<string, string>();
             foreach (var p in participant.participants)
             {
@@ -382,7 +382,7 @@
 
         private void UpdateSessionHistory(byte[] sessionHistoryPacket)
         {
-            var history = GetSessionHistoryStruct(sessionHistoryPacket);
+            var history = GetSessionHistory(sessionHistoryPacket);
             // TODO: Add converter for sector time like this (00.000)
 
             var name = ((int)history.carIdx).ToString();
@@ -424,7 +424,7 @@
 
         private void UpdateLobbyInfo(byte[] infoPacket)
         {
-            var info = GetLobbyInfoStruct(infoPacket);
+            var info = GetLobbyInfo(infoPacket);
             lobbyInfoMessage.Players = info.numPlayers;
             lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
             lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
@@ -437,7 +437,7 @@
 
         private void UpdateCarDamage(byte[] damagePacket)
         {
-            var damage = GetCarDamageStruct(damagePacket);
+            var damage = GetCarDamage(damagePacket);
             carDamageMessage.TyreWear = damage.carDamageData[19].tyreWear;
             carDamageMessage.FrontLeftWingDamage = damage.carDamageData[19].frontLeftWingDamage;
             carDamageMessage.FrontRightWingDamage = damage.carDamageData[19].frontRightWingDamage;
@@ -451,10 +451,10 @@
 
         private void UpdateCarSetup(byte[] setupPacket)
         {
-            var setup = GetCarSetupStruct(setupPacket);
-            carSetupMessage.Ballast = setup.carSetupData[19].ballast;
+            var setup = GetCarSetup(setupPacket);
+            carSetupMessage.BrakeBias = setup.carSetupData[19].brakeBias;
             carSetupMessage.FuelLoad = setup.carSetupData[19].fuelLoad;
-            RaisePropertyChanged(nameof(Ballast));
+            RaisePropertyChanged(nameof(BrakeBias));
             RaisePropertyChanged(nameof(FuelLoad));
         }
         #endregion
