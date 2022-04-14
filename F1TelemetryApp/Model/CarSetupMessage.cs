@@ -2,7 +2,7 @@
 {
     public struct CarSetupMessage
     {
-        public int Ballast { get; set; }
+        public int BrakeBias { get; set; }
         public float FuelLoad { get; set; }
     }
 }

@@ -2,8 +2,6 @@
 {
     using System.Runtime.InteropServices;
 
-    #region Event Structs
-
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 5)]
     public struct FastestLap
     {
@@ -91,5 +89,4 @@
     {
         public byte buttonStatus; // Bit flags specifying which buttons are being pressed currently
     }
-    #endregion
 }

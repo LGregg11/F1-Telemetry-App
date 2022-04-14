@@ -10,7 +10,7 @@
     using F1GameTelemetry.Listener;
     using F1TelemetryApp.Model;
     using F1GameTelemetry.Packets;
-    using F1GameTelemetry.Packets.Enums;
+    using F1GameTelemetry.Enums;
     using F1GameTelemetry.Converters;
 
     using static F1GameTelemetry.Reader.TelemetryReader;
@@ -70,6 +70,8 @@
             }
         }
 
+        #region Gui Test Properties
+
         public bool IsListenerRunning => telemetryListener.IsListenerRunning;
 
         public string LocalSpeed => $"{motionMessage.Speed:#0.00} m/s";
@@ -122,10 +124,11 @@
 
         public string FrontRightWingDamage => $"{carDamageMessage.FrontRightWingDamage:F1}%";
 
-        public string Ballast => $"{carSetupMessage.Ballast}";
+        public string BrakeBias => $"{carSetupMessage.BrakeBias}";
 
         public string FuelLoad => $"{carSetupMessage.FuelLoad:F2}";
 
+        #endregion
 
         public void StartTelemetryFeed()
         {
@@ -149,51 +152,48 @@
 
         private void OnTelemetryReceived(object source, TelemetryEventArgs e)
         {
-            Header header = ByteArrayToUdpPacketStruct<Header>(e.Message);
+            Header header = BytesToPacket<Header>(e.Message);
             byte[] remainingPacket = e.Message.Skip(TELEMETRY_HEADER_SIZE).ToArray();
 
             App.Current.Dispatcher.Invoke(delegate
             {
                 UpdateNMessages(header);
 
-                switch ((PacketIds)header.packetId)
+                switch ((PacketId)header.packetId)
                 {
-                    case PacketIds.Event:
-                        UpdateEvents(remainingPacket);
-                        break;
-                    case PacketIds.Motion:
+                    case PacketId.Motion:
                         UpdateMotion(remainingPacket);
                         break;
-                    case PacketIds.CarTelemetry:
-                        UpdateTelemetry(remainingPacket);
-                        break;
-                    case PacketIds.CarStatus:
-                        break;
-                    case PacketIds.FinalClassification:
-                        break;
-                    case PacketIds.LapData:
-                        UpdateLapData(remainingPacket);
-                        break;
-                    case PacketIds.Session:
+                    case PacketId.Session:
                         UpdateSession(remainingPacket);
                         break;
-                    case PacketIds.Participants:
+                    case PacketId.LapData:
+                        UpdateLapData(remainingPacket);
+                        break;
+                    case PacketId.Event:
+                        UpdateEvents(remainingPacket);
+                        break;
+                    case PacketId.Participants:
                         UpdateParticipants(remainingPacket);
                         break;
-                    case PacketIds.SessionHistory:
-                        UpdateSessionHistory(remainingPacket);
-                        break;
-                    case PacketIds.LobbyInfo:
-                        UpdateLobbyInfo(remainingPacket);
-                        break;
-                    case PacketIds.CarDamage:
-                        UpdateCarDamage(remainingPacket);
-                        break;
-                    case PacketIds.CarSetups:
-                        Log?.Debug($"New car damage packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                    case PacketId.CarSetups:
                         UpdateCarSetup(remainingPacket);
                         break;
-                    default:
+                    case PacketId.CarTelemetry:
+                        UpdateTelemetry(remainingPacket);
+                        break;
+                    case PacketId.CarStatus:
+                        break;
+                    case PacketId.FinalClassification:
+                        break;
+                    case PacketId.LobbyInfo:
+                        UpdateLobbyInfo(remainingPacket);
+                        break;
+                    case PacketId.CarDamage:
+                        UpdateCarDamage(remainingPacket);
+                        break;
+                    case PacketId.SessionHistory:
+                        UpdateSessionHistory(remainingPacket);
                         break;
                 }
             });
@@ -219,9 +219,9 @@
 
         private void PopulateHeaderMessages()
         {
-            var packetIds = Enum.GetValues(typeof(PacketIds));
+            var packetIds = Enum.GetValues(typeof(PacketId));
             headerMessages = new ObservableCollection<HeaderMessage>();
-            foreach (PacketIds id in packetIds)
+            foreach (PacketId id in packetIds)
                 headerMessages.Add(new HeaderMessage { PacketId = id, Total = 0 });
         }
 
@@ -282,7 +282,7 @@
 
         private void PopularCarSetupMessage()
         {
-            carSetupMessage = new CarSetupMessage { Ballast = 0, FuelLoad = 0f };
+            carSetupMessage = new CarSetupMessage { BrakeBias = 0, FuelLoad = 0f };
         }
         #endregion
 
@@ -292,7 +292,7 @@
         {
             for (int i = 0; i < HeaderMessages.Count; i++)
             {
-                if (HeaderMessages[i].PacketId == (PacketIds)udpPacketHeader.packetId)
+                if (HeaderMessages[i].PacketId == (PacketId)udpPacketHeader.packetId)
                 {
                     HeaderMessage headerMessage = HeaderMessages[i];
                     headerMessage.Total++;
@@ -321,14 +321,14 @@
 
         private void UpdateMotion(byte[] motionPacket)
         {
-            var motion = GetMotionStruct(motionPacket);
+            var motion = GetMotion(motionPacket);
             motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
             RaisePropertyChanged(nameof(LocalSpeed));
         }
 
         private void UpdateTelemetry(byte[] carTelemetryPacket)
         {
-            var carTelemetry = GetCarTelemetryStruct(carTelemetryPacket);
+            var carTelemetry = GetCarTelemetry(carTelemetryPacket);
             telemetryMessage.Speed = carTelemetry.carTelemetryData[0].speed;
             telemetryMessage.Throttle = carTelemetry.carTelemetryData[0].throttle;
             telemetryMessage.Brake = carTelemetry.carTelemetryData[0].brake;
@@ -343,7 +343,7 @@
 
         private void UpdateLapData(byte[] lapDataPacket)
         {
-            var lapData = GetLapDataStruct(lapDataPacket);
+            var lapData = GetLapData(lapDataPacket);
             // TODO: 0 isn't the index of 'my' car - is there a way of knowing?
             lapDataMessage.LastLapTime = lapData.carLapData[0].lastLapTime;
             RaisePropertyChanged(nameof(LastLapTime));
@@ -351,7 +351,7 @@
 
         private void UpdateSession(byte[] sessionPacket)
         {
-            var session = GetSessionStruct(sessionPacket);
+            var session = GetSession(sessionPacket);
             sessionMessage.Track = session.trackId;
             sessionMessage.Weather = session.weather;
             sessionMessage.TrackTemperature = session.trackTemperature;
@@ -368,11 +368,11 @@
 
         private void UpdateParticipants(byte[] participantPacket)
         {
-            var participant = GetParticipantStruct(participantPacket);
+            var participant = GetParticipant(participantPacket);
             var participants = new Dictionary<string, string>();
             foreach (var p in participant.participants)
             {
-                if (!string.IsNullOrEmpty(p.name))
+                if (!string.IsNullOrEmpty(p.name) && !participants.ContainsKey(p.name))
                     participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality));
             }
 
@@ -382,7 +382,7 @@
 
         private void UpdateSessionHistory(byte[] sessionHistoryPacket)
         {
-            var history = GetSessionHistoryStruct(sessionHistoryPacket);
+            var history = GetSessionHistory(sessionHistoryPacket);
             // TODO: Add converter for sector time like this (00.000)
 
             var name = ((int)history.carIdx).ToString();
@@ -424,7 +424,7 @@
 
         private void UpdateLobbyInfo(byte[] infoPacket)
         {
-            var info = GetLobbyInfoStruct(infoPacket);
+            var info = GetLobbyInfo(infoPacket);
             lobbyInfoMessage.Players = info.numPlayers;
             lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
             lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
@@ -437,7 +437,7 @@
 
         private void UpdateCarDamage(byte[] damagePacket)
         {
-            var damage = GetCarDamageStruct(damagePacket);
+            var damage = GetCarDamage(damagePacket);
             carDamageMessage.TyreWear = damage.carDamageData[19].tyreWear;
             carDamageMessage.FrontLeftWingDamage = damage.carDamageData[19].frontLeftWingDamage;
             carDamageMessage.FrontRightWingDamage = damage.carDamageData[19].frontRightWingDamage;
@@ -451,10 +451,10 @@
 
         private void UpdateCarSetup(byte[] setupPacket)
         {
-            var setup = GetCarSetupStruct(setupPacket);
-            carSetupMessage.Ballast = setup.carSetupData[19].ballast;
+            var setup = GetCarSetup(setupPacket);
+            carSetupMessage.BrakeBias = setup.carSetupData[19].brakeBias;
             carSetupMessage.FuelLoad = setup.carSetupData[19].fuelLoad;
-            RaisePropertyChanged(nameof(Ballast));
+            RaisePropertyChanged(nameof(BrakeBias));
             RaisePropertyChanged(nameof(FuelLoad));
         }
         #endregion
