@@ -30,6 +30,7 @@
         private DataTable sessionHistoryTable;
         private ParticipantMessage participantMessage;
         private LobbyInfoMessage lobbyInfoMessage;
+        private CarDamageMessage carDamageMessage;
         private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
@@ -108,6 +109,18 @@
 
         public string LobbyNationality => Enum.GetName(typeof(Nationality), lobbyInfoMessage.Nationality);
 
+        public string RLTyreWear => $"{carDamageMessage.TyreWear[0]:F1}%";
+
+        public string RRTyreWear => $"{carDamageMessage.TyreWear[1]:F1}%";
+
+        public string FLTyreWear => $"{carDamageMessage.TyreWear[2]:F1}%";
+
+        public string FRTyreWear => $"{carDamageMessage.TyreWear[3]:F1}%";
+
+        public string FrontLeftWingDamage => $"{carDamageMessage.FrontLeftWingDamage:F1}%";
+
+        public string FrontRightWingDamage => $"{carDamageMessage.FrontRightWingDamage:F1}%";
+
 
         public void StartTelemetryFeed()
         {
@@ -166,11 +179,13 @@
                         UpdateSessionHistory(remainingPacket);
                         break;
                     case PacketIds.LobbyInfo:
-                        Log?.Debug($"New lobby info packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
                         UpdateLobbyInfo(remainingPacket);
                         break;
-                    case PacketIds.CarSetups:
                     case PacketIds.CarDamage:
+                        Log?.Debug($"New car damage packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateCarDamage(remainingPacket);
+                        break;
+                    case PacketIds.CarSetups:
                     default:
                         break;
                 }
@@ -192,6 +207,7 @@
             PopulateParticipantMessage();
             PopulateSessionHistoryMessage();
             PopulateLobbyInfoMessage();
+            PopulateCarDamageMessage();
         }
 
         private void PopulateHeaderMessages()
@@ -250,6 +266,11 @@
             sessionHistoryTable.Columns.Add("Sector 2", typeof(float));
             sessionHistoryTable.Columns.Add("Sector 3", typeof(float));
             sessionHistoryTable.Columns.Add("Last Lap", typeof(string));
+        }
+
+        private void PopulateCarDamageMessage()
+        {
+            carDamageMessage = new CarDamageMessage { TyreWear = new float[4] { 0f, 0f, 0f, 0f }, FrontLeftWingDamage = 0, FrontRightWingDamage = 0 };
         }
         #endregion
 
@@ -400,6 +421,20 @@
             RaisePropertyChanged(nameof(LobbyName));
             RaisePropertyChanged(nameof(LobbyNationality));
             RaisePropertyChanged(nameof(LobbyTeam));
+        }
+
+        private void UpdateCarDamage(byte[] damagePacket)
+        {
+            var damage = GetCarDamageStruct(damagePacket);
+            carDamageMessage.TyreWear = damage.carDamageData[19].tyreWear;
+            carDamageMessage.FrontLeftWingDamage = damage.carDamageData[19].frontLeftWingDamage;
+            carDamageMessage.FrontRightWingDamage = damage.carDamageData[19].frontRightWingDamage;
+            RaisePropertyChanged(nameof(FLTyreWear));
+            RaisePropertyChanged(nameof(FRTyreWear));
+            RaisePropertyChanged(nameof(RLTyreWear));
+            RaisePropertyChanged(nameof(RRTyreWear));
+            RaisePropertyChanged(nameof(FrontLeftWingDamage));
+            RaisePropertyChanged(nameof(FrontRightWingDamage));
         }
         #endregion
     }
