@@ -654,4 +654,10 @@
         Ready = 1,
         Spectating = 2
     }
+
+    public enum DrsFault : byte
+    {
+        OK = 0,
+        Fault = 1
+    }
 }

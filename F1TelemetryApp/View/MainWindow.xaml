@@ -175,6 +175,39 @@
                         <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LobbyNationality}"/>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Car Damage">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding FLTyreWear}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FRTyreWear}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding RLTyreWear}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding RRTyreWear}" />
+                        </Grid>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="FL Wing Damage:"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FrontLeftWingDamage}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" Text="FR Wing Damage:"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FrontRightWingDamage}"/>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </GroupBox>
     </Grid>

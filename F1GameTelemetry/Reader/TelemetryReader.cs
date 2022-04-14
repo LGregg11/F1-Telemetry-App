@@ -148,5 +148,10 @@
         {
             return ByteArrayToUdpPacketStruct<LobbyInfo>(remainingPacket);
         }
+
+        public static CarDamage GetCarDamageStruct(byte[] remainingPacket)
+        {
+            return ByteArrayToUdpPacketStruct<CarDamage>(remainingPacket);
+        }
     }
 }
