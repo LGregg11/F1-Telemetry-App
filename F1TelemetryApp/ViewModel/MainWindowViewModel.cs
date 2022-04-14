@@ -31,6 +31,7 @@
         private ParticipantMessage participantMessage;
         private LobbyInfoMessage lobbyInfoMessage;
         private CarDamageMessage carDamageMessage;
+        private CarSetupMessage carSetupMessage;
         private TelemetryListener telemetryListener;
 
         public MainWindowViewModel()
@@ -121,6 +122,10 @@
 
         public string FrontRightWingDamage => $"{carDamageMessage.FrontRightWingDamage:F1}%";
 
+        public string Ballast => $"{carSetupMessage.Ballast}";
+
+        public string FuelLoad => $"{carSetupMessage.FuelLoad:F2}";
+
 
         public void StartTelemetryFeed()
         {
@@ -182,10 +187,12 @@
                         UpdateLobbyInfo(remainingPacket);
                         break;
                     case PacketIds.CarDamage:
-                        Log?.Debug($"New car damage packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
                         UpdateCarDamage(remainingPacket);
                         break;
                     case PacketIds.CarSetups:
+                        Log?.Debug($"New car damage packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                        UpdateCarSetup(remainingPacket);
+                        break;
                     default:
                         break;
                 }
@@ -271,6 +278,11 @@
         private void PopulateCarDamageMessage()
         {
             carDamageMessage = new CarDamageMessage { TyreWear = new float[4] { 0f, 0f, 0f, 0f }, FrontLeftWingDamage = 0, FrontRightWingDamage = 0 };
+        }
+
+        private void PopularCarSetupMessage()
+        {
+            carSetupMessage = new CarSetupMessage { Ballast = 0, FuelLoad = 0f };
         }
         #endregion
 
@@ -435,6 +447,15 @@
             RaisePropertyChanged(nameof(RRTyreWear));
             RaisePropertyChanged(nameof(FrontLeftWingDamage));
             RaisePropertyChanged(nameof(FrontRightWingDamage));
+        }
+
+        private void UpdateCarSetup(byte[] setupPacket)
+        {
+            var setup = GetCarSetupStruct(setupPacket);
+            carSetupMessage.Ballast = setup.carSetupData[19].ballast;
+            carSetupMessage.FuelLoad = setup.carSetupData[19].fuelLoad;
+            RaisePropertyChanged(nameof(Ballast));
+            RaisePropertyChanged(nameof(FuelLoad));
         }
         #endregion
     }

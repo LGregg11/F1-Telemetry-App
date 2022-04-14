@@ -84,6 +84,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\CarDamageMessage.cs" />
+    <Compile Include="Model\CarSetupMessage.cs" />
     <Compile Include="Model\LapDataMessage.cs" />
     <Compile Include="Model\EventMessage.cs" />
     <Compile Include="Model\HeaderMessage.cs" />
