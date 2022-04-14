@@ -379,6 +379,7 @@
         // TODO: Add descriptions to these names..
         Human = 255,
 
+        [Description("Carlos Sainz")]
         CarlosSainz = 0,
         DaniilKvyat = 1,
         DanielRicciardo = 2,

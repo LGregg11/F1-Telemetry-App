@@ -153,5 +153,10 @@
         {
             return ByteArrayToUdpPacketStruct<CarDamage>(remainingPacket);
         }
+
+        public static CarSetup GetCarSetupStruct(byte[] remainingPacket)
+        {
+            return ByteArrayToUdpPacketStruct<CarSetup>(remainingPacket);
+        }
     }
 }
