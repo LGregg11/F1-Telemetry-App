@@ -2,7 +2,7 @@
 {
     using System.ComponentModel;
 
-    public enum PacketIds : byte
+    public enum PacketId : byte
     {
         // Contains all motion data for player's car - only sent while player is in control
         Motion = 0,

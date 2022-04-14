@@ -28,19 +28,6 @@
             }
         }
 
-        public static MFDPanelIndexType GetMfdPanelIndexType(byte[] remainingPacket)
-        {
-            try
-            {
-                return (MFDPanelIndexType)remainingPacket.FirstOrDefault();
-            }
-            catch
-            {
-                // Return 'closed' instead of an error
-                return MFDPanelIndexType.Closed;
-            }
-        }
-
         public static T BytesToPacket<T>(byte[] remainingPacket)
         {
             GCHandle handle = GCHandle.Alloc(remainingPacket, GCHandleType.Pinned);

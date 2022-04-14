@@ -70,6 +70,8 @@
             }
         }
 
+        #region Gui Test Properties
+
         public bool IsListenerRunning => telemetryListener.IsListenerRunning;
 
         public string LocalSpeed => $"{motionMessage.Speed:#0.00} m/s";
@@ -126,6 +128,7 @@
 
         public string FuelLoad => $"{carSetupMessage.FuelLoad:F2}";
 
+        #endregion
 
         public void StartTelemetryFeed()
         {
@@ -156,44 +159,41 @@
             {
                 UpdateNMessages(header);
 
-                switch ((PacketIds)header.packetId)
+                switch ((PacketId)header.packetId)
                 {
-                    case PacketIds.Event:
-                        UpdateEvents(remainingPacket);
-                        break;
-                    case PacketIds.Motion:
+                    case PacketId.Motion:
                         UpdateMotion(remainingPacket);
                         break;
-                    case PacketIds.CarTelemetry:
-                        UpdateTelemetry(remainingPacket);
-                        break;
-                    case PacketIds.CarStatus:
-                        break;
-                    case PacketIds.FinalClassification:
-                        break;
-                    case PacketIds.LapData:
-                        UpdateLapData(remainingPacket);
-                        break;
-                    case PacketIds.Session:
+                    case PacketId.Session:
                         UpdateSession(remainingPacket);
                         break;
-                    case PacketIds.Participants:
+                    case PacketId.LapData:
+                        UpdateLapData(remainingPacket);
+                        break;
+                    case PacketId.Event:
+                        UpdateEvents(remainingPacket);
+                        break;
+                    case PacketId.Participants:
                         UpdateParticipants(remainingPacket);
                         break;
-                    case PacketIds.SessionHistory:
-                        UpdateSessionHistory(remainingPacket);
-                        break;
-                    case PacketIds.LobbyInfo:
-                        UpdateLobbyInfo(remainingPacket);
-                        break;
-                    case PacketIds.CarDamage:
-                        UpdateCarDamage(remainingPacket);
-                        break;
-                    case PacketIds.CarSetups:
-                        Log?.Debug($"New car damage packet: new byte[] {{ {string.Join(", ", remainingPacket)} }}");
+                    case PacketId.CarSetups:
                         UpdateCarSetup(remainingPacket);
                         break;
-                    default:
+                    case PacketId.CarTelemetry:
+                        UpdateTelemetry(remainingPacket);
+                        break;
+                    case PacketId.CarStatus:
+                        break;
+                    case PacketId.FinalClassification:
+                        break;
+                    case PacketId.LobbyInfo:
+                        UpdateLobbyInfo(remainingPacket);
+                        break;
+                    case PacketId.CarDamage:
+                        UpdateCarDamage(remainingPacket);
+                        break;
+                    case PacketId.SessionHistory:
+                        UpdateSessionHistory(remainingPacket);
                         break;
                 }
             });
@@ -219,9 +219,9 @@
 
         private void PopulateHeaderMessages()
         {
-            var packetIds = Enum.GetValues(typeof(PacketIds));
+            var packetIds = Enum.GetValues(typeof(PacketId));
             headerMessages = new ObservableCollection<HeaderMessage>();
-            foreach (PacketIds id in packetIds)
+            foreach (PacketId id in packetIds)
                 headerMessages.Add(new HeaderMessage { PacketId = id, Total = 0 });
         }
 
@@ -292,7 +292,7 @@
         {
             for (int i = 0; i < HeaderMessages.Count; i++)
             {
-                if (HeaderMessages[i].PacketId == (PacketIds)udpPacketHeader.packetId)
+                if (HeaderMessages[i].PacketId == (PacketId)udpPacketHeader.packetId)
                 {
                     HeaderMessage headerMessage = HeaderMessages[i];
                     headerMessage.Total++;

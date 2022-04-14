@@ -45,18 +45,6 @@
         TimeTrial = 13
     }
 
-    public enum ResultStatus : byte
-    {
-        Invalid = 0,
-        Inactive = 1,
-        Active = 2,
-        Finished = 3,
-        DNF = 4,
-        DSQ = 5,
-        NotClassified = 6,
-        Retired = 7
-    }
-
     public enum SafetyCarStatus : byte
     {
         None = 0,

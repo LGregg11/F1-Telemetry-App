@@ -4,7 +4,7 @@
 
     public struct HeaderMessage
     {
-        public PacketIds PacketId { get; set; }
+        public PacketId PacketId { get; set; }
         public int Total { get; set; }
     }
 }
