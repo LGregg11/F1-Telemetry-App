@@ -93,6 +93,7 @@
     <Compile Include="Model\ParticipantMessage.cs" />
     <Compile Include="Model\SessionMessage.cs" />
     <Compile Include="Model\TelemetryMessage.cs" />
+    <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

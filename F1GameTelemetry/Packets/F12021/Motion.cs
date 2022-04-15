@@ -1,5 +1,8 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
+    using F1GameTelemetry.Converters;
+    using F1GameTelemetry.Listener;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1436)]
@@ -62,5 +65,20 @@
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
         public float[] angularAcceleration;
+    }
+
+    public class MotionPacket : IPacket
+    {
+        public event EventHandler Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new MotionEventArgs
+            {
+                Motion = Converter.BytesToPacket<Motion>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }

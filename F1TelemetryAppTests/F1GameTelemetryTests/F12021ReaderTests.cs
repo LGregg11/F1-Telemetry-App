@@ -1,59 +1,34 @@
 ﻿namespace F1TelemetryAppTests.F1GameTelemetryTests
 {
-    using F1GameTelemetry.Enums;
-    using F1GameTelemetry.Packets;
+    using Moq;
     using NUnit.Framework;
     using System;
     using System.Linq;
     using System.Text;
 
+    using F1GameTelemetry.Enums;
     using F1GameTelemetry.Converters;
-    using TR = F1GameTelemetry.Reader.TelemetryReader;
-
+    using F1GameTelemetry.Packets.F12021;
+    using F1GameTelemetry.Readers.F12021;
+    using F1GameTelemetry.Listener;
 
     [TestFixture]
-    public class ReaderTests
+    public class F12021ReaderTests
     {
-        #region BytesToPacket
+        private TelemetryReader2021 _cut;
+        private Mock<ITelemetryListener> _telemetryListenerMock; 
 
-        [Test]
-        public void BytesToPacket_ShouldReturnUdpPacketHeader_WhenPacketIsValid()
+        [SetUp]
+        public void SetUp()
         {
-            // Arrange - Byte array was taken from a button event
-            byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
-
-            // Act
-            var result = TR.BytesToPacket<Header>(input);
-
-            // Assert
-            Assert.AreEqual(typeof(Header), result.GetType());
+            _telemetryListenerMock = new Mock<ITelemetryListener>();
+            _cut = new TelemetryReader2021(_telemetryListenerMock.Object);
         }
 
-        [Test]
-        public void BytesToPacket_ShouldReturnHeaderPacket_WhenPacketIsValid()
+        [TearDown]
+        public void TearDown()
         {
-            // Arrange - Byte array was taken from a button event
-            byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
-
-            // Act
-            var result = TR.BytesToPacket<Header>(input);
-
-            // Assert
-            Assert.AreEqual(typeof(Header), result.GetType());
-            Assert.AreEqual(2021, result.packetFormat);
-        }
-
-        [Test]
-        public void BytesToPacket_ShouldReturnCorrectEvent_WhenPacketIsValid()
-        {
-            // Arrange - Byte array was taken from a button event
-            byte[] input = new byte[] { 229, 7, 1, 12, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
-
-            // Act
-            var result = TR.BytesToPacket<Header>(input);
-
-            // Assert
-            Assert.AreEqual(typeof(Header), result.GetType());
+            _cut = null;
         }
 
         #region Events
@@ -65,14 +40,12 @@
             byte[] input = new byte[] { 66, 85, 84, 78, 32, 0, 0, 0, 3, 0, 0, 0 };
 
             // Act
-            var result = TR.GetEvent(input);
+            var result = _cut.GetEvent(input);
 
             // Assert
             Assert.AreEqual(typeof(Buttons), result.GetType());
             Assert.NotNull(((Buttons)result).buttonStatus);
         }
-
-        #endregion
 
         #endregion
 
@@ -101,7 +74,7 @@
             byte[] input = Encoding.ASCII.GetBytes(inputString);
 
             // Act
-            var result = TR.GetEventType(input);
+            var result = _cut.GetEventType(input);
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -114,7 +87,7 @@
             byte[] input = Encoding.ASCII.GetBytes(inputString);
 
             // Act
-            var result = TR.GetEventType(input);
+            var result = _cut.GetEventType(input);
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -135,7 +108,7 @@
         {
             // Arrange
             // Act
-            var result = TR.GetEvent(input);
+            var result = _cut.GetEvent(input);
 
             // Assert
             Assert.AreEqual(expectedType, result.GetType());
@@ -196,12 +169,12 @@
                 52, 186, 35, 58, 42, 147, 224, 60, 97, 55, 68, 58, 92, 114, 87, 57, 99, 32, 34, 245, 52, 40, 41, 241, 113, 57, 24, 60, 0, 0, 0, 128 };
 
             // Act
-            var result = TR.GetMotion(input);
+            var result = Converter.BytesToPacket<Motion>(input);
 
             // Assert
             Assert.AreEqual(typeof(Motion), result.GetType());
             Assert.AreEqual(typeof(CarMotionData[]), result.carMotionData.GetType());
-            Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carMotionData.Length);
+            Assert.AreEqual(_cut.MaxCarsPerRace, result.carMotionData.Length);
             Assert.AreEqual(typeof(ExtraCarMotionData), result.extraCarMotionData.GetType());
             Assert.AreEqual(0.0, Math.Round(Converter.GetMagnitudeFromVectorData(result.extraCarMotionData.localVelocity), 1));
         }
@@ -252,12 +225,12 @@
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 2 };
 
             // Act
-            var result = TR.GetCarTelemetry(input);
+            var result = Converter.BytesToPacket<CarTelemetry>(input);
 
             // Assert
             Assert.AreEqual(typeof(CarTelemetry), result.GetType());
             Assert.AreEqual(typeof(CarTelemetryData[]), result.carTelemetryData.GetType());
-            Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carTelemetryData.Length);
+            Assert.AreEqual(_cut.MaxCarsPerRace, result.carTelemetryData.Length);
             Assert.AreEqual(MFDPanelIndexType.Damage, result.mfdPanelIndex);
             Assert.AreEqual(2, (int)result.suggestedGear);
         }
@@ -305,7 +278,7 @@
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
             // Act
-            var result = TR.GetCarStatus(input);
+            var result = Converter.BytesToPacket<CarStatus>(input);
 
             // Assert
             Assert.AreEqual(typeof(CarStatus), result.GetType());
@@ -345,7 +318,7 @@
                 0, 0, 0 };
 
             // Act
-            var result = TR.GetFinalClassification(input);
+            var result = Converter.BytesToPacket<FinalClassification>(input);
 
             // Assert
             Assert.AreEqual(typeof(FinalClassification), result.GetType());
@@ -388,12 +361,12 @@
             };
 
             // Act
-            var result = TR.GetLapData(input);
-            var myResult = result.carLapData[TR.MAX_CARS_PER_RACE - 1];
+            var result = Converter.BytesToPacket<LapData>(input);
+            var myResult = result.carLapData[_cut.MaxCarsPerRace - 1];
 
             // Assert
             Assert.AreEqual(typeof(LapData), result.GetType());
-            Assert.AreEqual(TR.MAX_CARS_PER_RACE, result.carLapData.Length);
+            Assert.AreEqual(_cut.MaxCarsPerRace, result.carLapData.Length);
             Assert.AreEqual(typeof(CarLapData), myResult.GetType());
             Assert.AreEqual(Sector.Sector3, myResult.sector);
             Assert.AreEqual(21, myResult.gridPosition);
@@ -426,7 +399,7 @@
             };
 
             // Act
-            var result = TR.GetSession(input);
+            var result = Converter.BytesToPacket<Session>(input);
 
             // Assert
             Assert.AreEqual(typeof(Session), result.GetType());
@@ -470,7 +443,7 @@
             };
 
             // Act
-            var result = TR.GetParticipant(input);
+            var result = Converter.BytesToPacket<Participant>(input);
 
             // Assert
             Assert.AreEqual(typeof(Participant), result.GetType());
@@ -520,7 +493,7 @@
             };
 
             // Act
-            var result = TR.GetSessionHistory(input);
+            var result = Converter.BytesToPacket<SessionHistory>(input);
 
             // Assert
             Assert.AreEqual(typeof(SessionHistory), result.GetType());
@@ -573,7 +546,7 @@
             };
 
             // Act
-            var result = TR.GetLobbyInfo(input);
+            var result = Converter.BytesToPacket<LobbyInfo>(input);
 
             // Assert
             Assert.AreEqual(typeof(LobbyInfo), result.GetType());
@@ -618,7 +591,7 @@
             };
 
             // Act
-            var result = TR.GetCarDamage(input);
+            var result = Converter.BytesToPacket<CarDamage>(input);
 
             // Assert
             Assert.AreEqual(typeof(CarDamage), result.GetType());
@@ -673,7 +646,7 @@
             };
 
             // Act
-            var result = TR.GetCarSetup(input);
+            var result = Converter.BytesToPacket<CarSetup>(input);
 
             // Assert
             Assert.AreEqual(typeof(CarSetup), result.GetType());

@@ -1,6 +1,9 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
+    using F1GameTelemetry.Converters;
     using F1GameTelemetry.Enums;
+    using F1GameTelemetry.Listener;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 5)]
@@ -111,5 +114,20 @@
         public DynamicRacingLine dynamicRacingLine;
 
         public DynamicRacingLineType dynamicRacingLineType;
+    }
+
+    public class SessionPacket : IPacket
+    {
+        public event EventHandler Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new SessionEventArgs
+            {
+                Session = Converter.BytesToPacket<Session>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }

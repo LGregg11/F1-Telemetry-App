@@ -1,6 +1,9 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
+    using F1GameTelemetry.Converters;
     using F1GameTelemetry.Enums;
+    using F1GameTelemetry.Listener;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1131)]
@@ -38,5 +41,20 @@
         public byte endLap; // 255 of current tyre
         public TyreCompoundType tyreActualCompound;
         public TyreVisualType tyreVisualCompound;
+    }
+
+    public class SessionHistoryPacket : IPacket
+    {
+        public event EventHandler Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new SessionHistoryEventArgs
+            {
+                SessionHistory = Converter.BytesToPacket<SessionHistory>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }

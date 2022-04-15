@@ -4,11 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+        xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
         mc:Ignorable="d"
         Title="F1 Telemetry" Width="800" Height="600">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
+    <Window.Resources>
+        <conv:EnumConverter x:Key="enumConverter"/>
+    </Window.Resources>
     <Grid x:Name="MainGrid" Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -20,6 +24,21 @@
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="30" Margin="0,5">
             <Button x:Name="TelemetryFeedBtn" Content="Start Telemetry Feed" Click="StartTelemetryFeed"/>
+            <ComboBox ItemsSource="{Binding Versions}"
+                      SelectedItem="{Binding Version}"
+                      VerticalContentAlignment="Center">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource enumConverter}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Text="{Binding ReaderWarningMessage}"
+                       Foreground="Red"
+                       FontStyle="Oblique"
+                       VerticalAlignment="Center"
+                       Margin="5"
+                       Visibility="{Binding ReaderWarningMessageVisibility}"/>
         </StackPanel>
 
         <GroupBox Grid.Row="1" Header="F1 Telemetry" FontSize="20">
@@ -141,12 +160,21 @@
                 </TabItem>
                 <TabItem Header="Session History">
                     <DataGrid ItemsSource="{Binding SessionHistory}"
-                              AutoGenerateColumns="True"
+                              AutoGenerateColumns="False"
                               IsReadOnly="True"
                               FontSize="12"
                               GridLinesVisibility="None"
                               CanUserResizeColumns="False"
                               HorizontalAlignment="Stretch">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Pos}" Header="Pos." Width="*"/>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="3*"/>
+                            <DataGridTextColumn Binding="{Binding Laps}" Header="Laps" Width="*"/>
+                            <DataGridTextColumn Binding="{Binding Sector1}" Header="Sector 1" Width="3*"/>
+                            <DataGridTextColumn Binding="{Binding Sector2}" Header="Sector 2" Width="3*"/>
+                            <DataGridTextColumn Binding="{Binding Sector3}" Header="Sector 3" Width="3*"/>
+                            <DataGridTextColumn Binding="{Binding LastLap}" Header="Last Lap" Width="4*"/>
+                        </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
                 <TabItem Header="Lobby Info">
