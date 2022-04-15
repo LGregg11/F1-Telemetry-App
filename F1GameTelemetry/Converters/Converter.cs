@@ -1,9 +1,25 @@
 ﻿namespace F1GameTelemetry.Converters
 {
     using System;
+    using System.Runtime.InteropServices;
 
     public static class Converter
     {
+        public static T BytesToPacket<T>(byte[] remainingPacket)
+        {
+            GCHandle handle = GCHandle.Alloc(remainingPacket, GCHandleType.Pinned);
+            T packet;
+            try
+            {
+                packet = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
+            }
+            finally
+            {
+                handle.Free();
+            }
+            return packet;
+        }
+
         public static double GetMagnitudeFromVectorData(float[] vector)
         {
             return Math.Round(Math.Sqrt(Math.Pow(vector[0], 2) + Math.Pow(vector[1], 2) + Math.Pow(vector[2], 2)), 3);

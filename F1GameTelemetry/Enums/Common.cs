@@ -17,10 +17,10 @@
         Event = 3,
 
         // List of participants in the session, mostly relevant for multiplayer
-        Participants = 4,
+        Participant = 4,
 
         // Packet detailing car setups for cars in the race
-        CarSetups = 5,
+        CarSetup = 5,
 
         // Telemetry data for all cars
         CarTelemetry = 6,
@@ -245,13 +245,13 @@
         AlfaRomeo2020 = 94
     }
 
-    public enum ReaderVersion
+    public enum ReaderVersion : ushort
     {
         [Description("F1 2019")]
-        F12019,
+        F12019 = 2019,
         [Description("F1 2020")]
-        F12020,
+        F12020 = 2020,
         [Description("F1 2021")]
-        F12021
+        F12021 = 2021
     }
 }
