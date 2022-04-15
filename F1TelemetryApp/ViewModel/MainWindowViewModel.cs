@@ -1,7 +1,9 @@
 ﻿namespace F1TelemetryApp.ViewModel
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Data;
     using System.Linq;
 
     using GalaSoft.MvvmLight;
@@ -9,17 +11,21 @@
 
     using F1GameTelemetry.Listener;
     using F1TelemetryApp.Model;
-    using F1GameTelemetry.Packets;
     using F1GameTelemetry.Enums;
     using F1GameTelemetry.Converters;
-
-    using static F1GameTelemetry.Reader.TelemetryReader;
-    using System.Collections.Generic;
-    using System.Data;
+    using F1GameTelemetry.Readers;
+    using F1GameTelemetry.Packets.F12021;
+    using System.Windows;
+    using F1TelemetryApp.Converters;
 
     public class MainWindowViewModel : ViewModelBase
     {
         private const int port = 20777;
+
+        private readonly TelemetryReaderFactory _readerFactory;
+        private ITelemetryReader _telemetryReader;
+        private string _readerWarningMessage;
+        private Visibility _readerWarningMessageVisibility = Visibility.Hidden;
 
         private ObservableCollection<HeaderMessage> headerMessages;
         private ObservableCollection<EventMessage> eventMessages;
@@ -32,18 +38,20 @@
         private LobbyInfoMessage lobbyInfoMessage;
         private CarDamageMessage carDamageMessage;
         private CarSetupMessage carSetupMessage;
-        private TelemetryListener telemetryListener;
-        private ReaderVersion _readerVersion = ReaderVersion.F12021;
+        private TelemetryListener _telemetryListener;
+        private ReaderVersion _readerVersion;
         private int _myCarIndex = -1;
 
         public MainWindowViewModel()
         {
             log4net.Config.XmlConfigurator.Configure();
             Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
             PopulateMessages();
 
-            telemetryListener = new TelemetryListener(port);
-            telemetryListener.TelemetryReceived += OnTelemetryReceived;
+            _telemetryListener = new TelemetryListener(port);
+            _readerFactory = new TelemetryReaderFactory(_telemetryListener);
+            Version = ReaderVersion.F12021;
         }
 
         public ILog Log { get; set; }
@@ -83,14 +91,102 @@
                 if (_readerVersion != value)
                 {
                     _readerVersion = value;
+                    SetTelemetryReader(_readerVersion);
                     RaisePropertyChanged(nameof(Version));
                 }
             }
         }
 
+        public string ReaderWarningMessage
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_readerWarningMessage))
+                {
+                    if (_telemetryReader != null && !_telemetryReader.IsSupported)
+                        _readerWarningMessage = $"{_telemetryReader.Name} is not supported";
+                    _readerWarningMessage = "No reader specified";
+                }
+                return _readerWarningMessage;
+            }
+            set
+            {
+                if (_readerWarningMessage != value)
+                {
+                    _readerWarningMessage = value;
+                    RaisePropertyChanged(nameof(ReaderWarningMessage));
+                }
+            }
+        }
+
+        public Visibility ReaderWarningMessageVisibility
+        {
+            get => _readerWarningMessageVisibility;
+            set
+            {
+                if (_readerWarningMessageVisibility != value)
+                {
+                    _readerWarningMessageVisibility = value;
+                    RaisePropertyChanged(nameof(ReaderWarningMessageVisibility));
+                }
+            }
+        }
+
+        private void SetTelemetryReader(ReaderVersion reader)
+        {
+            if (_telemetryReader != null)
+            {
+                _telemetryReader.HeaderPacket.Received -= OnHeaderReceived;
+                _telemetryReader.MotionPacket.Received -= OnMotionReceived;
+                _telemetryReader.CarDamagePacket.Received -= OnCarDamageReceived;
+                _telemetryReader.CarSetupPacket.Received -= OnCarSetupReceived;
+                //_telemetryReader.CarStatusPacket.Received -= OnCarStatusReceived;
+                _telemetryReader.CarTelemetryPacket.Received -= OnCarTelemetryReceived;
+                //_telemetryReader.FinalClassificationPacket.Received -= OnFinalClassificationReceived;
+                _telemetryReader.LapDataPacket.Received -= OnLapDataReceived;
+                _telemetryReader.LobbyInfoPacket.Received -= OnLobbyInfoReceived;
+                _telemetryReader.ParticipantPacket.Received -= OnParticipantReceived;
+                _telemetryReader.SessionHistoryPacket.Received -= OnSessionHistoryReceived;
+                _telemetryReader.SessionPacket.Received -= OnSessionReceived;
+            }
+            _telemetryReader = null;
+            _telemetryReader = _readerFactory.GetTelemetryReader(reader);
+            if (_telemetryReader != null && !_telemetryReader.IsSupported)
+            {
+                // TODO: Create a method that checks if the reader is supported, if it is then enable the start telemetry feed button and hide the warning text!
+                var msg = $"{_telemetryReader.Name} is not supported";
+                Log?.Warn(msg);
+                ReaderWarningMessage = msg;
+            }
+
+            if (_telemetryReader == null)
+            {
+                var msg = $"{EnumConverter.GetEnumDescription(Version)} reader not found";
+                Log?.Warn(msg);
+                ReaderWarningMessage = msg;
+                ReaderWarningMessageVisibility = Visibility.Visible;
+                return;
+            }
+
+            ReaderWarningMessageVisibility = Visibility.Hidden;
+            _telemetryReader.HeaderPacket.Received += OnHeaderReceived;
+            _telemetryReader.MotionPacket.Received += OnMotionReceived;
+            _telemetryReader.CarDamagePacket.Received += OnCarDamageReceived;
+            _telemetryReader.CarSetupPacket.Received += OnCarSetupReceived;
+            //_telemetryReader.CarStatusPacket.Received += OnCarStatusReceived;
+            _telemetryReader.CarTelemetryPacket.Received += OnCarTelemetryReceived;
+            //_telemetryReader.FinalClassificationPacket.Received += OnFinalClassificationReceived;
+            _telemetryReader.LapDataPacket.Received += OnLapDataReceived;
+            _telemetryReader.LobbyInfoPacket.Received += OnLobbyInfoReceived;
+            _telemetryReader.ParticipantPacket.Received += OnParticipantReceived;
+            _telemetryReader.SessionHistoryPacket.Received += OnSessionHistoryReceived;
+            _telemetryReader.SessionPacket.Received += OnSessionReceived;
+
+        }
+
         #region Gui Test Properties
 
-        public bool IsListenerRunning => telemetryListener.IsListenerRunning;
+        public bool IsListenerRunning => _telemetryListener.IsListenerRunning;
 
         public string LocalSpeed => $"{motionMessage.Speed:#0.00} m/s";
 
@@ -150,76 +246,21 @@
 
         public void StartTelemetryFeed()
         {
-            if (!telemetryListener.IsListenerRunning)
+            if (!_telemetryListener.IsListenerRunning)
             {
                 Log?.Info("Starting Telemetry feed");
-                telemetryListener.Start();
+                _telemetryListener.Start();
             }
         }
 
         public void StopTelemetryFeed()
         {
-            if (telemetryListener.IsListenerRunning)
+            if (_telemetryListener.IsListenerRunning)
             {
                 Log?.Info("Stopping Telemetry feed");
-                telemetryListener.Stop();
+                _telemetryListener.Stop();
             }
         }
-
-        #region Telemetry Handler
-
-        private void OnTelemetryReceived(object source, TelemetryEventArgs e)
-        {
-            Header header = BytesToPacket<Header>(e.Message);
-            byte[] remainingPacket = e.Message.Skip(TELEMETRY_HEADER_SIZE).ToArray();
-            if (_myCarIndex < 0)
-                _myCarIndex = header.playerCarIndex;
-
-            App.Current.Dispatcher.Invoke(delegate
-            {
-                UpdateNMessages(header);
-
-                switch ((PacketId)header.packetId)
-                {
-                    case PacketId.Motion:
-                        UpdateMotion(remainingPacket);
-                        break;
-                    case PacketId.Session:
-                        UpdateSession(remainingPacket);
-                        break;
-                    case PacketId.LapData:
-                        UpdateLapData(remainingPacket);
-                        break;
-                    case PacketId.Event:
-                        UpdateEvents(remainingPacket);
-                        break;
-                    case PacketId.Participants:
-                        UpdateParticipants(remainingPacket);
-                        break;
-                    case PacketId.CarSetups:
-                        UpdateCarSetup(remainingPacket);
-                        break;
-                    case PacketId.CarTelemetry:
-                        UpdateTelemetry(remainingPacket);
-                        break;
-                    case PacketId.CarStatus:
-                        break;
-                    case PacketId.FinalClassification:
-                        break;
-                    case PacketId.LobbyInfo:
-                        UpdateLobbyInfo(remainingPacket);
-                        break;
-                    case PacketId.CarDamage:
-                        UpdateCarDamage(remainingPacket);
-                        break;
-                    case PacketId.SessionHistory:
-                        UpdateSessionHistory(remainingPacket);
-                        break;
-                }
-            });
-        }
-
-        #endregion
 
         #region Populators
 
@@ -306,49 +347,61 @@
         }
         #endregion
 
-        #region Update Fields
+        #region Event Handlers
 
-        private void UpdateNMessages(Header udpPacketHeader)
+        private void OnHeaderReceived(object sender, EventArgs e)
         {
-            for (int i = 0; i < HeaderMessages.Count; i++)
-            {
-                if (HeaderMessages[i].PacketId == (PacketId)udpPacketHeader.packetId)
-                {
-                    HeaderMessage headerMessage = HeaderMessages[i];
-                    headerMessage.Total++;
+            var header = ((HeaderEventArgs)e).Header;
+            if (_myCarIndex < 0)
+                _myCarIndex = (int)header.playerCarIndex;
 
-                    HeaderMessages[i] = headerMessage;
-                    break;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                for (int i = 0; i < HeaderMessages.Count; i++)
+                {
+                    if (HeaderMessages[i].PacketId == (PacketId)header.packetId)
+                    {
+                        HeaderMessage headerMessage = HeaderMessages[i];
+                        headerMessage.Total++;
+
+                        HeaderMessages[i] = headerMessage;
+                        break;
+                    }
                 }
-            }
+            });
         }
 
         private void UpdateEvents(byte[] eventPacket)
         {
-            EventType eventType = GetEventType(eventPacket);
-            for (int i = 0; i < EventMessages.Count; i++)
-            {
-                if (EventMessages[i].EventType == eventType)
-                {
-                    EventMessage eventMessage = EventMessages[i];
-                    eventMessage.Total++;
+            if (_telemetryReader == null) return;
 
-                    EventMessages[i] = eventMessage;
-                    break;
+            EventType eventType = _telemetryReader.GetEventType(eventPacket);
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                for (int i = 0; i < EventMessages.Count; i++)
+                {
+                    if (EventMessages[i].EventType == eventType)
+                    {
+                        EventMessage eventMessage = EventMessages[i];
+                        eventMessage.Total++;
+
+                        EventMessages[i] = eventMessage;
+                        break;
+                    }
                 }
-            }
+            });
         }
 
-        private void UpdateMotion(byte[] motionPacket)
+        private void OnMotionReceived(object sender, EventArgs e)
         {
-            var motion = GetMotion(motionPacket);
+            var motion = ((MotionEventArgs)e).Motion;
             motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
             RaisePropertyChanged(nameof(LocalSpeed));
         }
 
-        private void UpdateTelemetry(byte[] carTelemetryPacket)
+        private void OnCarTelemetryReceived(object sender, EventArgs e)
         {
-            var carTelemetry = GetCarTelemetry(carTelemetryPacket);
+            var carTelemetry = ((CarTelemetryEventArgs)e).CarTelemetry;
             telemetryMessage.Speed = carTelemetry.carTelemetryData[_myCarIndex].speed;
             telemetryMessage.Throttle = carTelemetry.carTelemetryData[_myCarIndex].throttle;
             telemetryMessage.Brake = carTelemetry.carTelemetryData[_myCarIndex].brake;
@@ -361,16 +414,16 @@
             RaisePropertyChanged(nameof(Steer));
         }
 
-        private void UpdateLapData(byte[] lapDataPacket)
+        private void OnLapDataReceived(object sender, EventArgs e)
         {
-            var lapData = GetLapData(lapDataPacket);
+            var lapData = ((LapDataEventArgs)e).LapData;
             lapDataMessage.LastLapTime = lapData.carLapData[_myCarIndex].lastLapTime;
             RaisePropertyChanged(nameof(LastLapTime));
         }
 
-        private void UpdateSession(byte[] sessionPacket)
+        private void OnSessionReceived(object sender, EventArgs e)
         {
-            var session = GetSession(sessionPacket);
+            var session = ((SessionEventArgs)e).Session;
             sessionMessage.Track = session.trackId;
             sessionMessage.Weather = session.weather;
             sessionMessage.TrackTemperature = session.trackTemperature;
@@ -385,9 +438,9 @@
             RaisePropertyChanged(nameof(AiDifficulty));
         }
 
-        private void UpdateParticipants(byte[] participantPacket)
+        private void OnParticipantReceived(object sender, EventArgs e)
         {
-            var participant = GetParticipant(participantPacket);
+            var participant = ((ParticipantEventArgs)e).Participant;
             var participants = new Dictionary<string, string>();
             foreach (var p in participant.participants)
             {
@@ -399,12 +452,18 @@
             RaisePropertyChanged(nameof(Participants));
         }
 
-        private void UpdateSessionHistory(byte[] sessionHistoryPacket)
+        private void OnSessionHistoryReceived(object sender, EventArgs e)
         {
-            var history = GetSessionHistory(sessionHistoryPacket);
+            var history = ((SessionHistoryEventArgs)e).SessionHistory;
             // TODO: Add converter for sector time like this (00.000)
 
             var name = ((int)history.carIdx).ToString();
+            if (string.IsNullOrEmpty(name))
+            {
+                Log?.Warn("Name is blank in SessionHistory");
+                return;
+            }
+
             if (_myCarIndex == (int)history.carIdx)
             {
                 name = "your CAR";
@@ -421,8 +480,8 @@
 
             row["Pos"] = 0;
             row["Name"] = name;
-            row["Laps"] = history.numLaps;
-            var i = history.numLaps - 1;
+            row["Laps"] = (int)history.numLaps;
+            var i = (int)history.numLaps - 1;
             var sector = (float)history.lapHistoryData[i].sector1Time;
             if (sector > 0)
                 row["Sector1"] = sector/1000;
@@ -445,9 +504,9 @@
             RaisePropertyChanged(nameof(SessionHistory));
         }
 
-        private void UpdateLobbyInfo(byte[] infoPacket)
+        private void OnLobbyInfoReceived(object sender, EventArgs e)
         {
-            var info = GetLobbyInfo(infoPacket);
+            var info = ((LobbyInfoEventArgs)e).LobbyInfo;
             lobbyInfoMessage.Players = info.numPlayers;
             lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
             lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
@@ -458,9 +517,9 @@
             RaisePropertyChanged(nameof(LobbyTeam));
         }
 
-        private void UpdateCarDamage(byte[] damagePacket)
+        private void OnCarDamageReceived(object sender, EventArgs e)
         {
-            var damage = GetCarDamage(damagePacket);
+            var damage = ((CarDamageEventArgs)e).CarDamage;
             carDamageMessage.TyreWear = damage.carDamageData[_myCarIndex].tyreWear;
             carDamageMessage.FrontLeftWingDamage = damage.carDamageData[_myCarIndex].frontLeftWingDamage;
             carDamageMessage.FrontRightWingDamage = damage.carDamageData[_myCarIndex].frontRightWingDamage;
@@ -472,9 +531,9 @@
             RaisePropertyChanged(nameof(FrontRightWingDamage));
         }
 
-        private void UpdateCarSetup(byte[] setupPacket)
+        private void OnCarSetupReceived(object sender, EventArgs e)
         {
-            var setup = GetCarSetup(setupPacket);
+            var setup = ((CarSetupEventArgs)e).CarSetup;
             carSetupMessage.BrakeBias = setup.carSetupData[_myCarIndex].brakeBias;
             carSetupMessage.FuelLoad = setup.carSetupData[_myCarIndex].fuelLoad;
             RaisePropertyChanged(nameof(BrakeBias));

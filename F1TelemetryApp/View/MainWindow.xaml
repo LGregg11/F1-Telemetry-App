@@ -33,6 +33,12 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
+            <TextBlock Text="{Binding ReaderWarningMessage}"
+                       Foreground="Red"
+                       FontStyle="Oblique"
+                       VerticalAlignment="Center"
+                       Margin="5"
+                       Visibility="{Binding ReaderWarningMessageVisibility}"/>
         </StackPanel>
 
         <GroupBox Grid.Row="1" Header="F1 Telemetry" FontSize="20">
