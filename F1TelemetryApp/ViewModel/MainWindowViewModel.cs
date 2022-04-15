@@ -33,6 +33,8 @@
         private CarDamageMessage carDamageMessage;
         private CarSetupMessage carSetupMessage;
         private TelemetryListener telemetryListener;
+        private ReaderVersion _readerVersion = ReaderVersion.F12021;
+        private int _myCarIndex = -1;
 
         public MainWindowViewModel()
         {
@@ -66,6 +68,22 @@
                 if (value != eventMessages)
                 {
                     eventMessages = value;
+                }
+            }
+        }
+
+        public List<ReaderVersion> Versions => new List<ReaderVersion>((IEnumerable<ReaderVersion>)Enum.GetValues(typeof(ReaderVersion)));
+
+        public ReaderVersion Version
+        {
+            get => _readerVersion;
+
+            set
+            {
+                if (_readerVersion != value)
+                {
+                    _readerVersion = value;
+                    RaisePropertyChanged(nameof(Version));
                 }
             }
         }
@@ -154,6 +172,8 @@
         {
             Header header = BytesToPacket<Header>(e.Message);
             byte[] remainingPacket = e.Message.Skip(TELEMETRY_HEADER_SIZE).ToArray();
+            if (_myCarIndex < 0)
+                _myCarIndex = header.playerCarIndex;
 
             App.Current.Dispatcher.Invoke(delegate
             {
@@ -269,10 +289,10 @@
             sessionHistoryTable.Columns.Add("Pos", typeof(int));
             sessionHistoryTable.Columns.Add("Name", typeof(string));
             sessionHistoryTable.Columns.Add("Laps", typeof(int));
-            sessionHistoryTable.Columns.Add("Sector 1", typeof(float));
-            sessionHistoryTable.Columns.Add("Sector 2", typeof(float));
-            sessionHistoryTable.Columns.Add("Sector 3", typeof(float));
-            sessionHistoryTable.Columns.Add("Last Lap", typeof(string));
+            sessionHistoryTable.Columns.Add("Sector1", typeof(float));
+            sessionHistoryTable.Columns.Add("Sector2", typeof(float));
+            sessionHistoryTable.Columns.Add("Sector3", typeof(float));
+            sessionHistoryTable.Columns.Add("LastLap", typeof(string));
         }
 
         private void PopulateCarDamageMessage()
@@ -329,11 +349,11 @@
         private void UpdateTelemetry(byte[] carTelemetryPacket)
         {
             var carTelemetry = GetCarTelemetry(carTelemetryPacket);
-            telemetryMessage.Speed = carTelemetry.carTelemetryData[0].speed;
-            telemetryMessage.Throttle = carTelemetry.carTelemetryData[0].throttle;
-            telemetryMessage.Brake = carTelemetry.carTelemetryData[0].brake;
-            telemetryMessage.Gear = carTelemetry.carTelemetryData[0].gear;
-            telemetryMessage.Steer = carTelemetry.carTelemetryData[0].steer;
+            telemetryMessage.Speed = carTelemetry.carTelemetryData[_myCarIndex].speed;
+            telemetryMessage.Throttle = carTelemetry.carTelemetryData[_myCarIndex].throttle;
+            telemetryMessage.Brake = carTelemetry.carTelemetryData[_myCarIndex].brake;
+            telemetryMessage.Gear = carTelemetry.carTelemetryData[_myCarIndex].gear;
+            telemetryMessage.Steer = carTelemetry.carTelemetryData[_myCarIndex].steer;
             RaisePropertyChanged(nameof(Speed));
             RaisePropertyChanged(nameof(Throttle));
             RaisePropertyChanged(nameof(Brake));
@@ -344,8 +364,7 @@
         private void UpdateLapData(byte[] lapDataPacket)
         {
             var lapData = GetLapData(lapDataPacket);
-            // TODO: 0 isn't the index of 'my' car - is there a way of knowing?
-            lapDataMessage.LastLapTime = lapData.carLapData[0].lastLapTime;
+            lapDataMessage.LastLapTime = lapData.carLapData[_myCarIndex].lastLapTime;
             RaisePropertyChanged(nameof(LastLapTime));
         }
 
@@ -386,13 +405,17 @@
             // TODO: Add converter for sector time like this (00.000)
 
             var name = ((int)history.carIdx).ToString();
+            if (_myCarIndex == (int)history.carIdx)
+            {
+                name = "your CAR";
+            }
 
             
             DataRow row = sessionHistoryTable.Select($"Name='{name}'").FirstOrDefault();
             if (row == null)
             {
                 row = sessionHistoryTable.NewRow();
-                row["Last Lap"] = 0f.ToTelemetryTime();
+                row["LastLap"] = 0f.ToTelemetryTime();
                 sessionHistoryTable.Rows.Add(row);
             }
 
@@ -402,22 +425,22 @@
             var i = history.numLaps - 1;
             var sector = (float)history.lapHistoryData[i].sector1Time;
             if (sector > 0)
-                row["Sector 1"] = sector/1000;
+                row["Sector1"] = sector/1000;
 
             sector = history.lapHistoryData[i].sector2Time;
             if (sector > 0)
-                row["Sector 2"] = sector / 1000;
+                row["Sector2"] = sector / 1000;
 
-            if (i < 2) return;
+            if (i < 1) return;
 
-            i = i - 1;
+            i--;
             sector = history.lapHistoryData[i].sector3Time;
             if (sector > 0)
-                row["Sector 3"] = sector / 1000;
+                row["Sector3"] = sector / 1000;
 
             sector = history.lapHistoryData[i].lapTime;
             if (sector > 0)
-                row["Last Lap"] = sector.ToTelemetryTime();
+                row["LastLap"] = sector.ToTelemetryTime();
 
             RaisePropertyChanged(nameof(SessionHistory));
         }
@@ -438,9 +461,9 @@
         private void UpdateCarDamage(byte[] damagePacket)
         {
             var damage = GetCarDamage(damagePacket);
-            carDamageMessage.TyreWear = damage.carDamageData[19].tyreWear;
-            carDamageMessage.FrontLeftWingDamage = damage.carDamageData[19].frontLeftWingDamage;
-            carDamageMessage.FrontRightWingDamage = damage.carDamageData[19].frontRightWingDamage;
+            carDamageMessage.TyreWear = damage.carDamageData[_myCarIndex].tyreWear;
+            carDamageMessage.FrontLeftWingDamage = damage.carDamageData[_myCarIndex].frontLeftWingDamage;
+            carDamageMessage.FrontRightWingDamage = damage.carDamageData[_myCarIndex].frontRightWingDamage;
             RaisePropertyChanged(nameof(FLTyreWear));
             RaisePropertyChanged(nameof(FRTyreWear));
             RaisePropertyChanged(nameof(RLTyreWear));
@@ -452,8 +475,8 @@
         private void UpdateCarSetup(byte[] setupPacket)
         {
             var setup = GetCarSetup(setupPacket);
-            carSetupMessage.BrakeBias = setup.carSetupData[19].brakeBias;
-            carSetupMessage.FuelLoad = setup.carSetupData[19].fuelLoad;
+            carSetupMessage.BrakeBias = setup.carSetupData[_myCarIndex].brakeBias;
+            carSetupMessage.FuelLoad = setup.carSetupData[_myCarIndex].fuelLoad;
             RaisePropertyChanged(nameof(BrakeBias));
             RaisePropertyChanged(nameof(FuelLoad));
         }

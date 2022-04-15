@@ -244,4 +244,14 @@
         McLaren2020 = 93,
         AlfaRomeo2020 = 94
     }
+
+    public enum ReaderVersion
+    {
+        [Description("F1 2019")]
+        F12019,
+        [Description("F1 2020")]
+        F12020,
+        [Description("F1 2021")]
+        F12021
+    }
 }
