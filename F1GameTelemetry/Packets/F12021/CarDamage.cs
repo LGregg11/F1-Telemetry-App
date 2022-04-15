@@ -1,8 +1,10 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
+    using System;
     using System.Runtime.InteropServices;
-
+    using F1GameTelemetry.Converters;
     using F1GameTelemetry.Enums;
+    using F1GameTelemetry.Listener;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 858)]
     public struct CarDamage
@@ -40,5 +42,20 @@
         public byte engineICEWear;
         public byte engineMGUKWear;
         public byte engineICWear;
+    }
+
+    public class CarDamagePacket : IPacket
+    {
+        public event EventHandler Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new CarDamageEventArgs
+            {
+                CarDamage = Converter.BytesToPacket<CarDamage>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }

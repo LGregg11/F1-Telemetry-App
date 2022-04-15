@@ -1,4 +1,4 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
     using System.Runtime.InteropServices;
 

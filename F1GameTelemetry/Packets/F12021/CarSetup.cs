@@ -1,5 +1,8 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
+    using F1GameTelemetry.Converters;
+    using F1GameTelemetry.Listener;
+    using System;
     using System.Runtime.InteropServices;
 
     // Other players cars will appear as blank (Unless AI)
@@ -35,5 +38,20 @@
         public float frontRightTyrePressure; // PSI
         public byte ballast;
         public float fuelLoad; // Litres? Laps?
+    }
+
+    public class CarSetupPacket : IPacket
+    {
+        public event EventHandler Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new CarSetupEventArgs
+            {
+                CarSetup = Converter.BytesToPacket<CarSetup>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }

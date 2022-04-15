@@ -1,6 +1,9 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
+    using F1GameTelemetry.Converters;
     using F1GameTelemetry.Enums;
+    using F1GameTelemetry.Listener;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1034)]
@@ -58,5 +61,20 @@
         public float ersDeployedThisLap;
 
         public byte networkPaused;
+    }
+
+    public class CarStatusPacket : IPacket
+    {
+        public event EventHandler Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new CarStatusEventArgs
+            {
+                CarStatus = Converter.BytesToPacket<CarStatus>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }
