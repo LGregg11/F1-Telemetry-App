@@ -1,28 +1,32 @@
 ﻿namespace F1GameTelemetry.Listener
 {
+    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
 
-    public class TelemetryListener : ITelemetryListener
+    public class TelemetryListener : ITelemetryListener, IDisposable
     {
-        public TelemetryListener(int port)
+        public TelemetryListener(int port) : this(port, null)
+        {
+        }
+
+        public TelemetryListener(int port, IUdpClient? client)
         {
             Port = port;
-            Client = new UdpClient(Port);
-            ListenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
-            {
-                Name = "Telemetry Listener Thread"
-            };
+            if (client == null)
+                client = CreateClient();
+            Client = client;
+            ListenerThread = CreateThread();
         }
 
         public event TelemetryEventHandler? TelemetryReceived;
 
         public int Port { get; }
 
-        public Thread ListenerThread { get; private set; }
+        public Thread? ListenerThread { get; private set; }
 
-        public UdpClient Client { get; private set; }
+        public IUdpClient Client { get; private set; }
 
         public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
@@ -31,7 +35,10 @@
             if (IsListenerRunning)
                 return;
 
+            Client = CreateClient();
+            ListenerThread = CreateThread();
             ListenerThread.Start();
+
         }
 
         public void Stop()
@@ -41,6 +48,12 @@
 
             Client?.Close();
             ListenerThread?.Join();
+            Client?.Dispose();
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)Client).Dispose();
         }
 
         public void TelemetrySubscriber()
@@ -51,7 +64,7 @@
             {
                 try
                 {
-                    byte[]? receiveBytes = Client?.Receive(ref ep);
+                    byte[]? receiveBytes = Client.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
                         TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }
@@ -61,6 +74,19 @@
                     break;
                 }
             }
+        }
+
+        public Thread CreateThread()
+        {
+            return new Thread(new ThreadStart(TelemetrySubscriber))
+            {
+                Name = "Telemetry Listener Thread"
+            };
+        }
+
+        public IUdpClient CreateClient()
+        {
+            return new TelemetryUdpClient(Port);
         }
     }
 }
