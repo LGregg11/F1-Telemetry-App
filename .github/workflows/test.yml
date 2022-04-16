@@ -33,5 +33,5 @@ jobs:
       working-directory: ${{env.working-directory}}
       
     - name: Run NUnit Tests
-      run: dotnet test ../bin/Release/F1TelemetryAppTests.dll
+      run: dotnet test
       working-directory: ${{env.working-directory}}
