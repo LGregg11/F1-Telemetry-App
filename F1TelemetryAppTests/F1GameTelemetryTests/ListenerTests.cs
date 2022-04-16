@@ -6,7 +6,7 @@ namespace F1TelemetryAppTests.F1GameTelemetryTests
 
     public class ListenerTests
     {
-        private TelemetryListener cut;
+        private ITelemetryListener cut;
         private int portMock = 10101;
 
         [SetUp]

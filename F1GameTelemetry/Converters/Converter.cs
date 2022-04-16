@@ -11,7 +11,7 @@
             T packet;
             try
             {
-                packet = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
+                packet = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T))!;
             }
             finally
             {

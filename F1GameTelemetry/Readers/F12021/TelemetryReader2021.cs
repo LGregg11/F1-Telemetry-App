@@ -11,8 +11,8 @@
 
     public class TelemetryReader2021 : BaseTelemetryReader
     {
-        private Dictionary<PacketId, IPacket> _packetMap;
-        // private Dictionary<PacketId, IEvent> _eventMap;
+        private readonly Dictionary<PacketId, IPacket> _packetMap;
+        // private readonly Dictionary<PacketId, IEvent> _eventMap;
 
         public TelemetryReader2021(ITelemetryListener listener) : base(listener)
         {
@@ -85,7 +85,7 @@
             remainingTask.RunSynchronously();
         }
 
-        public object GetEvent(byte[] remainingPacket)
+        public object? GetEvent(byte[] remainingPacket)
         {
             EventType eventType = GetEventType(remainingPacket);
             switch (eventType)

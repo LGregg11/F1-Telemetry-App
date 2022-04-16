@@ -12,7 +12,7 @@
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             ReaderVersion version = (ReaderVersion)value;
-            return GetEnumDescription(version);
+            return GetEnumDescription(version)!;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -21,7 +21,7 @@
         }
 
 
-        public static string GetEnumDescription<T>(T value)
+        public static string? GetEnumDescription<T>(T value)
             where T : Enum
         {
             if (!typeof(T).IsEnum)
@@ -35,7 +35,7 @@
                 var attrs = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), true);
                 if (attrs != null && attrs.Length > 0)
                 {
-                    description = ((DescriptionAttribute)attrs.FirstOrDefault()).Description;
+                    description = ((DescriptionAttribute)attrs.FirstOrDefault()!).Description;
                 }    
             }
 

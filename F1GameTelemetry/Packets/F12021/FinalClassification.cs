@@ -49,7 +49,7 @@
 
     public class FinalClassificationPacket : IPacket
     {
-        public event EventHandler Received;
+        public event EventHandler? Received;
 
         public void ReceivePacket(byte[] remainingPacket)
         {

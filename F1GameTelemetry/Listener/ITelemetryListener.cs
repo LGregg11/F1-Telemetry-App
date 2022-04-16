@@ -9,6 +9,7 @@
         int Port { get; }
         Thread ListenerThread { get; }
         UdpClient Client { get; }
+        bool IsListenerRunning { get; }
         void Start();
         void Stop();
         void TelemetrySubscriber();

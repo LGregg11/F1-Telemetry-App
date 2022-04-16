@@ -18,7 +18,7 @@
             };
         }
 
-        public ITelemetryReader GetTelemetryReader(ReaderVersion version)
+        public ITelemetryReader? GetTelemetryReader(ReaderVersion version)
         {
             if (_readerMap.ContainsKey(version))
                 return _readerMap[version];

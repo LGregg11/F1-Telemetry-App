@@ -6,22 +6,23 @@
 
     public class TelemetryListener : ITelemetryListener
     {
-        private int _port;
-        private Thread _listenerThread;
-        private UdpClient _client;
-
         public TelemetryListener(int port)
         {
-            _port = port;
+            Port = port;
+            Client = new UdpClient(Port);
+            ListenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
+            {
+                Name = "Telemetry Listener Thread"
+            };
         }
 
-        public event TelemetryEventHandler TelemetryReceived;
+        public event TelemetryEventHandler? TelemetryReceived;
 
-        public int Port => _port;
+        public int Port { get; }
 
-        public Thread ListenerThread => _listenerThread;
+        public Thread ListenerThread { get; private set; }
 
-        public UdpClient Client => _client;
+        public UdpClient Client { get; private set; }
 
         public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
@@ -30,13 +31,7 @@
             if (IsListenerRunning)
                 return;
 
-            _client = new UdpClient(Port);
-            _listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
-            {
-                Name = "Telemetry Listener Thread"
-            };
-
-            _listenerThread.Start();
+            ListenerThread.Start();
         }
 
         public void Stop()
@@ -44,21 +39,19 @@
             if (!IsListenerRunning)
                 return;
 
-            _client?.Close();
-            _listenerThread?.Join();
-            _listenerThread = null;
-            _client = null;
+            Client?.Close();
+            ListenerThread?.Join();
         }
 
         public void TelemetrySubscriber()
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Any, _port);
+            IPEndPoint ep = new(IPAddress.Any, Port);
 
             while (true)
             {
                 try
                 {
-                    byte[] receiveBytes = _client.Receive(ref ep);
+                    byte[]? receiveBytes = Client?.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
                         TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }
