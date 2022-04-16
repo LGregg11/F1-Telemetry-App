@@ -14,7 +14,6 @@
     using F1GameTelemetry.Enums;
     using F1GameTelemetry.Converters;
     using F1GameTelemetry.Readers;
-    using F1GameTelemetry.Packets.F12021;
     using System.Windows;
     using F1TelemetryApp.Converters;
 
