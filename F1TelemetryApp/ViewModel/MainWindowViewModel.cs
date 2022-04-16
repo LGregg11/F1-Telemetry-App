@@ -205,7 +205,18 @@
 
         public Dictionary<string, string> Participants => participantMessage.Participants;
 
-        public DataTable SessionHistory => sessionHistoryTable;
+        public DataTable SessionHistory
+        {
+            get => sessionHistoryTable;
+            set
+            {
+                if (sessionHistoryTable != value)
+                {
+                    sessionHistoryTable = value;
+                    RaisePropertyChanged(nameof(SessionHistory));
+                }
+            }
+        }
 
         public string LobbyPlayers => $"{lobbyInfoMessage.Players}";
 
@@ -262,6 +273,7 @@
             PopulateLapDataMessage();
             PopulateSessionMessage();
             PopulateParticipantMessage();
+            PopularCarSetupMessage();
             PopulateSessionHistoryMessage();
             PopulateLobbyInfoMessage();
             PopulateCarDamageMessage();
@@ -315,14 +327,20 @@
 
         private void PopulateSessionHistoryMessage()
         {
-            sessionHistoryTable = new DataTable();
-            sessionHistoryTable.Columns.Add("Pos", typeof(int));
-            sessionHistoryTable.Columns.Add("Name", typeof(string));
-            sessionHistoryTable.Columns.Add("Laps", typeof(int));
-            sessionHistoryTable.Columns.Add("Sector1", typeof(float));
-            sessionHistoryTable.Columns.Add("Sector2", typeof(float));
-            sessionHistoryTable.Columns.Add("Sector3", typeof(float));
-            sessionHistoryTable.Columns.Add("LastLap", typeof(string));
+            var table = new DataTable
+            {
+                Columns =
+                {
+                    { "Pos", typeof(int) },
+                    { "Name", typeof(string) },
+                    { "Laps", typeof(int) },
+                    { "Sector1", typeof(float) },
+                    { "Sector2", typeof(float) },
+                    { "Sector3", typeof(float) },
+                    { "LastLap", typeof(string) }
+                }
+            };
+            SessionHistory = table;
         }
 
         private void PopulateCarDamageMessage()
@@ -342,7 +360,7 @@
         {
             var header = ((HeaderEventArgs)e).Header;
             if (myCarIndex < 0)
-                myCarIndex = (int)header.playerCarIndex;
+                myCarIndex = header.playerCarIndex;
 
             App.Current.Dispatcher.Invoke(() =>
             {
@@ -384,18 +402,24 @@
         private void OnMotionReceived(object? sender, EventArgs e)
         {
             var motion = ((MotionEventArgs)e).Motion;
-            motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            });
             RaisePropertyChanged(nameof(LocalSpeed));
         }
 
         private void OnCarTelemetryReceived(object? sender, EventArgs e)
         {
             var carTelemetry = ((CarTelemetryEventArgs)e).CarTelemetry;
-            telemetryMessage.Speed = carTelemetry.carTelemetryData[myCarIndex].speed;
-            telemetryMessage.Throttle = carTelemetry.carTelemetryData[myCarIndex].throttle;
-            telemetryMessage.Brake = carTelemetry.carTelemetryData[myCarIndex].brake;
-            telemetryMessage.Gear = carTelemetry.carTelemetryData[myCarIndex].gear;
-            telemetryMessage.Steer = carTelemetry.carTelemetryData[myCarIndex].steer;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                telemetryMessage.Speed = carTelemetry.carTelemetryData[myCarIndex].speed;
+                telemetryMessage.Throttle = carTelemetry.carTelemetryData[myCarIndex].throttle;
+                telemetryMessage.Brake = carTelemetry.carTelemetryData[myCarIndex].brake;
+                telemetryMessage.Gear = carTelemetry.carTelemetryData[myCarIndex].gear;
+                telemetryMessage.Steer = carTelemetry.carTelemetryData[myCarIndex].steer;
+            });
             RaisePropertyChanged(nameof(Speed));
             RaisePropertyChanged(nameof(Throttle));
             RaisePropertyChanged(nameof(Brake));
@@ -406,19 +430,25 @@
         private void OnLapDataReceived(object? sender, EventArgs e)
         {
             var lapData = ((LapDataEventArgs)e).LapData;
-            lapDataMessage.LastLapTime = lapData.carLapData[myCarIndex].lastLapTime;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                lapDataMessage.LastLapTime = lapData.carLapData[myCarIndex].lastLapTime;
+            });
             RaisePropertyChanged(nameof(LastLapTime));
         }
 
         private void OnSessionReceived(object? sender, EventArgs e)
         {
             var session = ((SessionEventArgs)e).Session;
-            sessionMessage.Track = session.trackId;
-            sessionMessage.Weather = session.weather;
-            sessionMessage.TrackTemperature = session.trackTemperature;
-            sessionMessage.AirTemperature = session.airTemperature;
-            sessionMessage.AiDifficulty = session.aiDifficulty;
-            sessionMessage.TotalLaps = session.totalLaps;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                sessionMessage.Track = session.trackId;
+                sessionMessage.Weather = session.weather;
+                sessionMessage.TrackTemperature = session.trackTemperature;
+                sessionMessage.AirTemperature = session.airTemperature;
+                sessionMessage.AiDifficulty = session.aiDifficulty;
+                sessionMessage.TotalLaps = session.totalLaps;
+            });
             RaisePropertyChanged(nameof(TrackName));
             RaisePropertyChanged(nameof(WeatherStatus));
             RaisePropertyChanged(nameof(TotalLaps));
@@ -431,13 +461,16 @@
         {
             var participant = ((ParticipantEventArgs)e).Participant;
             var participants = new Dictionary<string, string>();
-            foreach (var p in participant.participants)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                if (!string.IsNullOrEmpty(p.name) && !participants.ContainsKey(p.name))
-                    participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality)!);
-            }
+                foreach (var p in participant.participants)
+                {
+                    if (!string.IsNullOrEmpty(p.name) && !participants.ContainsKey(p.name))
+                        participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality)!);
+                }
+                participantMessage.Participants = participants;
+            });
 
-            participantMessage.Participants = participants;
             RaisePropertyChanged(nameof(Participants));
         }
 
@@ -458,48 +491,51 @@
                 name = "your CAR";
             }
 
-            
-            DataRow? row = sessionHistoryTable.Select($"Name='{name}'").FirstOrDefault();
-            if (row == null)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                row = sessionHistoryTable.NewRow();
-                row["LastLap"] = 0f.ToTelemetryTime();
-                sessionHistoryTable.Rows.Add(row);
-            }
+                DataRow? row = SessionHistory.Select($"Name='{name}'").FirstOrDefault();
+                if (row == null)
+                {
+                    row = SessionHistory.NewRow();
+                    row["LastLap"] = 0f.ToTelemetryTime();
+                    SessionHistory.Rows.Add(row);
+                }
 
-            row["Pos"] = 0;
-            row["Name"] = name;
-            row["Laps"] = (int)history.numLaps;
-            var i = (int)history.numLaps - 1;
-            var sector = (float)history.lapHistoryData[i].sector1Time;
-            if (sector > 0)
-                row["Sector1"] = sector/1000;
+                row["Pos"] = 0;
+                row["Name"] = name;
+                row["Laps"] = (int)history.numLaps;
+                var i = (int)history.numLaps - 1;
+                var sector = (float)history.lapHistoryData[i].sector1Time;
+                if (sector > 0)
+                    row["Sector1"] = sector / 1000;
 
-            sector = history.lapHistoryData[i].sector2Time;
-            if (sector > 0)
-                row["Sector2"] = sector / 1000;
+                sector = history.lapHistoryData[i].sector2Time;
+                if (sector > 0)
+                    row["Sector2"] = sector / 1000;
 
-            if (i < 1) return;
+                if (i < 1) return;
 
-            i--;
-            sector = history.lapHistoryData[i].sector3Time;
-            if (sector > 0)
-                row["Sector3"] = sector / 1000;
+                i--;
+                sector = history.lapHistoryData[i].sector3Time;
+                if (sector > 0)
+                    row["Sector3"] = sector / 1000;
 
-            sector = history.lapHistoryData[i].lapTime;
-            if (sector > 0)
-                row["LastLap"] = sector.ToTelemetryTime();
-
-            RaisePropertyChanged(nameof(SessionHistory));
+                sector = history.lapHistoryData[i].lapTime;
+                if (sector > 0)
+                    row["LastLap"] = sector.ToTelemetryTime();
+            });
         }
 
         private void OnLobbyInfoReceived(object? sender, EventArgs e)
         {
             var info = ((LobbyInfoEventArgs)e).LobbyInfo;
-            lobbyInfoMessage.Players = info.numPlayers;
-            lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
-            lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
-            lobbyInfoMessage.Team = info.lobbyPlayers.FirstOrDefault().teamId;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                lobbyInfoMessage.Players = info.numPlayers;
+                lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
+                lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
+                lobbyInfoMessage.Team = info.lobbyPlayers.FirstOrDefault().teamId;
+            });
             RaisePropertyChanged(nameof(LobbyPlayers));
             RaisePropertyChanged(nameof(LobbyName));
             RaisePropertyChanged(nameof(LobbyNationality));
@@ -509,9 +545,12 @@
         private void OnCarDamageReceived(object? sender, EventArgs e)
         {
             var damage = ((CarDamageEventArgs)e).CarDamage;
-            carDamageMessage.TyreWear = damage.carDamageData[myCarIndex].tyreWear;
-            carDamageMessage.FrontLeftWingDamage = damage.carDamageData[myCarIndex].frontLeftWingDamage;
-            carDamageMessage.FrontRightWingDamage = damage.carDamageData[myCarIndex].frontRightWingDamage;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                carDamageMessage.TyreWear = damage.carDamageData[myCarIndex].tyreWear;
+                carDamageMessage.FrontLeftWingDamage = damage.carDamageData[myCarIndex].frontLeftWingDamage;
+                carDamageMessage.FrontRightWingDamage = damage.carDamageData[myCarIndex].frontRightWingDamage;
+            });
             RaisePropertyChanged(nameof(FLTyreWear));
             RaisePropertyChanged(nameof(FRTyreWear));
             RaisePropertyChanged(nameof(RLTyreWear));
@@ -523,8 +562,11 @@
         private void OnCarSetupReceived(object? sender, EventArgs e)
         {
             var setup = ((CarSetupEventArgs)e).CarSetup;
-            carSetupMessage.BrakeBias = setup.carSetupData[myCarIndex].brakeBias;
-            carSetupMessage.FuelLoad = setup.carSetupData[myCarIndex].fuelLoad;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                carSetupMessage.BrakeBias = setup.carSetupData[myCarIndex].brakeBias;
+                carSetupMessage.FuelLoad = setup.carSetupData[myCarIndex].fuelLoad;
+            });
             RaisePropertyChanged(nameof(BrakeBias));
             RaisePropertyChanged(nameof(FuelLoad));
         }
