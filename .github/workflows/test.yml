@@ -33,5 +33,5 @@ jobs:
       working-directory: ${{env.working-directory}}
       
     - name: Run NUnit Tests
-      run: packages/NUnit.ConsoleRunner.3.12.0/tools/nunit3-console.exe ../bin/Release/F1TelemetryAppTests.dll
+      run: dotnet test ../bin/Release/F1TelemetryAppTests.dll
       working-directory: ${{env.working-directory}}
