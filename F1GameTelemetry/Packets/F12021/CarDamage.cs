@@ -46,7 +46,7 @@
 
     public class CarDamagePacket : IPacket
     {
-        public event EventHandler Received;
+        public event EventHandler? Received;
 
         public void ReceivePacket(byte[] remainingPacket)
         {

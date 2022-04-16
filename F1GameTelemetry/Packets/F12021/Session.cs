@@ -118,7 +118,7 @@
 
     public class SessionPacket : IPacket
     {
-        public event EventHandler Received;
+        public event EventHandler? Received;
 
         public void ReceivePacket(byte[] remainingPacket)
         {

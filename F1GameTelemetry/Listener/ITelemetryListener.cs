@@ -1,6 +1,5 @@
 ﻿namespace F1GameTelemetry.Listener
 {
-    using System.Net.Sockets;
     using System.Threading;
 
     public interface ITelemetryListener
@@ -8,9 +7,12 @@
         event TelemetryEventHandler TelemetryReceived;
         int Port { get; }
         Thread ListenerThread { get; }
-        UdpClient Client { get; }
+        IUdpClient Client { get; }
+        bool IsListenerRunning { get; }
         void Start();
         void Stop();
         void TelemetrySubscriber();
+        Thread CreateThread();
+        IUdpClient CreateClient();
     }
 }

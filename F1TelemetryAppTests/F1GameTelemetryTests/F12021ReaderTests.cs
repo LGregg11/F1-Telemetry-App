@@ -25,12 +25,6 @@
             _cut = new TelemetryReader2021(_telemetryListenerMock.Object);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _cut = null;
-        }
-
         #region Events
 
         [Test]
@@ -43,7 +37,7 @@
             var result = _cut.GetEvent(input);
 
             // Assert
-            Assert.AreEqual(typeof(Buttons), result.GetType());
+            Assert.AreEqual(typeof(Buttons), result!.GetType());
             Assert.NotNull(((Buttons)result).buttonStatus);
         }
 
@@ -111,7 +105,7 @@
             var result = _cut.GetEvent(input);
 
             // Assert
-            Assert.AreEqual(expectedType, result.GetType());
+            Assert.AreEqual(expectedType, result!.GetType());
 
         }
 

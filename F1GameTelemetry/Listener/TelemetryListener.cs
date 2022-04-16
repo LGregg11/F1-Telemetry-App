@@ -1,27 +1,32 @@
 ﻿namespace F1GameTelemetry.Listener
 {
+    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
 
-    public class TelemetryListener : ITelemetryListener
+    public class TelemetryListener : ITelemetryListener, IDisposable
     {
-        private int _port;
-        private Thread _listenerThread;
-        private UdpClient _client;
-
-        public TelemetryListener(int port)
+        public TelemetryListener(int port) : this(port, null)
         {
-            _port = port;
         }
 
-        public event TelemetryEventHandler TelemetryReceived;
+        public TelemetryListener(int port, IUdpClient? client)
+        {
+            Port = port;
+            if (client == null)
+                client = CreateClient();
+            Client = client;
+            ListenerThread = CreateThread();
+        }
 
-        public int Port => _port;
+        public event TelemetryEventHandler? TelemetryReceived;
 
-        public Thread ListenerThread => _listenerThread;
+        public int Port { get; }
 
-        public UdpClient Client => _client;
+        public Thread? ListenerThread { get; private set; }
+
+        public IUdpClient Client { get; private set; }
 
         public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
@@ -30,13 +35,10 @@
             if (IsListenerRunning)
                 return;
 
-            _client = new UdpClient(Port);
-            _listenerThread = new Thread(new ThreadStart(TelemetrySubscriber))
-            {
-                Name = "Telemetry Listener Thread"
-            };
+            Client = CreateClient();
+            ListenerThread = CreateThread();
+            ListenerThread.Start();
 
-            _listenerThread.Start();
         }
 
         public void Stop()
@@ -44,21 +46,25 @@
             if (!IsListenerRunning)
                 return;
 
-            _client?.Close();
-            _listenerThread?.Join();
-            _listenerThread = null;
-            _client = null;
+            Client?.Close();
+            ListenerThread?.Join();
+            Client?.Dispose();
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)Client).Dispose();
         }
 
         public void TelemetrySubscriber()
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Any, _port);
+            IPEndPoint ep = new(IPAddress.Any, Port);
 
             while (true)
             {
                 try
                 {
-                    byte[] receiveBytes = _client.Receive(ref ep);
+                    byte[]? receiveBytes = Client.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
                         TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }
@@ -68,6 +74,19 @@
                     break;
                 }
             }
+        }
+
+        public Thread CreateThread()
+        {
+            return new Thread(new ThreadStart(TelemetrySubscriber))
+            {
+                Name = "Telemetry Listener Thread"
+            };
+        }
+
+        public IUdpClient CreateClient()
+        {
+            return new TelemetryUdpClient(Port);
         }
     }
 }
