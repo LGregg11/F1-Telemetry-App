@@ -22,7 +22,7 @@
 
         public AiControlled aiControlled;
 
-        public Driver driverId; // Driver IDs (255 for Human)
+        public DriverId driverId; // Driver IDs (255 for Human)
 
         public byte networkId;
 

@@ -34,7 +34,7 @@
 
         public byte carPosition;
 
-        public byte currentlapNum;
+        public byte currentLapNum;
 
         public PitStatus pitStatus;
 

@@ -2,7 +2,7 @@
 {
     using System.ComponentModel;
 
-    public enum Driver : byte
+    public enum DriverId : byte
     {
         // TODO: Add descriptions to these names..
         Human = 255,
@@ -120,6 +120,8 @@
 
     public enum DriverStatus : byte
     {
+        Unknown = 255,
+
         InGarage = 0,
         FlyingLap = 1,
         InLap = 2,
@@ -155,6 +157,8 @@
 
     public enum ResultStatus : byte
     {
+        Unknown = 255,
+
         Invalid = 0,
         Inactive = 1,
         Active = 2,
@@ -164,5 +168,4 @@
         NotClassified = 6,
         Retired = 7
     }
-
 }
