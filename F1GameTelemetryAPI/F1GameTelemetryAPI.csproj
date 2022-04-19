@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Cloud.Firestore" Version="2.5.0" />
+    <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\F1GameTelemetry\F1GameTelemetry.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,5 @@
+using F1GameTelemetry.Listener;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,5 +23,18 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.Logger.LogInformation("App Starting.");
 app.Run();
+app.Logger.LogInformation("App Started.");
+
+
+RunListener();
+
+
+void RunListener()
+{
+    TelemetryListener telemetryListener = new TelemetryListener(123);
+    app.Logger.LogInformation("Listener Starting.");
+    telemetryListener.Start();
+    app.Logger.LogInformation("Listener Started.");
+}
