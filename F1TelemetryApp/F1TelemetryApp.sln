@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F1TelemetryApp", "F1TelemetryApp.csproj", "{EF0D2939-1531-46B5-80E0-598CBF814905}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F1GameTelemetry", "..\F1GameTelemetry\F1GameTelemetry.csproj", "{8526E5B0-0081-46DA-98FC-B284036DA37E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F1TelemetryAppTests", "..\F1TelemetryAppTests\F1TelemetryAppTests.csproj", "{A1728C0D-1984-4724-ABB5-6D2121BA4577}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F1GameTelemetryAPI", "..\F1GameTelemetryAPI\F1GameTelemetryAPI.csproj", "{6940AFD0-3F41-495D-A9EF-EA5E3E613EE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,14 +28,14 @@ Global
 		{8526E5B0-0081-46DA-98FC-B284036DA37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8526E5B0-0081-46DA-98FC-B284036DA37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8526E5B0-0081-46DA-98FC-B284036DA37E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D8BF266-281F-4354-A60C-1635A62CF240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D8BF266-281F-4354-A60C-1635A62CF240}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D8BF266-281F-4354-A60C-1635A62CF240}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D8BF266-281F-4354-A60C-1635A62CF240}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1728C0D-1984-4724-ABB5-6D2121BA4577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1728C0D-1984-4724-ABB5-6D2121BA4577}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1728C0D-1984-4724-ABB5-6D2121BA4577}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1728C0D-1984-4724-ABB5-6D2121BA4577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6940AFD0-3F41-495D-A9EF-EA5E3E613EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6940AFD0-3F41-495D-A9EF-EA5E3E613EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6940AFD0-3F41-495D-A9EF-EA5E3E613EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6940AFD0-3F41-495D-A9EF-EA5E3E613EE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
