@@ -1,12 +1,15 @@
-﻿namespace F1GameTelemetry.Packets
+﻿namespace F1GameTelemetry.Packets.F12021
 {
-    using F1GameTelemetry.Packets.Enums;
+    using F1GameTelemetry.Converters;
+    using F1GameTelemetry.Enums;
+    using F1GameTelemetry.Listener;
+    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 946)]
     public struct LapData
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 946)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public CarLapData[] carLapData;
     }
 
@@ -25,6 +28,8 @@
 
         public float lapDistance; // distance around lap in metres
 
+        public float totalDistance; // metres
+      
         public float safetyCarDelta; // seconds
 
         public byte carPosition;
@@ -60,5 +65,20 @@
         public ushort pitStopTimer;
 
         public byte pitStopShouldServePen;
+    }
+
+    public class LapDataPacket : IPacket
+    {
+        public event EventHandler? Received;
+
+        public void ReceivePacket(byte[] remainingPacket)
+        {
+            var args = new LapDataEventArgs
+            {
+                LapData = Converter.BytesToPacket<LapData>(remainingPacket)
+            };
+
+            Received?.Invoke(this, args);
+        }
     }
 }

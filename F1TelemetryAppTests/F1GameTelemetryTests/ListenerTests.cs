@@ -1,47 +1,46 @@
 namespace F1TelemetryAppTests.F1GameTelemetryTests
 {
+    using Moq;
     using NUnit.Framework;
-    using System.Threading.Tasks;
+
     using F1GameTelemetry.Listener;
 
     public class ListenerTests
     {
+        private Mock<IUdpClient> clientMock;
         private TelemetryListener cut;
         private int portMock = 10101;
 
         [SetUp]
         public void Setup()
         {
-            Task.Delay(500);
-            cut = new TelemetryListener(portMock);
+            clientMock = new Mock<IUdpClient>();
+            cut = new TelemetryListener(portMock, clientMock.Object);
         }
 
         [TearDown]
         public void Teardown()
         {
-            if (cut != null)
-                cut.Stop();
+            cut.Stop();
+            cut.Dispose();
         }
 
         [Test]
         public void Start_ShouldStartTelemetryThread()
         {
-            // Act
-            // Arrange
+            // Act & Arrange
             cut.Start();
 
             // Assert
-            Assert.IsTrue(cut.ListenerThread.IsAlive);
-            Assert.AreEqual("Telemetry Listener Thread", cut.ListenerThread.Name);
+            Assert.IsTrue(cut.IsListenerRunning);
+            Assert.AreEqual("Telemetry Listener Thread", cut.ListenerThread?.Name);
         }
 
         [Test]
         public void Start_ShouldStartUdpClient()
         {
-            // Act
-            // Arrange
+            // Act & Arrange
             cut.Start();
-            Task.Delay(1000);
 
             // Assert
             Assert.IsNotNull(cut.Client);
