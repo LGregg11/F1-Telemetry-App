@@ -1,11 +1,10 @@
 ﻿namespace F1GameTelemetry.Listener
 {
-    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
 
-    public class TelemetryListener : ITelemetryListener, IDisposable
+    public class TelemetryListener : ITelemetryListener
     {
         public TelemetryListener(int port) : this(port, null)
         {
@@ -26,7 +25,7 @@
 
         public Thread? ListenerThread { get; private set; }
 
-        public IUdpClient Client { get; private set; }
+        public IUdpClient? Client { get; private set; }
 
         public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
@@ -35,10 +34,10 @@
             if (IsListenerRunning)
                 return;
 
-            Client = CreateClient();
+            if (Client == null)
+                Client = CreateClient();
             ListenerThread = CreateThread();
             ListenerThread.Start();
-
         }
 
         public void Stop()
@@ -48,12 +47,7 @@
 
             Client?.Close();
             ListenerThread?.Join();
-            Client?.Dispose();
-        }
-
-        public void Dispose()
-        {
-            ((IDisposable)Client).Dispose();
+            Client = null;
         }
 
         public void TelemetrySubscriber()
@@ -64,7 +58,7 @@
             {
                 try
                 {
-                    byte[]? receiveBytes = Client.Receive(ref ep);
+                    byte[]? receiveBytes = Client?.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
                         TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }

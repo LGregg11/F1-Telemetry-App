@@ -365,7 +365,7 @@
             Assert.AreEqual(Sector.Sector3, myResult.sector);
             Assert.AreEqual(21, myResult.gridPosition);
             Assert.AreEqual(8, myResult.carPosition);
-            Assert.AreEqual(5, myResult.currentlapNum);
+            Assert.AreEqual(5, myResult.currentLapNum);
         }
 
         #endregion
