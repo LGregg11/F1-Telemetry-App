@@ -5,7 +5,6 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 
 using F1GameTelemetry.Listener;
@@ -15,7 +14,6 @@ using F1GameTelemetry.Converters;
 using F1GameTelemetry.Readers;
 using System.Windows;
 using F1TelemetryApp.Converters;
-using F1GameTelemetry.Packets.F12021;
 
 public class MainWindowViewModel : BindableBase
 {
@@ -27,15 +25,13 @@ public class MainWindowViewModel : BindableBase
     private string readerWarningMessage = "No reader specified";
     private Visibility readerWarningMessageVisibility = Visibility.Hidden;
 
-    private Dictionary<int, Driver> drivers = new Dictionary<int, Driver>();
-
+    private ObservableCollection<Driver> drivers = new();
     private ObservableCollection<HeaderMessage> headerMessages;
     private ObservableCollection<EventMessage> eventMessages;
     private MotionMessage motionMessage;
     private TelemetryMessage telemetryMessage;
     private LapDataMessage lapDataMessage;
     private SessionMessage sessionMessage;
-    private DataTable sessionHistoryTable;
     private ParticipantMessage participantMessage;
     private LobbyInfoMessage lobbyInfoMessage;
     private CarDamageMessage carDamageMessage;
@@ -99,7 +95,7 @@ public class MainWindowViewModel : BindableBase
         }
     }
 
-    public Dictionary<int, Driver> Drivers
+    public ObservableCollection<Driver> Drivers
     {
         get => drivers;
         set
@@ -107,7 +103,6 @@ public class MainWindowViewModel : BindableBase
             if (drivers != value)
             {
                 drivers = value;
-                RaisePropertyChanged(nameof(Drivers));
             }
         }
     }
@@ -221,19 +216,6 @@ public class MainWindowViewModel : BindableBase
 
     public Dictionary<string, string> Participants => participantMessage.Participants;
 
-    public DataTable SessionHistory
-    {
-        get => sessionHistoryTable;
-        set
-        {
-            if (sessionHistoryTable != value)
-            {
-                sessionHistoryTable = value;
-                RaisePropertyChanged(nameof(SessionHistory));
-            }
-        }
-    }
-
     public string LobbyPlayers => $"{lobbyInfoMessage.Players}";
 
     public string LobbyName => lobbyInfoMessage.Name;
@@ -290,7 +272,6 @@ public class MainWindowViewModel : BindableBase
         PopulateSessionMessage();
         PopulateParticipantMessage();
         PopularCarSetupMessage();
-        PopulateSessionHistoryMessage();
         PopulateLobbyInfoMessage();
         PopulateCarDamageMessage();
     }
@@ -339,24 +320,6 @@ public class MainWindowViewModel : BindableBase
     private void PopulateLobbyInfoMessage()
     {
         lobbyInfoMessage = new LobbyInfoMessage { Players = 0, Name = "", Nationality = Nationality.Unknown, Team = Team.Unknown };
-    }
-
-    private void PopulateSessionHistoryMessage()
-    {
-        var table = new DataTable
-        {
-            Columns =
-            {
-                { "Pos", typeof(int) },
-                { "Name", typeof(string) },
-                { "Laps", typeof(int) },
-                { "Sector1", typeof(float) },
-                { "Sector2", typeof(float) },
-                { "Sector3", typeof(float) },
-                { "LastLap", typeof(string) }
-            }
-        };
-        SessionHistory = table;
     }
 
     private void PopulateCarDamageMessage()
@@ -448,6 +411,19 @@ public class MainWindowViewModel : BindableBase
         var lapData = ((LapDataEventArgs)e).LapData;
         App.Current.Dispatcher.Invoke(() =>
         {
+            for (int i = 0; i < lapData.carLapData.Length; i++)
+            {
+                Driver driver;
+                if (!TryGetDriver(i, out driver!)) continue;
+
+                driver.ApplyCarLapData(lapData.carLapData[i]); // Should change the dictionary driver value too (I think)
+                Drivers[i] = driver;
+            }
+        });
+        RaisePropertyChanged(nameof(Drivers));
+
+        App.Current.Dispatcher.Invoke(() =>
+        {
             lapDataMessage.LastLapTime = lapData.carLapData[myCarIndex].lastLapTime;
         });
         RaisePropertyChanged(nameof(LastLapTime));
@@ -480,12 +456,16 @@ public class MainWindowViewModel : BindableBase
         App.Current.Dispatcher.Invoke(() =>
         {
             int i = 0;
-            foreach (var p in participant.participants)
+            foreach (var p in participant.participants.Where(p => p.name != string.Empty))
             {
                 if (!string.IsNullOrEmpty(p.name) && !participants.ContainsKey(p.name))
                     participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality)!);
 
-                SetDriverParticipantData(i, p);
+                // Assume this is the first packet that is received per driver
+                // Also Assume this doesn't change during a session
+                if (!GetDriverIndexes().Contains(i))
+                    Drivers.Add(new Driver(i, p));
+
                 i++;
             }
             participantMessage.Participants = participants;
@@ -506,44 +486,15 @@ public class MainWindowViewModel : BindableBase
             return;
         }
 
-        if (myCarIndex == (int)history.carIdx)
-        {
-            name = "your CAR";
-        }
+        Driver driver;
+        if (!TryGetDriver(history.carIdx, out driver!)) return;
 
         App.Current.Dispatcher.Invoke(() =>
         {
-            DataRow? row = SessionHistory.Select($"Name='{name}'").FirstOrDefault();
-            if (row == null)
-            {
-                row = SessionHistory.NewRow();
-                row["LastLap"] = 0f.ToTelemetryTime();
-                SessionHistory.Rows.Add(row);
-            }
-
-            row["Pos"] = 0;
-            row["Name"] = name;
-            row["Laps"] = (int)history.numLaps;
-            var i = (int)history.numLaps - 1;
-            var sector = (float)history.lapHistoryData[i].sector1Time;
-            if (sector > 0)
-                row["Sector1"] = sector / 1000;
-
-            sector = history.lapHistoryData[i].sector2Time;
-            if (sector > 0)
-                row["Sector2"] = sector / 1000;
-
-            if (i < 1) return;
-
-            i--;
-            sector = history.lapHistoryData[i].sector3Time;
-            if (sector > 0)
-                row["Sector3"] = sector / 1000;
-
-            sector = history.lapHistoryData[i].lapTime;
-            if (sector > 0)
-                row["LastLap"] = sector.ToTelemetryTime();
+            driver.ApplySessionHistory(history);
+            Drivers[history.carIdx] = driver;
         });
+        RaisePropertyChanged(nameof(Drivers));
     }
 
     private void OnLobbyInfoReceived(object? sender, EventArgs e)
@@ -592,11 +543,13 @@ public class MainWindowViewModel : BindableBase
     }
     #endregion
 
-    private void SetDriverParticipantData(int idx, ParticipantData p)
+    private int[] GetDriverIndexes() => Drivers.Select(d => d.Index).ToArray();
+
+    private bool TryGetDriver(int index, out Driver? driver)
     {
-        // Assume this is the first packet that is received per driver
-        // Also Assume this doesn't change during a session
-        if (!Drivers.ContainsKey(idx))
-            Drivers.Add(idx, new Driver(idx, p));
+        driver = Drivers.FirstOrDefault(d => d.Index == index);
+        if (driver == null)
+            return false;
+        return true;
     }
 }

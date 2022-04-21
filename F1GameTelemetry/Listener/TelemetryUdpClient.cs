@@ -16,7 +16,6 @@ internal class TelemetryUdpClient : IUdpClient, IDisposable
     public void Close()
     {
         Client.Close();
-        Dispose();
     }
 
     public void Dispose()

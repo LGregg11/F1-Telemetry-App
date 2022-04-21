@@ -5,8 +5,9 @@ using F1GameTelemetry.Enums;
 using F1GameTelemetry.Packets.F12021;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 
-public class Driver
+public class Driver : INotifyPropertyChanged
 {
     public Driver(int index, ParticipantData p)
     {
@@ -31,96 +32,65 @@ public class Driver
     public int Position { get; set; } = 0;
     public int Laps { get; set; } = 0;
     public Sector Sector { get; set; } = Sector.Sector1;
-    public List<LapTime> LapTimes { get; set; } = new List<LapTime>();
-    public int BestSector1 { get; set; } = 0;
-    public int BestSector2 { get; set; } = 0;
-    public int BestSector3 { get; set; } = 0;
-    public int BestFullLap { get; set; } = 0;
+    public List<LapHistoryData> LapTimes { get; set; } = new List<LapHistoryData>();
+    public int LastSector1Time { get; set; } = 0;
+    public int LastSector2Time { get; set; } = 0;
+    public int LastSector3Time { get; set; } = 0;
+    public int LastLapTime { get; set; } = 0;
+    public int CurrentLapTime { get; set; } = 0; // milliseconds
+    public int BestSector1Lap { get; set; } = 0; // lap
+    public int BestSector2Lap { get; set; } = 0; // lap
+    public int BestSector3Lap { get; set; } = 0; // lap
+    public int BestLapTimeLap { get; set; } = 0; // lap
     public int Warnings { get; set; } = 0;
     public int Penalties { get; set; } = 0;
     public DriverStatus DriverStatus { get; set; } = DriverStatus.Unknown;
     public ResultStatus ResultStatus { get; set; } = ResultStatus.Unknown;
 
-    public void ApplyLapData(LapData lapData)
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public void ApplyCarLapData(CarLapData lapData)
     {
-        // If race has finished, we want to make sure no more lap data is processed (just in case!)
-        if (ResultStatus == ResultStatus.Finished) return;
-
-        if (lapData.carLapData.Length < Index)
-            throw new IndexOutOfRangeException($"{Index} of Driver {Name} is out of range for the most recent LapData packet");
-
-        var driverData = lapData.carLapData[Index];
-
-        // Position
         if (GridPosition == 0)
-            GridPosition = driverData.gridPosition;
-        Position = driverData.carPosition;
-
-        // Status
-        DriverStatus = driverData.driverStatus;
-        ResultStatus = driverData.resultStatus;
-
-        if (Laps < driverData.currentLapNum)
-        {
-            // Started a new lap? Create a new LapTime and update Laps
-            Laps = driverData.currentLapNum;
-            LapTimes.Add(new LapTime { Sector1 = 0f, Sector2 = 0f, Sector3 = 0f, TotalLapTime = 0f });
-
-            if (Laps < 2) return;
-            var previousLap = LapTimes[Laps - 2];
-            previousLap.TotalLapTime = driverData.lastLapTime;
-            previousLap.Sector3 = previousLap.TotalLapTime - (previousLap.Sector1 - previousLap.Sector2);
-            LapTimes[Laps - 2] = previousLap;
-            BestSector3 = UpdateBestLap(LapTimes.Select(l => l.Sector3).ToArray());
-            BestFullLap = UpdateBestLap(LapTimes.Select(l => l.TotalLapTime).ToArray());
-        }
-
-        var currentLap = LapTimes[Laps - 1];
-
-        // Only process sector 1 and 2 lap times if the sector has changed
-        if (Sector != driverData.sector)
-        {
-            Sector = driverData.sector;
-            if (Sector == Sector.Sector2)
-            {
-                currentLap.Sector1 = driverData.sector1Time;
-                LapTimes[Laps - 1] = currentLap;
-                BestSector1 = UpdateBestLap(LapTimes.Select(l => l.Sector1).ToArray());
-            }
-            else if (Sector == Sector.Sector3)
-            {
-                currentLap.Sector2 = driverData.sector2Time;
-                LapTimes[Laps - 1] = currentLap;
-                BestSector2 = UpdateBestLap(LapTimes.Select(l => l.Sector2).ToArray());
-            }
-        }
-
-        // If the driver has finished the race, we want to process their last sector 3 and lap time
-        if (ResultStatus == ResultStatus.Finished)
-        {
-            currentLap.TotalLapTime = driverData.currentLapTime;
-            currentLap.Sector3 = currentLap.TotalLapTime - (currentLap.Sector1 - currentLap.Sector2);
-            LapTimes[Laps - 1] = currentLap;
-            BestSector3 = UpdateBestLap(LapTimes.Select(l => l.Sector3).ToArray());
-            BestFullLap = UpdateBestLap(LapTimes.Select(l => l.TotalLapTime).ToArray());
-        }
+            GridPosition = lapData.gridPosition;
+        Position = lapData.carPosition;
+        DriverStatus = lapData.driverStatus;
+        ResultStatus = lapData.resultStatus;
+        Sector = lapData.sector;
+        CurrentLapTime = Convert.ToInt32(lapData.currentLapTime);
+        NotifyPropertyChanged();
     }
 
-    private static int UpdateBestLap(float[] values)
+    public void ApplySessionHistory(SessionHistory history)
     {
-        var minIndex = 0;
-        if (values == null || values.Length < 2) return minIndex + 1;
+        if (history.lapHistoryData.Length < Index)
+            throw new IndexOutOfRangeException($"{Index} of Driver {Name} is out of range for the most recent SessionHistory packet");
 
-        var min = values[0];
-        for (var i = 1; i < values.Length; i++)
+        if (Laps < history.numLaps)
         {
-            if (values[i] < min)
-            {
-                min = values[i];
-                minIndex = i;
-            }
+            // One final lap update before starting the new lap data
+            if (Laps >= 1)
+                LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
+            Laps = history.numLaps;
+            LapTimes.Add(new LapHistoryData { lapTime = 0, sector1Time = 0, sector2Time = 0, sector3Time = 0 });
         }
 
-        return minIndex + 1;
+        // Just completely update the lap data
+        BestSector1Lap = history.bestSector1LapNum;
+        BestSector2Lap = history.bestSector2LapNum;
+        BestSector3Lap = history.bestSector3LapNum;
+        BestLapTimeLap = history.bestLapTimeLapNum;
+        LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
+
+        LastSector1Time = LapTimes.Select(l => l.sector1Time).Where(t => t > 0).LastOrDefault();
+        LastSector2Time = LapTimes.Select(l => l.sector2Time).Where(t => t > 0).LastOrDefault();
+        LastSector3Time = LapTimes.Select(l => l.sector3Time).Where(t => t > 0).LastOrDefault();
+        LastLapTime = Convert.ToInt32(LapTimes.Select(l => l.lapTime).Where(t => t > 0).LastOrDefault());
+        NotifyPropertyChanged();
+    }
+
+    private void NotifyPropertyChanged(string propertyName = "")
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

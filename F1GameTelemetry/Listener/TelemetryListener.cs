@@ -35,10 +35,10 @@
             if (IsListenerRunning)
                 return;
 
-            Client = CreateClient();
+            if (Client == null)
+                Client = CreateClient();
             ListenerThread = CreateThread();
             ListenerThread.Start();
-
         }
 
         public void Stop()
@@ -48,7 +48,7 @@
 
             Client?.Close();
             ListenerThread?.Join();
-            Client?.Dispose();
+            Client = null;
         }
 
         public void Dispose()

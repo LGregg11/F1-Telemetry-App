@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
         xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="F1 Telemetry" Width="800" Height="600">
     <Window.DataContext>
@@ -12,6 +13,12 @@
     </Window.DataContext>
     <Window.Resources>
         <conv:EnumConverter x:Key="enumConverter"/>
+        <conv:TelemetryConverter x:Key="telemetryConverter"/>
+        <CollectionViewSource Source="{Binding Drivers}" x:Key="SessionHistoryItems">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Position" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </Window.Resources>
     <Grid x:Name="MainGrid" Margin="5">
         <Grid.ColumnDefinitions>
@@ -159,21 +166,19 @@
                     </ListBox>
                 </TabItem>
                 <TabItem Header="Session History">
-                    <DataGrid ItemsSource="{Binding SessionHistory}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
+                    <DataGrid ItemsSource="{Binding Source={StaticResource SessionHistoryItems}}"
                               FontSize="12"
-                              GridLinesVisibility="None"
-                              CanUserResizeColumns="False"
-                              HorizontalAlignment="Stretch">
+                              AutoGenerateColumns="False"
+                              HorizontalAlignment="Stretch"
+                              GridLinesVisibility="None">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Pos}" Header="Pos." Width="*"/>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="3*"/>
-                            <DataGridTextColumn Binding="{Binding Laps}" Header="Laps" Width="*"/>
-                            <DataGridTextColumn Binding="{Binding Sector1}" Header="Sector 1" Width="3*"/>
-                            <DataGridTextColumn Binding="{Binding Sector2}" Header="Sector 2" Width="3*"/>
-                            <DataGridTextColumn Binding="{Binding Sector3}" Header="Sector 3" Width="3*"/>
-                            <DataGridTextColumn Binding="{Binding LastLap}" Header="Last Lap" Width="4*"/>
+                            <DataGridTextColumn Header="Pos." Binding="{Binding Position}" Width="*"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="3*"/>
+                            <DataGridTextColumn Header="Laps" Binding="{Binding Laps}" Width="*"/>
+                            <DataGridTextColumn Header="Sector 1" Binding="{Binding LastSector1Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                            <DataGridTextColumn Header="Sector 2" Binding="{Binding LastSector2Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                            <DataGridTextColumn Header="Sector 3" Binding="{Binding LastSector3Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                            <DataGridTextColumn Header="Last Lap" Binding="{Binding LastLapTime, Converter={StaticResource telemetryConverter}}" Width="3*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
