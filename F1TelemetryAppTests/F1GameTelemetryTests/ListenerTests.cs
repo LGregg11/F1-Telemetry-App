@@ -21,7 +21,6 @@ internal class ListenerTests
     [TearDown]
     public void Teardown()
     {
-        cut.Stop();
     }
 
     [Test]

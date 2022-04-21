@@ -1,6 +1,5 @@
 ﻿namespace F1GameTelemetry.Listener
 {
-    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -26,7 +25,7 @@
 
         public Thread? ListenerThread { get; private set; }
 
-        public IUdpClient Client { get; private set; }
+        public IUdpClient? Client { get; private set; }
 
         public bool IsListenerRunning => ListenerThread != null && ListenerThread.IsAlive;
 
@@ -47,7 +46,7 @@
                 return;
 
             Client?.Close();
-            ListenerThread?.Join(1000);
+            ListenerThread?.Join();
             Client = null;
         }
 
@@ -59,7 +58,7 @@
             {
                 try
                 {
-                    byte[]? receiveBytes = Client.Receive(ref ep);
+                    byte[]? receiveBytes = Client?.Receive(ref ep);
                     if (receiveBytes != null && receiveBytes.Length > 0)
                         TelemetryReceived?.Invoke(this, new TelemetryEventArgs(receiveBytes));
                 }
