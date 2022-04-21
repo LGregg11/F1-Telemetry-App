@@ -5,7 +5,7 @@
     using System.Net.Sockets;
     using System.Threading;
 
-    public class TelemetryListener : ITelemetryListener, IDisposable
+    public class TelemetryListener : ITelemetryListener
     {
         public TelemetryListener(int port) : this(port, null)
         {
@@ -47,13 +47,8 @@
                 return;
 
             Client?.Close();
-            ListenerThread?.Join();
+            ListenerThread?.Join(1000);
             Client = null;
-        }
-
-        public void Dispose()
-        {
-            ((IDisposable)Client).Dispose();
         }
 
         public void TelemetrySubscriber()
