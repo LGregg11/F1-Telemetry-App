@@ -1,10 +1,9 @@
-﻿namespace F1GameTelemetry.Packets
-{
-    using System;
+﻿namespace F1GameTelemetry.Packets;
 
-    public interface IPacket
-    {
-        void ReceivePacket(byte[] remainingPacket);
-        event EventHandler Received;
-    }
+using System;
+
+public interface IPacket
+{
+    void ReceivePacket(byte[] remainingPacket);
+    event EventHandler Received;
 }

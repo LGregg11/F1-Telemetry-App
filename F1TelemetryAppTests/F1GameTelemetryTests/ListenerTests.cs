@@ -9,7 +9,7 @@ internal class ListenerTests
 {
     private Mock<IUdpClient> clientMock;
     private TelemetryListener cut;
-    private int portMock = 10101;
+    private readonly int portMock = 10101;
 
     [SetUp]
     public void Setup()
