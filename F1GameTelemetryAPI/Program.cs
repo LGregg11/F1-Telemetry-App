@@ -35,11 +35,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-
 app.MapControllers();
+
 RunListener();
 
 app.Logger.LogInformation("App Starting.");

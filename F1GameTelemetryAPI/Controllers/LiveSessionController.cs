@@ -1,6 +1,6 @@
 namespace F1GameTelemetryAPI.Controllers;
 
-using F1TelemetryApp.Model;
+using Model;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
