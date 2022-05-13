@@ -1,9 +1,10 @@
 using F1GameTelemetryAPI.Helper;
 using F1GameTelemetry.Listener;
-using F1GameTelemetryAPI.Providers;
 using Google.Cloud.Firestore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+SetFirebaseCredentials();
 
 // Add services to the container.
 
@@ -14,15 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton(_ =>
 {
-    var credentials = GetFirebaseCredentials();
-
-    return new FirestoreProvider(
-        new FirestoreDbBuilder
-        {
-            ProjectId = credentials["FirebaseProjectId"],
-            JsonCredentials = credentials["FirebaseCredentials"]
-        }
-        .Build());
+    return FirestoreDb.Create("f1telemetryapp");
 });
 
 var app = builder.Build();
@@ -53,20 +46,8 @@ void RunListener()
     app.Logger.LogInformation("Listener Started.");
 }
 
-Dictionary<string,string> GetFirebaseCredentials()
+void SetFirebaseCredentials()
 {
-    var credentials = new Dictionary<string,string>();
-
-    using (StreamReader r = File.OpenText($"{Directory.GetCurrentDirectory()}\\..\\..\\..\\..\\credentials.txt"))
-    {
-        foreach (var line in r.ReadToEnd().Split("\n"))
-        {
-            if (!line.Contains(':')) continue;
-
-            var keyval = line.Split(':');
-            credentials.Add(keyval[0].Trim(), keyval[1].Trim());
-        }
-    }
-
-    return credentials;
+    var path = $"{AppDomain.CurrentDomain.BaseDirectory}..\\..\\..\\..\\credentials.json";
+    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
 }

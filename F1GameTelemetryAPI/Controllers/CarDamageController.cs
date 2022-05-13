@@ -1,18 +1,21 @@
 namespace F1GameTelemetryAPI.Controllers;
 
-using F1GameTelemetry.Packets.F12021;
 using Model;
+using Providers;
 using Microsoft.AspNetCore.Mvc;
+using Google.Cloud.Firestore;
 
 [ApiController]
 [Route("api/[controller]")]
 public class CarDamageController : ControllerBase
 {
+    private FirestoreProvider _db;
 
     private readonly ILogger<CarDamageController> _logger;
 
-    public CarDamageController(ILogger<CarDamageController> logger)
+    public CarDamageController(IServiceProvider services, ILogger<CarDamageController> logger)
     {
+        _db = new FirestoreProvider(services.GetRequiredService<FirestoreDb>());
         _logger = logger;
     }
 
@@ -24,21 +27,23 @@ public class CarDamageController : ControllerBase
     [HttpGet(Name = "Car Damage")]
     public async Task<ActionResult<IEnumerable<CarDamageMessage>>> Get()
     {
-        var list = new List<CarDamageMessage>{
-            new CarDamageMessage
-            {
-                TyreWear = new float[4]
-                {
-                    10.07f,
-                    11.56f,
-                    10.35f,
-                    12.74f
-                },
-                FrontLeftWingDamage = 10,
-                FrontRightWingDamage = 2,
-            }
-        };
+        var result = await _db.GetAll<CarDamageMessage>(CancellationToken.None);
+        return Ok(result);
+    }
 
-        return Ok(list);
+    /// <summary>
+    /// Post the Car Damage.
+    /// Live data should be pulled directly from the realtime database directly on the app.
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost(Name = "Car Damage")]
+    public async Task<ActionResult<IEnumerable<CarDamageMessage>>> AddCarDamageMessage([FromBody]string id)
+    {
+        var carDamageMessage = new CarDamageMessage(id);
+        await _db.AddOrUpdate(carDamageMessage, CancellationToken.None);
+
+        var result = await _db.GetAll<CarDamageMessage>(CancellationToken.None);
+
+        return Ok(result);
     }
 }
