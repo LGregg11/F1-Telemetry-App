@@ -1,7 +1,6 @@
-﻿namespace F1TelemetryApp.Model
+﻿namespace F1TelemetryApp.Model;
+
+public struct MotionMessage
 {
-    public struct MotionMessage
-    {
-        public double Speed { get; set; }
-    }
+    public double Speed { get; set; }
 }

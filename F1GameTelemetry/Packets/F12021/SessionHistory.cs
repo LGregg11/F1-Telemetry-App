@@ -1,60 +1,62 @@
-﻿namespace F1GameTelemetry.Packets.F12021
+﻿namespace F1GameTelemetry.Packets.F12021;
+
+using F1GameTelemetry.Converters;
+using F1GameTelemetry.Enums;
+using F1GameTelemetry.Listener;
+using System;
+using System.Runtime.InteropServices;
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1131)]
+public struct SessionHistory
 {
-    using F1GameTelemetry.Converters;
-    using F1GameTelemetry.Enums;
-    using F1GameTelemetry.Listener;
-    using System;
-    using System.Runtime.InteropServices;
+    public byte carIdx;
+    public byte numLaps;
+    public byte numTyreStints;
+    public byte bestLapTimeLapNum;
+    public byte bestSector1LapNum;
+    public byte bestSector2LapNum;
+    public byte bestSector3LapNum;
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1131)]
-    public struct SessionHistory
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
+    public LapHistoryData[] lapHistoryData;
+
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+    public TyreStintHistoryData[] tyreStintHistoryData;
+
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 11)]
+public struct LapHistoryData
+{
+    // All times in milliseconds
+    public uint lapTime;
+    public ushort sector1Time;
+    public ushort sector2Time;
+    public ushort sector3Time;
+    public byte lapValidBitFlags; // 0x01 bit set-lap valid, 0x02 bit set-sector 1 valid, 0x04 bit set-sector 2 valid, 0x08 bit set-sector 3 valid
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+public struct TyreStintHistoryData
+{
+    public byte endLap; // 255 of current tyre
+    public TyreCompoundType tyreActualCompound;
+    public TyreVisualType tyreVisualCompound;
+}
+
+public class SessionHistoryPacket : IPacket
+{
+    public event EventHandler? Received;
+
+    public void ReceivePacket(byte[] remainingPacket)
     {
-        public byte carIdx;
-        public byte numLaps;
-        public byte numTyreStints;
-        public byte bestLapTimeLapNum;
-        public byte bestSector1LapNum;
-        public byte bestSector2LapNum;
-        public byte bestSector3LapNum;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
-        public LapHistoryData[] lapHistoryData;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public TyreStintHistoryData[] tyreStintHistoryData;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 11)]
-    public struct LapHistoryData
-    {
-        // All times in milliseconds
-        public uint lapTime;
-        public ushort sector1Time;
-        public ushort sector2Time;
-        public ushort sector3Time;
-        public byte lapValidBitFlags; // 0x01 bit set-lap valid, 0x02 bit set-sector 1 valid, 0x04 bit set-sector 2 valid, 0x08 bit set-sector 3 valid
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
-    public struct TyreStintHistoryData
-    {
-        public byte endLap; // 255 of current tyre
-        public TyreCompoundType tyreActualCompound;
-        public TyreVisualType tyreVisualCompound;
-    }
-
-    public class SessionHistoryPacket : IPacket
-    {
-        public event EventHandler? Received;
-
-        public void ReceivePacket(byte[] remainingPacket)
+        var args = new SessionHistoryEventArgs
         {
-            var args = new SessionHistoryEventArgs
-            {
-                SessionHistory = Converter.BytesToPacket<SessionHistory>(remainingPacket)
-            };
+            // We can add a new GUID ID here when the even is sent?
 
-            Received?.Invoke(this, args);
-        }
+            SessionHistory = Converter.BytesToPacket<SessionHistory>(remainingPacket)
+        };
+
+        Received?.Invoke(this, args);
     }
 }
