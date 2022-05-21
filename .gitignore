@@ -3,4 +3,5 @@ obj/
 .vs/
 packages/
 *.docx
-credentials.json
+credentials.txt
+FirebaseEmulator/

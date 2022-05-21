@@ -1,10 +1,10 @@
 using F1GameTelemetryAPI.Helper;
+using F1GameTelemetryAPI.Providers;
 using F1GameTelemetry.Listener;
-using Google.Cloud.Firestore;
+using FireSharp;
+using FireSharp.Config;
 
 var builder = WebApplication.CreateBuilder(args);
-
-SetFirebaseCredentials();
 
 // Add services to the container.
 
@@ -15,7 +15,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton(_ =>
 {
-    return FirestoreDb.Create("f1telemetryapp");
+    // Default to using the emulator for now
+    SetupFirebase();
+
+    return new FirebaseProvider(new FirebaseClient(new FirebaseConfig
+    {
+         BasePath = Environment.GetEnvironmentVariable("FIRESTORE_EMULATOR_HOST")
+    }));
 });
 
 var app = builder.Build();
@@ -46,8 +52,23 @@ void RunListener()
     app.Logger.LogInformation("Listener Started.");
 }
 
-void SetFirebaseCredentials()
+void SetupFirebase()
 {
-    var path = $"{AppDomain.CurrentDomain.BaseDirectory}..\\..\\..\\..\\credentials.json";
-    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
+    foreach(var line in File.ReadLines($"{AppDomain.CurrentDomain.BaseDirectory}..\\..\\..\\..\\credentials.txt"))
+    {
+        var keyval = line.Split('\t');
+        var key = keyval[0].Trim().ToLower();
+        var value = keyval[1].Trim();
+        switch (key)
+        {
+            case "emulator host":
+                Environment.SetEnvironmentVariable("FIRESTORE_EMULATOR_HOST", value);
+                break;
+            case "secret":
+                Environment.SetEnvironmentVariable("FIRESTORE_SECRET", value);
+                break;
+            default:
+                break;
+        }
+    }
 }

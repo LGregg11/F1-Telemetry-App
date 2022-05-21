@@ -1,9 +1,8 @@
 ﻿namespace F1GameTelemetryAPI.Model;
 
-using Google.Cloud.Firestore;
 using Interfaces;
 
-[FirestoreData]
+[Serializable]
 public class CarDamageMessage : IFirebaseEntity
 {
     public CarDamageMessage() : this(Guid.NewGuid().ToString("N"))
@@ -18,15 +17,8 @@ public class CarDamageMessage : IFirebaseEntity
         FrontRightWingDamage = 0;
     }
 
-    [FirestoreProperty]
     public string Id { get; set; }
-
-    [FirestoreProperty]
     public float[] TyreWear { get; set; }
-
-    [FirestoreProperty]
     public int FrontLeftWingDamage { get; set; }
-
-    [FirestoreProperty]
     public int FrontRightWingDamage { get; set; }
 }
