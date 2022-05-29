@@ -1,4 +1,4 @@
-﻿namespace F1TelemetryApp.Model;
+﻿namespace F1TelF1GameTelemetryAPIemetryApp.Model;
 
 using F1GameTelemetry.Enums;
 

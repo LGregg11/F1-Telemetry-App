@@ -4,3 +4,4 @@ obj/
 packages/
 *.docx
 credentials.txt
+FirebaseEmulator/

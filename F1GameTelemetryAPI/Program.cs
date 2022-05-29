@@ -1,7 +1,8 @@
 using F1GameTelemetryAPI.Helper;
-using F1GameTelemetry.Listener;
 using F1GameTelemetryAPI.Providers;
-using Google.Cloud.Firestore;
+using F1GameTelemetry.Listener;
+using FireSharp;
+using FireSharp.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,15 +15,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton(_ =>
 {
-    var credentials = GetFirebaseCredentials();
+    // Default to using the emulator for now
+    SetupFirebase();
 
-    return new FirestoreProvider(
-        new FirestoreDbBuilder
-        {
-            ProjectId = credentials["FirebaseProjectId"],
-            JsonCredentials = credentials["FirebaseCredentials"]
-        }
-        .Build());
+    return new FirebaseProvider(new FirebaseClient(new FirebaseConfig
+    {
+         BasePath = Environment.GetEnvironmentVariable("FIRESTORE_EMULATOR_HOST")
+    }));
 });
 
 var app = builder.Build();
@@ -35,11 +34,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-
 app.MapControllers();
+
 RunListener();
 
 app.Logger.LogInformation("App Starting.");
@@ -55,20 +52,23 @@ void RunListener()
     app.Logger.LogInformation("Listener Started.");
 }
 
-Dictionary<string,string> GetFirebaseCredentials()
+void SetupFirebase()
 {
-    var credentials = new Dictionary<string,string>();
-
-    using (StreamReader r = File.OpenText($"{Directory.GetCurrentDirectory()}\\..\\..\\..\\..\\credentials.txt"))
+    foreach(var line in File.ReadLines($"{AppDomain.CurrentDomain.BaseDirectory}..\\..\\..\\..\\credentials.txt"))
     {
-        foreach (var line in r.ReadToEnd().Split("\n"))
+        var keyval = line.Split('\t');
+        var key = keyval[0].Trim().ToLower();
+        var value = keyval[1].Trim();
+        switch (key)
         {
-            if (!line.Contains(':')) continue;
-
-            var keyval = line.Split(':');
-            credentials.Add(keyval[0].Trim(), keyval[1].Trim());
+            case "emulator host":
+                Environment.SetEnvironmentVariable("FIRESTORE_EMULATOR_HOST", value);
+                break;
+            case "secret":
+                Environment.SetEnvironmentVariable("FIRESTORE_SECRET", value);
+                break;
+            default:
+                break;
         }
     }
-
-    return credentials;
 }

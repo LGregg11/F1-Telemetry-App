@@ -1,4 +1,4 @@
-﻿namespace F1TelemetryApp.Model;
+﻿namespace F1GameTelemetryAPI.Model;
 
 using System.Collections.Generic;
 
