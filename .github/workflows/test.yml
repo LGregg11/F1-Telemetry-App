@@ -11,7 +11,7 @@ jobs:
 
     runs-on: windows-latest
     env:
-        working-directory: ./F1TelemetryApp
+        working-directory: ./srs
 
     steps:
     - uses: actions/checkout@v2
