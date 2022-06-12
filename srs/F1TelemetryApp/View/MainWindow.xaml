@@ -6,11 +6,9 @@
         xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
         xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="F1 Telemetry" Width="800" Height="600">
-    <Window.DataContext>
-        <vm:MainWindowViewModel />
-    </Window.DataContext>
     <Window.Resources>
         <conv:EnumConverter x:Key="enumConverter"/>
         <conv:TelemetryConverter x:Key="telemetryConverter"/>
