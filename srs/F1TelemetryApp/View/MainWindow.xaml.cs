@@ -1,48 +1,68 @@
-﻿namespace F1TelemetryApp.View
+﻿namespace F1TelemetryApp.View;
+
+using Controls;
+using Interfaces;
+using ViewModel;
+
+using System.Windows;
+using System.Windows.Controls;
+using System;
+using System.Windows.Navigation;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+
+public partial class MainWindow : Window
 {
-    using System.Windows;
-    using F1TelemetryApp.ViewModel;
+    private const string PACK_URI = "pack://application:,,,/F1TelemetryApp;component";
+    private MainWindowViewModel viewModel;
 
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        private MainWindowViewModel _viewModel;
+        InitializeComponent();
+        viewModel = (MainWindowViewModel)DataContext;
+        NavFrame.Navigated += OnNavigate;
+        NavFrame.Navigate(new Uri($"{PACK_URI}/View/HomePage.xaml", UriKind.Absolute));
+    }
 
-        public MainWindow()
-        {
-            InitializeComponent();
-            _viewModel = (MainWindowViewModel)DataContext;
-        }
+    public void StartTelemetryFeed(object sender, RoutedEventArgs e)
+    {
+        viewModel.StartTelemetryFeed();
+        UpdateTelemetryFeedBtn();
+    }
 
-        public void StartTelemetryFeed(object sender, RoutedEventArgs e)
-        {
-            _viewModel.StartTelemetryFeed();
-            UpdateTelemetryFeedBtn();
-        }
+    public void StopTelemetryFeed(object sender, RoutedEventArgs e)
+    {
+        viewModel.StopTelemetryFeed();
+        UpdateTelemetryFeedBtn();
+    }
 
-        public void StopTelemetryFeed(object sender, RoutedEventArgs e)
+    private void UpdateTelemetryFeedBtn()
+    {
+        if (viewModel.IsListenerRunning)
         {
-            _viewModel.StopTelemetryFeed();
-            UpdateTelemetryFeedBtn();
+            TelemetryFeedBtn.Click -= StartTelemetryFeed;
+            TelemetryFeedBtn.Click += StopTelemetryFeed;
+            TelemetryFeedBtn.Content = "Stop Telemetry Feed";
         }
+        else
+        {
+            TelemetryFeedBtn.Click -= StopTelemetryFeed;
+            TelemetryFeedBtn.Click += StartTelemetryFeed;
+            TelemetryFeedBtn.Content = "Start Telemetry Feed";
+        }
+    }
 
-        private void UpdateTelemetryFeedBtn()
-        {
-            if (_viewModel.IsListenerRunning)
-            {
-                TelemetryFeedBtn.Click -= StartTelemetryFeed;
-                TelemetryFeedBtn.Click += StopTelemetryFeed;
-                TelemetryFeedBtn.Content = "Stop Telemetry Feed";
-            }
-            else
-            {
-                TelemetryFeedBtn.Click -= StopTelemetryFeed;
-                TelemetryFeedBtn.Click += StartTelemetryFeed;
-                TelemetryFeedBtn.Content = "Start Telemetry Feed";
-            }
-        }
+    private void NavBar_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var selected = NavBar.SelectedItem as NavigationButton;
+        NavFrame.Navigate(selected!.NavigationLink);
+    }
+
+    private void OnNavigate(object sender, NavigationEventArgs e)
+    {
+        var content = (Page)NavFrame.Content;
+        ((IPageViewModel)content.DataContext).MainWindowViewModel = viewModel;
     }
 }
