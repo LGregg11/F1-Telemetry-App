@@ -1,13 +1,11 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
-using Converters;
 using Interfaces;
 using Model;
 
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Listener;
-using F1GameTelemetry.Readers;
 
 using log4net;
 using Prism.Mvvm;
@@ -17,7 +15,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Linq;
 
-public class TelemetryPageViewModel : BindableBase, IPageViewModel
+public class TestPageViewModel : BindableBase, IPageViewModel
 {
     private int myCarIndex = -1; // Not really but for example sake this is fine
     private MotionMessage motionMessage;
@@ -29,7 +27,7 @@ public class TelemetryPageViewModel : BindableBase, IPageViewModel
     private CarDamageMessage carDamageMessage;
     private CarSetupMessage carSetupMessage;
 
-    public TelemetryPageViewModel()
+    public TestPageViewModel()
     {
         log4net.Config.XmlConfigurator.Configure();
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);

@@ -6,13 +6,13 @@ using ViewModel;
 /// <summary>
 /// Interaction logic for TelemetryPage.xaml
 /// </summary>
-public partial class TelemetryPage : Page
+public partial class TestPage : Page
 {
-    private TelemetryPageViewModel viewModel;
+    private TestPageViewModel viewModel;
 
-    public TelemetryPage()
+    public TestPage()
     {
         InitializeComponent();
-        viewModel = (TelemetryPageViewModel)DataContext;
+        viewModel = (TestPageViewModel)DataContext;
     }
 }
