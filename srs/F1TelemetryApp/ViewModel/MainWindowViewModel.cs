@@ -11,8 +11,6 @@ using System.Windows;
 using F1GameTelemetry.Listener;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Readers;
-using System.Windows.Controls;
-using F1TelemetryApp.Interfaces;
 
 public class MainWindowViewModel : BindableBase
 {

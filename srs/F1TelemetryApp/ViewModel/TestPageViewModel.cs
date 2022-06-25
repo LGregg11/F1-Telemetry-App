@@ -15,7 +15,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Linq;
 
-public class TestPageViewModel : BindableBase, IPageViewModel
+public class TestPageViewModel : BasePageViewModel
 {
     private int myCarIndex = -1; // Not really but for example sake this is fine
     private MotionMessage motionMessage;
@@ -33,19 +33,6 @@ public class TestPageViewModel : BindableBase, IPageViewModel
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
         PopulateMessages();
-    }
-
-    public ILog Log { get; set; }
-
-    private MainWindowViewModel mainWindowViewModel;
-    public MainWindowViewModel MainWindowViewModel {
-        get => mainWindowViewModel;
-
-        set
-        {
-            mainWindowViewModel = value;
-            SetTelemetryReader();
-        }
     }
 
     private ObservableCollection<HeaderMessage> headerMessages;
@@ -88,7 +75,7 @@ public class TestPageViewModel : BindableBase, IPageViewModel
         }
     }
 
-    private void SetTelemetryReader()
+    public override void SetTelemetryReader()
     {
         var telemetryReader = MainWindowViewModel.TelemetryReader;
 
@@ -118,7 +105,6 @@ public class TestPageViewModel : BindableBase, IPageViewModel
         telemetryReader.ParticipantPacket.Received += OnParticipantReceived;
         telemetryReader.SessionHistoryPacket.Received += OnSessionHistoryReceived;
         telemetryReader.SessionPacket.Received += OnSessionReceived;
-
     }
 
     #region Gui Test Properties
