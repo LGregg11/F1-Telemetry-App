@@ -11,29 +11,98 @@
     <Page.DataContext>
         <vm:TelemetryPageViewModel />
     </Page.DataContext>
-    <Grid>
+    <Grid Background="{StaticResource SecondaryBackground}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="6*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Graphs -->
-        <Grid Grid.Column="0">
+        <Grid Grid.Column="0" Margin="2" Background="{StaticResource PrimaryBackground}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Graph 1"/>
-            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Graph 2"/>
-            <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Graph 3"/>
-            <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Graph 4"/>
+            <Grid Grid.Row="0" Background="{StaticResource PrimaryBackground}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" Margin="2" Background="{StaticResource SecondaryBackground}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Lap Time: "/>
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LapTime}"/>
+
+                </Grid>
+                <Grid Grid.Column="1" Margin="2" Background="{StaticResource SecondaryBackground}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Lap Distance (m): "/>
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LapDistance}"/>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Speed (km/h): "/>
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Speed}"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Brake (%): "/>
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Brake}"/>
+            </Grid>
+
+            <Grid Grid.Row="3" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Throttle (%): "/>
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Throttle}"/>
+            </Grid>
+
+            <Grid Grid.Row="4" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Gear: "/>
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Gear}"/>
+            </Grid>
+
+            <Grid Grid.Row="5" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Steering: "/>
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Steer}"/>
+            </Grid>
         </Grid>
 
         <!-- Options -->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Margin="2" Background="{StaticResource PrimaryBackground}">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Checkboxes"/>
         </Grid>
         
