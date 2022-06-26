@@ -8,7 +8,8 @@
         <ResourceDictionary>
             <SolidColorBrush x:Key="PrimaryBackground" Color="#212121"/>
             <SolidColorBrush x:Key="SecondaryBackground" Color="#111111"/>
-
+            <SolidColorBrush x:Key="PrimaryGreen" Color="#00c317"/>
+            <SolidColorBrush x:Key="SecondaryGreen" Color="#269934"/>
             <SolidColorBrush x:Key="PrimaryText" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="NavBarHover" Color="#444444"/>
             <SolidColorBrush x:Key="IconPrimary" Color="#888888"/>
@@ -117,12 +118,62 @@
                             </Border>
 
                             <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
+                                <!-- Default settings -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="False"/>
+                                        <Condition Property="IsChecked" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Content" Value="Start Telemetry"/>
+                                </MultiTrigger>
+                                
+                                <!-- If not started and hovering over -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="IsChecked" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{StaticResource SecondaryGreen}"/>
+                                    <Setter Property="Content" Value="Start Telemetry"/>
+                                </MultiTrigger>
+
+                                <!-- If pressed to start -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsPressed" Value="True"/>
+                                        <Condition Property="IsChecked" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{StaticResource PrimaryGreen}"/>
+                                </MultiTrigger>
+
+                                <!-- Is started and not hovered over -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="False"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{StaticResource PrimaryGreen}"/>
+                                    <Setter Property="Content" Value="Telemetry running.."/>
+                                </MultiTrigger>
+
+                                <!-- If started and hovering over -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource IconHover}"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content" Value="Stop Telemetry"/>
+                                </MultiTrigger>
+                                
+                                <!-- If pressed to stop -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsPressed" Value="True"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource IconSelected}"/>
-                                </Trigger>
+                                </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -132,6 +183,12 @@
 
             <Style x:Key="StartStopFeedToggleBtnStyle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleBtnStyle}">
                 <Setter Property="Width" Value="120"/>
+            </Style>
+            
+            <!-- Telemetry Graph -->
+            <Style TargetType="{x:Type controls:TelemetryGraph}">
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

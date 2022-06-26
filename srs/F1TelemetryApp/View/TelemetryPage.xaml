@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:F1TelemetryApp.View"
       xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+      xmlns:c="clr-namespace:F1TelemetryApp.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="TelemetryPage">
@@ -33,72 +34,15 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Margin="2" Background="{StaticResource SecondaryBackground}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Lap Time: "/>
-                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LapTime}"/>
-
-                </Grid>
-                <Grid Grid.Column="1" Margin="2" Background="{StaticResource SecondaryBackground}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Lap Distance (m): "/>
-                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LapDistance}"/>
-                </Grid>
+                <c:TelemetryGraph Grid.Column="0" DataType="Lap Time: " DataValue="{Binding LapTime}"/>
+                <c:TelemetryGraph Grid.Column="1" DataType="Lap Distance (m): " DataValue="{Binding LapDistance}"/>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Speed (km/h): "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Speed}"/>
-            </Grid>
-
-            <Grid Grid.Row="2" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Brake (%): "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Brake}"/>
-            </Grid>
-
-            <Grid Grid.Row="3" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Throttle (%): "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Throttle}"/>
-            </Grid>
-
-            <Grid Grid.Row="4" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Gear: "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Gear}"/>
-            </Grid>
-
-            <Grid Grid.Row="5" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Steering: "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Steer}"/>
-            </Grid>
+            <c:TelemetryGraph Grid.Row="1" DataType="Speed (km/h): " DataValue="{Binding Speed}"/>
+            <c:TelemetryGraph Grid.Row="2" DataType="Brake (%): " DataValue="{Binding Brake}"/>
+            <c:TelemetryGraph Grid.Row="3" DataType="Throttle (%): " DataValue="{Binding Throttle}"/>
+            <c:TelemetryGraph Grid.Row="4" DataType="Gear: " DataValue="{Binding Gear}"/>
+            <c:TelemetryGraph Grid.Row="5" DataType="Steering: " DataValue="{Binding Steer}"/>
         </Grid>
 
         <!-- Options -->
