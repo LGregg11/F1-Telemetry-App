@@ -1,0 +1,238 @@
+﻿<Page x:Class="F1TelemetryApp.View.TestPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+      xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
+      xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="HomePage">
+    <Page.DataContext>
+        <vm:TestPageViewModel />
+    </Page.DataContext>
+    <Page.Resources>
+        <conv:TelemetryConverter x:Key="telemetryConverter"/>
+        <CollectionViewSource Source="{Binding Drivers}" x:Key="SessionHistoryItems">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Position" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource PrimaryBackground}">
+        <TabControl>
+            <TabItem Header="Overall">
+                <DataGrid HorizontalAlignment="Stretch"
+                      AutoGenerateColumns="False"
+                      GridLinesVisibility="None"
+                      ItemsSource="{Binding HeaderMessages}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="*" Header="Packet Id" Binding="{Binding PacketId}"/>
+                        <DataGridTextColumn Width="*" Header="Total" Binding="{Binding Total}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Events">
+                <DataGrid HorizontalAlignment="Stretch"
+                      AutoGenerateColumns="False"
+                      GridLinesVisibility="None"
+                      ItemsSource="{Binding EventMessages}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="*" Header="EventType" Binding="{Binding EventType}"/>
+                        <DataGridTextColumn Width="*" Header="Total" Binding="{Binding Total}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Motion">
+                <TextBlock HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="40"
+                               Text="{Binding LocalSpeed}"/>
+            </TabItem>
+            <TabItem Header="Telemetry">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Speed"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Speed}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Throttle"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Throttle}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Brake"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Brake}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Gear"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Gear}"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Steer"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Steer}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Lap Data" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Last lap time"/>
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding LastLapTime}"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Session">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Track: "/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TrackName}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Weather: "/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding WeatherStatus}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Total Laps: "/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TotalLaps}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Track Temp (deg C): "/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TrackTemperature}"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Air Temp (deg C): "/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding AirTemperature}"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="AI Difficulty: "/>
+                    <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding AiDifficulty}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Participants">
+                <ListBox ItemsSource="{Binding Path=Participants}" Margin="5" FontSize="10" Background="{StaticResource PrimaryBackground}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding Key}"/>
+                                <TextBlock Text="{Binding Value}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            <TabItem Header="Session History">
+                <DataGrid ItemsSource="{Binding Source={StaticResource SessionHistoryItems}}"
+                              FontSize="12"
+                              AutoGenerateColumns="False"
+                              HorizontalAlignment="Stretch"
+                              GridLinesVisibility="None">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Pos." Binding="{Binding Position}" Width="*"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="3*"/>
+                        <DataGridTextColumn Header="Laps" Binding="{Binding Laps}" Width="*"/>
+                        <DataGridTextColumn Header="Sector 1" Binding="{Binding LastSector1Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                        <DataGridTextColumn Header="Sector 2" Binding="{Binding LastSector2Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                        <DataGridTextColumn Header="Sector 3" Binding="{Binding LastSector3Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                        <DataGridTextColumn Header="Last Lap" Binding="{Binding LastLapTime, Converter={StaticResource telemetryConverter}}" Width="3*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Lobby Info">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Players:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LobbyPlayers}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LobbyName}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Team:"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LobbyTeam}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Nationality:"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LobbyNationality}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Car Damage">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding FLTyreWear}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FRTyreWear}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding RLTyreWear}" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding RRTyreWear}" />
+                    </Grid>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="FL Wing Damage:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FrontLeftWingDamage}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" Text="FR Wing Damage:"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FrontRightWingDamage}"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Car Setup">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Text="Ballast:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding BrakeBias}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="Fuel Load:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding FuelLoad}"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>
