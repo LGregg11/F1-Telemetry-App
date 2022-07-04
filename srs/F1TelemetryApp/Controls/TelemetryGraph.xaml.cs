@@ -1,7 +1,11 @@
 ﻿namespace F1TelemetryApp.Controls;
 
+using Model;
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
+using LiveCharts;
 
 /// <summary>
 /// Interaction logic for TelemetryGraphControl.xaml
@@ -14,14 +18,16 @@ public partial class TelemetryGraph : UserControl
     }
 
     public string DataType { get; set; }
+    public double MinY { get; set; }
+    public double MaxY { get; set; }
+    public Func<double, string> DataFormatter { get; set; }
 
-    public string DataValue
+    public GraphPointCollection DataSeries
     {
-        get { return (string)GetValue(DataValueProperty); }
-        set { SetValue(DataValueProperty, value); }
+        get { return (GraphPointCollection)GetValue(DataSeriesProperty); }
+        set { SetValue(DataSeriesProperty, value); }
     }
 
-    public static readonly DependencyProperty DataValueProperty =
-        DependencyProperty.Register("DataValue", typeof(string), typeof(TelemetryGraph), new PropertyMetadata(null));
-
+    public static readonly DependencyProperty DataSeriesProperty =
+        DependencyProperty.Register("DataSeries", typeof(GraphPointCollection), typeof(TelemetryGraph), new PropertyMetadata(null));
 }
