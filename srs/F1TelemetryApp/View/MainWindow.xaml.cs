@@ -44,13 +44,11 @@ public partial class MainWindow : Window
         {
             TelemetryFeedBtn.Click -= StartTelemetryFeed;
             TelemetryFeedBtn.Click += StopTelemetryFeed;
-            TelemetryFeedBtn.Content = "Stop Telemetry Feed";
         }
         else
         {
             TelemetryFeedBtn.Click -= StopTelemetryFeed;
             TelemetryFeedBtn.Click += StartTelemetryFeed;
-            TelemetryFeedBtn.Content = "Start Telemetry Feed";
         }
     }
 

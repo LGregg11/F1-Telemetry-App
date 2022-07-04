@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:F1TelemetryApp.View"
       xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+      xmlns:c="clr-namespace:F1TelemetryApp.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="TelemetryPage">
@@ -22,10 +23,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="{StaticResource PrimaryBackground}">
@@ -33,77 +30,55 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Margin="2" Background="{StaticResource SecondaryBackground}">
+                <Grid Grid.Column="0" Background="{StaticResource PrimaryBackground}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Lap Time: "/>
-                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LapTime}"/>
-
+                    <TextBlock Grid.Column="0" Text="Lap Time:" />
+                    <TextBlock Grid.Column="1" Text="{Binding LapTime}"/>
                 </Grid>
-                <Grid Grid.Column="1" Margin="2" Background="{StaticResource SecondaryBackground}">
+                <Grid Grid.Column="1" Background="{StaticResource PrimaryBackground}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Lap Distance (m): "/>
-                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LapDistance}"/>
+                    <TextBlock Grid.Column="0" Text="Lap Distance (m):" />
+                    <TextBlock Grid.Column="1" Text="{Binding LapDistance}"/>
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Speed (km/h): "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Speed}"/>
-            </Grid>
-
-            <Grid Grid.Row="2" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Brake (%): "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Brake}"/>
-            </Grid>
-
-            <Grid Grid.Row="3" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Throttle (%): "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Throttle}"/>
-            </Grid>
-
-            <Grid Grid.Row="4" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Gear: "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Gear}"/>
-            </Grid>
-
-            <Grid Grid.Row="5" Margin="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Steering: "/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Steer}"/>
+            <Grid x:Name="DataGraphGrid" Grid.Row="1">
             </Grid>
         </Grid>
 
         <!-- Options -->
         <Grid Grid.Column="1" Margin="2" Background="{StaticResource PrimaryBackground}">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Checkboxes"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Text="Checkboxes"/>
+
+            <HeaderedContentControl Grid.Row="1" Margin="2,5" Header="Data">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox x:Name="ThrottleCheckbox" Content="Throttle" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="BrakeCheckbox" Content="Brake" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="GearCheckbox" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="SpeedCheckbox" Content="Speed" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="SteerCheckbox" Content="Steer" Click="DataGraphCheckBoxClick" />
+                    </StackPanel>
+                </ScrollViewer>
+            </HeaderedContentControl>
+            <HeaderedContentControl Grid.Row="2" Margin="2,5" Header="Drivers">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox Content="You" IsChecked="True" />
+                    </StackPanel>
+                </ScrollViewer>
+            </HeaderedContentControl>
         </Grid>
         
     </Grid>

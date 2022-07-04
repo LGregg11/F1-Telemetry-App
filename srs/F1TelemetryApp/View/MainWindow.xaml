@@ -29,7 +29,7 @@
 
         <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource SecondaryBackground}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="30" Margin="0,5">
-                <ToggleButton x:Name="TelemetryFeedBtn" Content="Start Telemetry Feed" Click="StartTelemetryFeed"
+                <ToggleButton x:Name="TelemetryFeedBtn" Click="StartTelemetryFeed"
                               Style="{StaticResource StartStopFeedToggleBtnStyle}"
                               IsEnabled="{Binding IsFeedBtnEnabled}"
                               IsChecked="{Binding IsListenerRunning, Mode=OneWay}"/>

@@ -8,7 +8,8 @@
         <ResourceDictionary>
             <SolidColorBrush x:Key="PrimaryBackground" Color="#212121"/>
             <SolidColorBrush x:Key="SecondaryBackground" Color="#111111"/>
-
+            <SolidColorBrush x:Key="PrimaryGreen" Color="#00c317"/>
+            <SolidColorBrush x:Key="SecondaryGreen" Color="#269934"/>
             <SolidColorBrush x:Key="PrimaryText" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="NavBarHover" Color="#444444"/>
             <SolidColorBrush x:Key="IconPrimary" Color="#888888"/>
@@ -117,12 +118,62 @@
                             </Border>
 
                             <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
+                                <!-- Default settings -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="False"/>
+                                        <Condition Property="IsChecked" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Content" Value="Start Telemetry"/>
+                                </MultiTrigger>
+                                
+                                <!-- If not started and hovering over -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="IsChecked" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{StaticResource SecondaryGreen}"/>
+                                    <Setter Property="Content" Value="Start Telemetry"/>
+                                </MultiTrigger>
+
+                                <!-- If pressed to start -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsPressed" Value="True"/>
+                                        <Condition Property="IsChecked" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{StaticResource PrimaryGreen}"/>
+                                </MultiTrigger>
+
+                                <!-- Is started and not hovered over -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="False"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{StaticResource PrimaryGreen}"/>
+                                    <Setter Property="Content" Value="Telemetry running.."/>
+                                </MultiTrigger>
+
+                                <!-- If started and hovering over -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource IconHover}"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content" Value="Stop Telemetry"/>
+                                </MultiTrigger>
+                                
+                                <!-- If pressed to stop -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsPressed" Value="True"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource IconSelected}"/>
-                                </Trigger>
+                                </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -132,6 +183,64 @@
 
             <Style x:Key="StartStopFeedToggleBtnStyle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleBtnStyle}">
                 <Setter Property="Width" Value="120"/>
+            </Style>
+            
+            <!-- Telemetry Graph -->
+            <Style TargetType="{x:Type controls:TelemetryGraph}">
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
+            </Style>
+            
+            <!-- Checkbox -->
+            <Style TargetType="{x:Type CheckBox}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CheckBox">
+                            <BulletDecorator Background="Transparent">
+                                <BulletDecorator.Bullet>
+                                    <Border x:Name="Border"
+                                            Width="13" Height="13" 
+                                            CornerRadius="0" 
+                                            Background="#C0C0C0"
+                                            BorderThickness="1"
+                                            BorderBrush="#404040">
+                                        <Path 
+                                            Width="7" Height="7" 
+                                            x:Name="CheckMark"
+                                            SnapsToDevicePixels="False" 
+                                            Stroke="#404040"
+                                            StrokeThickness="2"
+                                            Data="M 0 3.5 L 2 6 L 6.7 0" />
+                                    </Border>
+                                </BulletDecorator.Bullet>
+                                <ContentPresenter Margin="4,0,0,0"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"
+                                                  RecognizesAccessKey="True"/>
+                            </BulletDecorator>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="false">
+                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="{x:Null}">
+                                    <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="#808080" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="#E0E0E0" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#606060" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter TargetName="Border" Property="Background" Value="#EEEEEE" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#AAAAAA" />
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
