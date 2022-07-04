@@ -23,10 +23,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="{StaticResource PrimaryBackground}">
@@ -34,20 +30,55 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <c:TelemetryGraph Grid.Column="0" DataType="Lap Time: " DataValue="{Binding LapTime}"/>
-                <c:TelemetryGraph Grid.Column="1" DataType="Lap Distance (m): " DataValue="{Binding LapDistance}"/>
+                <Grid Grid.Column="0" Background="{StaticResource PrimaryBackground}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Lap Time:" />
+                    <TextBlock Grid.Column="1" Text="{Binding LapTime}"/>
+                </Grid>
+                <Grid Grid.Column="1" Background="{StaticResource PrimaryBackground}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Lap Distance (m):" />
+                    <TextBlock Grid.Column="1" Text="{Binding LapDistance}"/>
+                </Grid>
             </Grid>
 
-            <c:TelemetryGraph Grid.Row="1" DataType="Speed (km/h): " DataValue="{Binding Speed}"/>
-            <c:TelemetryGraph Grid.Row="2" DataType="Brake (%): " DataValue="{Binding Brake}"/>
-            <c:TelemetryGraph Grid.Row="3" DataType="Throttle (%): " DataValue="{Binding Throttle}"/>
-            <c:TelemetryGraph Grid.Row="4" DataType="Gear: " DataValue="{Binding Gear}"/>
-            <c:TelemetryGraph Grid.Row="5" DataType="Steering: " DataValue="{Binding Steer}"/>
+            <Grid x:Name="DataGraphGrid" Grid.Row="1">
+            </Grid>
         </Grid>
 
         <!-- Options -->
         <Grid Grid.Column="1" Margin="2" Background="{StaticResource PrimaryBackground}">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Checkboxes"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Text="Checkboxes"/>
+
+            <HeaderedContentControl Grid.Row="1" Margin="2,5" Header="Data">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox x:Name="ThrottleCheckbox" Content="Throttle" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="BrakeCheckbox" Content="Brake" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="GearCheckbox" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="SpeedCheckbox" Content="Speed" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="SteerCheckbox" Content="Steer" Click="DataGraphCheckBoxClick" />
+                    </StackPanel>
+                </ScrollViewer>
+            </HeaderedContentControl>
+            <HeaderedContentControl Grid.Row="2" Margin="2,5" Header="Drivers">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox Content="You" IsChecked="True" />
+                    </StackPanel>
+                </ScrollViewer>
+            </HeaderedContentControl>
         </Grid>
         
     </Grid>
