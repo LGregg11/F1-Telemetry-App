@@ -14,7 +14,6 @@ using System.Collections.ObjectModel;
 public class TelemetryPageViewModel : BasePageViewModel
 {
     private int myCarIndex = -1;
-    private bool isFirstLapData = true;
 
     public TelemetryPageViewModel()
     {
@@ -22,19 +21,20 @@ public class TelemetryPageViewModel : BasePageViewModel
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
         Laps = new();
-        GraphPointCollectionMaps = new();
-        UpdateGraphPointCollectionMaps();
-
         DisplayedLap = new Lap(1);
         DisplayNewestLap = true;
+
+        GraphPointCollectionMaps = new();
+        UpdateGraphPointCollectionMaps();
     }
 
     public event EventHandler? LapUpdated;
 
-    public int DisplayedLapIndex => Laps.IndexOf(DisplayedLap) != -1 ? Laps.IndexOf(DisplayedLap) : 0;
-
     public List<Dictionary<DataGraphType, GraphPointCollection>> GraphPointCollectionMaps { get; set; }
     public Dictionary<DataGraphType, GraphPointCollection> GraphPointCollectionMap => GraphPointCollectionMaps[DisplayedLapIndex];
+
+    public string LapTime => $"{TelemetryConverter.ToTelemetryTime(DisplayedLap.LapTime)}";
+    public string LapDistance => $"{DisplayedLap.LapDistance}";
 
     private bool displayNewestLap;
     public bool DisplayNewestLap
@@ -44,6 +44,9 @@ public class TelemetryPageViewModel : BasePageViewModel
         {
             displayNewestLap = value;
             RaisePropertyChanged();
+
+            if (displayNewestLap)
+                DisplayedLapIndex = Math.Max(0, Laps.Count - 1);
         }
     }
 
@@ -61,20 +64,45 @@ public class TelemetryPageViewModel : BasePageViewModel
         }
     }
 
+    private int displayedLapIndex;
+    public int DisplayedLapIndex
+    {
+        get => displayedLapIndex;
+        set
+        {
+            if (displayedLapIndex != value)
+            {
+                displayedLapIndex = value;
+                RaisePropertyChanged();
+                LapUpdated?.Invoke(this, new EventArgs());
+            }
+        }
+    }
+
     private Lap displayedLap;
     public Lap DisplayedLap
     {
         get => displayedLap;
         set
         {
-            displayedLap = value;
-            LapUpdated?.Invoke(this, new EventArgs());
-            RaisePropertyChanged();
+            if (value != null && displayedLap != value)
+            {
+                var lapNum = 1;
+                if (displayedLap != null)
+                    lapNum = displayedLap.LapNumber;
+
+                displayedLap = value;
+                RaisePropertyChanged();
+
+                if (lapNum != value.LapNumber)
+                {
+                    DisplayedLapIndex = Laps.IndexOf(Laps.FirstOrDefault(l => l.LapNumber == value.LapNumber)!);
+                    DisplayNewestLap = Laps.LastOrDefault()!.LapNumber == value.LapNumber;
+                }
+
+            }
         }
     }
-
-    public string LapTime => $"{TelemetryConverter.ToTelemetryTime(DisplayedLap.LapTime)}";
-    public string LapDistance => $"{DisplayedLap.LapDistance}";
 
     public override void SetTelemetryReader()
     {
@@ -120,7 +148,7 @@ public class TelemetryPageViewModel : BasePageViewModel
         {
             var lap = new Lap(myLapData.currentLapNum, myLapData.currentLapTime, myLapData.lapDistance);
             UpdateLap(lap);
-            DisplayedLap = Laps.FirstOrDefault(l => l.LapNumber == lap.LapNumber);
+            DisplayedLap = Laps[DisplayedLapIndex];
 
             foreach (var key in GraphPointCollectionMap.Keys)
                 UpdateGraphPointX(key, myLapData.lapDistance);
@@ -151,7 +179,7 @@ public class TelemetryPageViewModel : BasePageViewModel
                 UpdateGraphPointCollectionMaps();
 
             if (DisplayNewestLap)
-                DisplayedLap = Laps.FirstOrDefault(l => l.LapNumber == Laps.LastOrDefault()!.LapNumber);
+                DisplayedLapIndex = Laps.Count - 1;
         }
         else
         {
