@@ -12,7 +12,7 @@
     <Page.DataContext>
         <vm:TelemetryPageViewModel />
     </Page.DataContext>
-    <Grid Background="{StaticResource SecondaryBackground}">
+    <Grid Style="{StaticResource DefaultGridStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="6*"/>
             <ColumnDefinition Width="*"/>
@@ -29,23 +29,51 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Background="{StaticResource PrimaryBackground}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Lap Time:" />
-                    <TextBlock Grid.Column="1" Text="{Binding LapTime}"/>
+                    <TextBlock Grid.Column="0"  Style="{StaticResource DefaultTextBlockStyle}" Text="Lap Time:" />
+                    <TextBlock Grid.Column="1"  Style="{StaticResource DefaultTextBlockStyle}" Text="{Binding LapTime}"/>
                 </Grid>
                 <Grid Grid.Column="1" Background="{StaticResource PrimaryBackground}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Lap Distance (m):" />
-                    <TextBlock Grid.Column="1" Text="{Binding LapDistance}"/>
+                    <TextBlock Grid.Column="0" Style="{StaticResource DefaultTextBlockStyle}" Text="Lap Distance (m):" />
+                    <TextBlock  Grid.Column="1" Style="{StaticResource DefaultTextBlockStyle}" Text="{Binding LapDistance}"/>
                 </Grid>
+                <Grid Grid.Column="2" Margin="5,0" Background="{StaticResource PrimaryBackground}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource DefaultTextBlockStyle}" Text="Lap:" Margin="5,0"/>
+                    <ComboBox Grid.Column="1"
+                              Style="{StaticResource DefaultComboBoxStyle}"
+                              ItemsSource="{Binding Laps}"
+                              SelectedItem="{Binding DisplayedLap}"
+                              Width="40"
+                              Margin="5,0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Foreground="{StaticResource SecondaryBackground}" Text="{Binding LapNumber}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+                <CheckBox Grid.Column="3"
+                          Style="{StaticResource DefaultCheckboxStyle}"
+                          Margin="5,0"
+                          Content="Display newest lap"
+                          IsChecked="{Binding DisplayNewestLap}"
+                          VerticalAlignment="Center"
+                          VerticalContentAlignment="Center" />
             </Grid>
 
             <Grid x:Name="DataGraphGrid" Grid.Row="1">
@@ -59,27 +87,28 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Text="Checkboxes"/>
+            <TextBlock Grid.Row="0" Style="{StaticResource DefaultTextBlockStyle}" HorizontalAlignment="Center" Text="Checkboxes"/>
 
-            <HeaderedContentControl Grid.Row="1" Margin="2,5" Header="Data">
+            <HeaderedContentControl Grid.Row="1" Style="{StaticResource DefaultHeaderedContentControlStyle}" Header="Data">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Vertical">
-                        <CheckBox x:Name="ThrottleCheckbox" Content="Throttle" IsChecked="True" Click="DataGraphCheckBoxClick" />
-                        <CheckBox x:Name="BrakeCheckbox" Content="Brake" IsChecked="True" Click="DataGraphCheckBoxClick" />
-                        <CheckBox x:Name="GearCheckbox" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
-                        <CheckBox x:Name="SpeedCheckbox" Content="Speed" Click="DataGraphCheckBoxClick" />
-                        <CheckBox x:Name="SteerCheckbox" Content="Steer" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="ThrottleCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Throttle" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="BrakeCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Brake" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="GearCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="SpeedCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Speed" Click="DataGraphCheckBoxClick" />
+                        <CheckBox x:Name="SteerCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Steer" Click="DataGraphCheckBoxClick" />
+                        <Button Content="New Lap" Click="NewLapClick" Foreground="{StaticResource SecondaryBackground}"/>
                     </StackPanel>
                 </ScrollViewer>
             </HeaderedContentControl>
-            <HeaderedContentControl Grid.Row="2" Margin="2,5" Header="Drivers">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <HeaderedContentControl Grid.Row="2" Style="{StaticResource DefaultHeaderedContentControlStyle}" Header="Drivers">
+                <ScrollViewer Style="{StaticResource DefaultScrollViewerStyle}">
                     <StackPanel Orientation="Vertical">
-                        <CheckBox Content="You" IsChecked="True" />
+                        <CheckBox Style="{StaticResource DefaultCheckboxStyle}" Content="You" IsChecked="True" />
                     </StackPanel>
                 </ScrollViewer>
             </HeaderedContentControl>
         </Grid>
-        
+
     </Grid>
 </Page>
