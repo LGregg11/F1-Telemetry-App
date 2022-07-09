@@ -58,7 +58,7 @@
                               Style="{StaticResource DefaultComboBoxStyle}"
                               ItemsSource="{Binding Laps}"
                               SelectedItem="{Binding DisplayedLap}"
-                              Width="40"
+                              Width="45"
                               Margin="5,0">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -70,13 +70,17 @@
                 <CheckBox Grid.Column="3"
                           Style="{StaticResource DefaultCheckboxStyle}"
                           Margin="5,0"
-                          Content="Display newest lap"
+                          Content="Show new laps"
                           IsChecked="{Binding DisplayNewestLap}"
                           VerticalAlignment="Center"
                           VerticalContentAlignment="Center" />
             </Grid>
 
             <Grid x:Name="DataGraphGrid" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260*"/>
+                    <ColumnDefinition Width="81*"/>
+                </Grid.ColumnDefinitions>
             </Grid>
         </Grid>
 
@@ -97,7 +101,7 @@
                         <CheckBox x:Name="GearCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
                         <CheckBox x:Name="SpeedCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Speed" Click="DataGraphCheckBoxClick" />
                         <CheckBox x:Name="SteerCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Steer" Click="DataGraphCheckBoxClick" />
-                        <Button Content="New Lap" Click="NewLapClick" Foreground="{StaticResource SecondaryBackground}"/>
+                        <!--<Button Content="New Lap" Click="NewLapClick" Foreground="{StaticResource SecondaryBackground}"/>-->
                     </StackPanel>
                 </ScrollViewer>
             </HeaderedContentControl>
