@@ -32,6 +32,16 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <None Remove="Images\star.png" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Images\star.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
   

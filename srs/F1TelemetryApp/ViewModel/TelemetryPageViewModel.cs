@@ -165,6 +165,7 @@ public class TelemetryPageViewModel : BasePageViewModel
             lapNumber = Laps.LastOrDefault()!.LapNumber + 1;
             
         UpdateLap(new Lap(lapNumber));
+        DisplayedLap = Laps[DisplayedLapIndex];
     }
 
     private void UpdateLap(Lap lap)
@@ -193,7 +194,7 @@ public class TelemetryPageViewModel : BasePageViewModel
         if (Laps.Count < 2) return;
 
         var lapsToCheck = Laps.SkipLast(1).ToList();
-        var fastestLap = lapsToCheck.Select(l => l.LapTime).Max();
+        var fastestLap = lapsToCheck.Select(l => l.LapTime).Min();
         for (int i = 0; i < lapsToCheck.Count; i++)
         {
             Laps[i].IsFastestLap = lapsToCheck[i].LapTime == fastestLap;

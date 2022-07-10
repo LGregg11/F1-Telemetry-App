@@ -58,11 +58,25 @@
                               Style="{StaticResource DefaultComboBoxStyle}"
                               ItemsSource="{Binding Laps}"
                               SelectedItem="{Binding DisplayedLap}"
-                              Width="45"
+                              Width="60"
                               Margin="5,0">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Foreground="{StaticResource SecondaryBackground}" Text="{Binding LapNumber}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" x:Name="LapText" Foreground="{StaticResource SecondaryBackground}" Text="{Binding LapNumber}" />
+                                    <Image Grid.Column="1" x:Name="LapIcon" Width="16" VerticalAlignment="Center" Visibility="Collapsed" Source="pack://application:,,,/F1TelemetryApp;component/Images/star.png"/>
+                                </Grid>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsFastestLap}" Value="true">
+                                        <Setter TargetName="LapText" Property="Foreground" Value="{StaticResource TextFastest}"/>
+                                        <Setter TargetName="LapText" Property="FontWeight" Value="Bold"/>
+                                        <Setter TargetName="LapIcon" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -77,10 +91,6 @@
             </Grid>
 
             <Grid x:Name="DataGraphGrid" Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="260*"/>
-                    <ColumnDefinition Width="81*"/>
-                </Grid.ColumnDefinitions>
             </Grid>
         </Grid>
 
@@ -101,7 +111,7 @@
                         <CheckBox x:Name="GearCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
                         <CheckBox x:Name="SpeedCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Speed" Click="DataGraphCheckBoxClick" />
                         <CheckBox x:Name="SteerCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Steer" Click="DataGraphCheckBoxClick" />
-                        <!--<Button Content="New Lap" Click="NewLapClick" Foreground="{StaticResource SecondaryBackground}"/>-->
+                        <Button Content="New Lap" Click="NewLapClick" Foreground="{StaticResource SecondaryBackground}"/>
                     </StackPanel>
                 </ScrollViewer>
             </HeaderedContentControl>
@@ -113,6 +123,5 @@
                 </ScrollViewer>
             </HeaderedContentControl>
         </Grid>
-
     </Grid>
 </Page>
