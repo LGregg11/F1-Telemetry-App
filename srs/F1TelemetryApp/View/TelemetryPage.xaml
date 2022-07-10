@@ -58,6 +58,7 @@
                               Style="{StaticResource DefaultComboBoxStyle}"
                               ItemsSource="{Binding Laps}"
                               SelectedItem="{Binding DisplayedLap}"
+                              LostFocus="LapsComboBox_LostFocus"
                               Width="60"
                               Margin="5,0">
                         <ComboBox.ItemTemplate>
@@ -111,7 +112,7 @@
                         <CheckBox x:Name="GearCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Gear" IsChecked="True" Click="DataGraphCheckBoxClick" />
                         <CheckBox x:Name="SpeedCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Speed" Click="DataGraphCheckBoxClick" />
                         <CheckBox x:Name="SteerCheckbox" Style="{StaticResource DefaultCheckboxStyle}" Content="Steer" Click="DataGraphCheckBoxClick" />
-                        <Button Content="New Lap" Click="NewLapClick" Foreground="{StaticResource SecondaryBackground}"/>
+                        <Button Content="New Lap" Click="NewLapButton_Click" Foreground="{StaticResource SecondaryBackground}"/>
                     </StackPanel>
                 </ScrollViewer>
             </HeaderedContentControl>
