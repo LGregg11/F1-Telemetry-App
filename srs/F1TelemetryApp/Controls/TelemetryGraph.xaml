@@ -10,6 +10,9 @@
     <Grid x:Name="TelemetryGraphGrid">
         <lvc:CartesianChart x:Name="Chart" LegendLocation="Bottom" DisableAnimations="True" Hoverable="False" DataTooltip="{x:Null}"
                             Series="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TelemetryGraph}}, Path=DataSeries.Series}">
+            <lvc:CartesianChart.AxisX>
+                <lvc:Axis Title="Distance (m)"/>
+            </lvc:CartesianChart.AxisX>
             <lvc:CartesianChart.AxisY>
                 <lvc:Axis x:Name="YAxis"/>
             </lvc:CartesianChart.AxisY>

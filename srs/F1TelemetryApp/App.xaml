@@ -8,37 +8,112 @@
         <ResourceDictionary>
             <SolidColorBrush x:Key="PrimaryBackground" Color="#212121"/>
             <SolidColorBrush x:Key="SecondaryBackground" Color="#111111"/>
+            
             <SolidColorBrush x:Key="PrimaryGreen" Color="#00c317"/>
             <SolidColorBrush x:Key="SecondaryGreen" Color="#269934"/>
+            
             <SolidColorBrush x:Key="PrimaryText" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="TextFastest" Color="#c718c1"/>
+            
             <SolidColorBrush x:Key="NavBarHover" Color="#444444"/>
+            
             <SolidColorBrush x:Key="IconPrimary" Color="#888888"/>
             <SolidColorBrush x:Key="IconHover" Color="#CC4444"/>
             <SolidColorBrush x:Key="IconSelected" Color="#FE1E00"/>
 
-            <Style TargetType="{x:Type Grid}">
+            <Style x:Key="DefaultGridStyle" TargetType="{x:Type Grid}">
                 <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
             </Style>
 
-            <Style TargetType="{x:Type TextBlock}">
+            <Style x:Key="DefaultTextBlockStyle" TargetType="{x:Type TextBlock}">
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
 
-            <Style TargetType="{x:Type TextBox}">
+            <Style x:Key="DefaultTextBoxStyle" TargetType="{x:Type TextBox}">
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
 
-            <Style TargetType="{x:Type ListBox}">
-                <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
-                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
-            </Style>
-
-            <Style TargetType="{x:Type TabControl}">
+            <Style x:Key="DefaultListBoxStyle" TargetType="{x:Type ListBox}">
                 <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
 
-            <Style TargetType="{x:Type TabItem}">
+            <Style x:Key="DefaultComboBoxStyle" TargetType="{x:Type ComboBox}">
+                <Setter Property="Width" Value="70"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+
+            <Style x:Key="DefaultHeaderedContentControlStyle" TargetType="{x:Type HeaderedContentControl}">
+                <Setter Property="Margin" Value="2,5"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+            </Style>
+
+            <Style x:Key="DefaultScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+            </Style>
+
+            <!-- Checkbox -->
+            <Style x:Key="DefaultCheckboxStyle" TargetType="{x:Type CheckBox}">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CheckBox">
+                            <BulletDecorator Background="Transparent">
+                                <BulletDecorator.Bullet>
+                                    <Border x:Name="Border"
+                                            Width="13" Height="13" 
+                                            CornerRadius="0" 
+                                            Background="#C0C0C0"
+                                            BorderThickness="1"
+                                            BorderBrush="#404040">
+                                        <Path 
+                                            Width="7" Height="7" 
+                                            x:Name="CheckMark"
+                                            SnapsToDevicePixels="False" 
+                                            Stroke="#404040"
+                                            StrokeThickness="2"
+                                            Data="M 0 3.5 L 2 6 L 6.7 0" />
+                                    </Border>
+                                </BulletDecorator.Bullet>
+                                <ContentPresenter Margin="4,0,0,0"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"
+                                                  RecognizesAccessKey="True"/>
+                            </BulletDecorator>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="false">
+                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="{x:Null}">
+                                    <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="#808080" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="#E0E0E0" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#606060" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter TargetName="Border" Property="Background" Value="#EEEEEE" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#AAAAAA" />
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="DefaultTabControlStyle" TargetType="{x:Type TabControl}">
+                <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+            </Style>
+
+            <Style x:Key="DefaultTabItemStyle" TargetType="{x:Type TabItem}">
                 <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
 
@@ -71,7 +146,7 @@
                 </Setter>
             </Style>
 
-            <Style TargetType="{x:Type controls:NavigationButton}">
+            <Style x:Key="DefaultNavButtonStyle" TargetType="{x:Type controls:NavigationButton}">
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Template">
@@ -183,64 +258,13 @@
 
             <Style x:Key="StartStopFeedToggleBtnStyle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleBtnStyle}">
                 <Setter Property="Width" Value="120"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
             
             <!-- Telemetry Graph -->
             <Style TargetType="{x:Type controls:TelemetryGraph}">
                 <Setter Property="Margin" Value="2"/>
                 <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
-            </Style>
-            
-            <!-- Checkbox -->
-            <Style TargetType="{x:Type CheckBox}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="CheckBox">
-                            <BulletDecorator Background="Transparent">
-                                <BulletDecorator.Bullet>
-                                    <Border x:Name="Border"
-                                            Width="13" Height="13" 
-                                            CornerRadius="0" 
-                                            Background="#C0C0C0"
-                                            BorderThickness="1"
-                                            BorderBrush="#404040">
-                                        <Path 
-                                            Width="7" Height="7" 
-                                            x:Name="CheckMark"
-                                            SnapsToDevicePixels="False" 
-                                            Stroke="#404040"
-                                            StrokeThickness="2"
-                                            Data="M 0 3.5 L 2 6 L 6.7 0" />
-                                    </Border>
-                                </BulletDecorator.Bullet>
-                                <ContentPresenter Margin="4,0,0,0"
-                                                  VerticalAlignment="Center"
-                                                  HorizontalAlignment="Left"
-                                                  RecognizesAccessKey="True"/>
-                            </BulletDecorator>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="false">
-                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="{x:Null}">
-                                    <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter TargetName="Border" Property="Background" Value="#808080" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="true">
-                                    <Setter TargetName="Border" Property="Background" Value="#E0E0E0" />
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="#606060" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="false">
-                                    <Setter TargetName="Border" Property="Background" Value="#EEEEEE" />
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="#AAAAAA" />
-                                    <Setter Property="Foreground" Value="#888888"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

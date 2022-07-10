@@ -7,21 +7,22 @@ using ViewModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
+using System;
 
 /// <summary>
 /// Interaction logic for TelemetryPage.xaml
 /// </summary>
 public partial class TelemetryPage : Page
 {
-    private TelemetryPageViewModel _vm;
+    private readonly TelemetryPageViewModel vm;
+    private readonly Dictionary<DataGraphType, CheckBox> checkboxMap = new();
     private Dictionary<CheckBox, TelemetryGraph> graphMap = new();
-    private Dictionary<DataGraphType, CheckBox> checkboxMap = new();
 
 
     public TelemetryPage()
     {
         InitializeComponent();
-        _vm = (TelemetryPageViewModel)DataContext;
+        vm = (TelemetryPageViewModel)DataContext;
 
         checkboxMap = new Dictionary<DataGraphType, CheckBox> {
             { DataGraphType.Throttle, ThrottleCheckbox },
@@ -33,10 +34,18 @@ public partial class TelemetryPage : Page
 
         foreach (var key in checkboxMap.Keys)
         {
-            if (!_vm.GraphPointCollections.ContainsKey(key))
+            if (!vm.GraphPointCollectionMap.ContainsKey(key))
                 checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
         }
 
+        UpdateGraphMap();
+        UpdateGrid();
+
+        vm.LapUpdated += OnLapUpdated;
+    }
+
+    private void OnLapUpdated(object? sender, EventArgs e)
+    {
         UpdateGraphMap();
         UpdateGrid();
     }
@@ -48,7 +57,7 @@ public partial class TelemetryPage : Page
 
         foreach (var key in checkboxMap.Keys)
         {
-            if (vm.GraphPointCollections.ContainsKey(key))
+            if (vm.GraphPointCollectionMap.ContainsKey(key))
                 graphMap.Add(checkboxMap[key], CreateTelemetryGraph(key));
         }
     }
@@ -59,7 +68,7 @@ public partial class TelemetryPage : Page
 
         var graph = new TelemetryGraph
         {
-            DataSeries = vm.GraphPointCollections[type],
+            DataSeries = vm.GraphPointCollectionMap[type],
         };
         graph.YAxis.MinValue = 0;
 
@@ -101,5 +110,10 @@ public partial class TelemetryPage : Page
             Grid.SetRow(graphMap[checkBox], i);
             i++;
         }
+    }
+
+    private void NewLapClick(object sender, System.Windows.RoutedEventArgs e)
+    {
+        vm.DebugNewLap();
     }
 }

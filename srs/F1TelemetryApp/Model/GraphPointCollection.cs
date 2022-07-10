@@ -13,7 +13,6 @@ public class GraphPointCollection : INotifyPropertyChanged
 {
     public GraphPointCollection(DataGraphType type)
     {
-
         GraphType = type;
         Series = new SeriesCollection
         {
