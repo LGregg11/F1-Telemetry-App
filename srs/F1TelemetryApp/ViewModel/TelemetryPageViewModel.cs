@@ -168,6 +168,16 @@ public class TelemetryPageViewModel : BasePageViewModel
         DisplayedLap = Laps[DisplayedLapIndex];
     }
 
+    public void RedrawLaps()
+    {
+        var laps = new ObservableCollection<Lap>();
+        foreach (var lap in Laps)
+            laps.Add(lap);
+
+        Laps = laps;
+        RaisePropertyChanged(nameof(DisplayedLap));
+    }
+
     private void UpdateLap(Lap lap)
     {
         if (!Laps.Any(l => l.LapNumber == lap.LapNumber))

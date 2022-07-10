@@ -112,8 +112,13 @@ public partial class TelemetryPage : Page
         }
     }
 
-    private void NewLapClick(object sender, System.Windows.RoutedEventArgs e)
+    private void NewLapButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
         vm.DebugNewLap();
+    }
+
+    private void LapsComboBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+    {
+        vm.RedrawLaps();
     }
 }
