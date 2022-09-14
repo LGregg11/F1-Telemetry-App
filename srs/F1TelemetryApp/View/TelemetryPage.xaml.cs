@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System;
+using System.Windows;
+using F1TelemetryApp.Misc;
 
 /// <summary>
 /// Interaction logic for TelemetryPage.xaml
@@ -15,8 +17,9 @@ using System;
 public partial class TelemetryPage : Page
 {
     private readonly TelemetryPageViewModel vm;
-    private readonly Dictionary<DataGraphType, CheckBox> checkboxMap = new();
+    private readonly Dictionary<GraphDataType, CheckBox> graphTypeCheckboxMap = new();
     private Dictionary<CheckBox, TelemetryGraph> graphMap = new();
+    private Dictionary<string, CheckBox> driverCheckboxMap = new();
 
 
     public TelemetryPage()
@@ -24,24 +27,25 @@ public partial class TelemetryPage : Page
         InitializeComponent();
         vm = (TelemetryPageViewModel)DataContext;
 
-        checkboxMap = new Dictionary<DataGraphType, CheckBox> {
-            { DataGraphType.Throttle, ThrottleCheckbox },
-            { DataGraphType.Brake, BrakeCheckbox },
-            { DataGraphType.Gear, GearCheckbox },
-            { DataGraphType.Speed, SpeedCheckbox },
-            { DataGraphType.Steer, SteerCheckbox },
+        graphTypeCheckboxMap = new Dictionary<GraphDataType, CheckBox> {
+            { GraphDataType.Throttle, ThrottleCheckbox },
+            { GraphDataType.Brake, BrakeCheckbox },
+            { GraphDataType.Gear, GearCheckbox },
+            { GraphDataType.Speed, SpeedCheckbox },
+            { GraphDataType.Steer, SteerCheckbox },
         };
 
-        foreach (var key in checkboxMap.Keys)
+        foreach (var key in graphTypeCheckboxMap.Keys)
         {
-            if (!vm.GraphPointCollectionMap.ContainsKey(key))
-                checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
+            if (!vm.DataTypeSeriesCollectionMap.ContainsKey(key))
+                graphTypeCheckboxMap[key].Visibility = Visibility.Hidden;
         }
 
         UpdateGraphMap();
         UpdateGrid();
 
         vm.LapUpdated += OnLapUpdated;
+        vm.DriverUpdated += OnDriverUpdated;
     }
 
     private void OnLapUpdated(object? sender, EventArgs e)
@@ -50,51 +54,85 @@ public partial class TelemetryPage : Page
         UpdateGrid();
     }
 
-    private void UpdateGraphMap()
+    private void OnDriverUpdated(object? sender, EventArgs e)
     {
-        var vm = (TelemetryPageViewModel)DataContext;
-        graphMap = new();
+        var collections = vm.DataTypeSeriesCollectionMap.Values.FirstOrDefault();
+        if (collections == null) return;
 
-        foreach (var key in checkboxMap.Keys)
+        int i = -1;
+        foreach (var driverSeries in collections.Series)
         {
-            if (vm.GraphPointCollectionMap.ContainsKey(key))
-                graphMap.Add(checkboxMap[key], CreateTelemetryGraph(key));
+            i++;
+            var name = driverSeries.Title;
+            if (string.IsNullOrEmpty(name) || driverCheckboxMap.ContainsKey(name)) continue;
+
+            var driverCheckBox = new CheckBox
+            {
+                Content = name,
+                IsChecked = false,
+                Style = this.FindResource("DefaultCheckboxStyle") as Style,
+                Foreground = GraphColors.Colors[collections.Series.IndexOf(driverSeries)]
+            };
+            driverCheckBox.Click += DriverCheckBoxClick;
+
+            if (i == vm.MyCarIndex)
+            {
+                driverCheckBox.IsChecked = true;
+                driverCheckBox.Content = name + " (You)";
+                DriversStackPanel.Children.Insert(1, driverCheckBox);
+            }
+            else
+            {
+                DriversStackPanel.Children.Add(driverCheckBox);
+            }
+
+            driverCheckboxMap.Add(name, driverCheckBox);
+            UpdateVisibleDriverSeries(name);
         }
+
     }
 
-    private TelemetryGraph CreateTelemetryGraph(DataGraphType type)
+    private TelemetryGraph CreateTelemetryGraph(GraphDataType type)
     {
         var vm = (TelemetryPageViewModel)DataContext;
 
         var graph = new TelemetryGraph
         {
-            DataSeries = vm.GraphPointCollectionMap[type],
+            DataSeries = vm.DataTypeSeriesCollectionMap[type],
         };
         graph.YAxis.MinValue = 0;
 
-        var percentageTypes = new List<DataGraphType> { DataGraphType.Throttle, DataGraphType.Brake };
+        var percentageTypes = new List<GraphDataType> { GraphDataType.Throttle, GraphDataType.Brake };
         if (percentageTypes.Contains(type))
         {
             graph.YAxis.MaxValue = 1;
             graph.YAxis.LabelFormatter = v => v.ToString("P0");
         }
-        else if (type == DataGraphType.Steer)
+        else if (type == GraphDataType.Steer)
         {
             // Steer is -1 to 1
             graph.YAxis.MinValue = -1;
             graph.YAxis.MaxValue = 1;
         }
-        else if (type == DataGraphType.Gear)
+        else if (type == GraphDataType.Gear)
         {
+            graph.YAxis.MinValue = -1;
             graph.YAxis.MaxValue = 8;
         }
 
         return graph;
     }
 
-    private void DataGraphCheckBoxClick(object sender, System.Windows.RoutedEventArgs e)
+    private void UpdateGraphMap()
     {
-        UpdateGrid();
+        var vm = (TelemetryPageViewModel)DataContext;
+        graphMap = new();
+
+        foreach (var key in graphTypeCheckboxMap.Keys)
+        {
+            if (vm.DataTypeSeriesCollectionMap.ContainsKey(key))
+                graphMap.Add(graphTypeCheckboxMap[key], CreateTelemetryGraph(key));
+        }
     }
 
     private void UpdateGrid()
@@ -112,12 +150,36 @@ public partial class TelemetryPage : Page
         }
     }
 
-    private void NewLapButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    private void UpdateVisibleDriverSeries(string name)
+    {
+        var vm = (TelemetryPageViewModel)DataContext;
+        if (!driverCheckboxMap.Keys.Contains(name)) return;
+
+        var visible = (bool)driverCheckboxMap[name].IsChecked!;
+        vm.DriverCollection.UpdateDriverVisibility(name, visible);
+    }
+
+    private void DataGraphCheckBoxClick(object sender, RoutedEventArgs e)
+    {
+        UpdateGrid();
+    }
+
+    private void DriverCheckBoxClick(object sender, RoutedEventArgs e)
+    {
+        UpdateVisibleDriverSeries((string)((CheckBox)sender).Content);
+    }
+
+    private void NewLapButton_Click(object sender, RoutedEventArgs e)
     {
         vm.DebugNewLap();
     }
 
-    private void LapsComboBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+    private void AddDrivers_Click(object sender, RoutedEventArgs e)
+    {
+        vm.DebugAddDrivers();
+    }
+
+    private void LapsComboBox_LostFocus(object sender, RoutedEventArgs e)
     {
         vm.RedrawLaps();
     }

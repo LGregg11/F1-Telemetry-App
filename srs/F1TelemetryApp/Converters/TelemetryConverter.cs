@@ -39,17 +39,23 @@ internal class TelemetryConverter : IValueConverter
     /// <summary>
     /// Convert ushort to a standard telemetry time format.
     /// </summary>
-    /// <param name="time">Time given in seconds.</param>
+    /// <param name="t">Time given in seconds.</param>
     /// <returns>The time in a standard telemetry format.</returns>
-    public static string ToTelemetryTime(int milliseconds)
+    public static string ToTelemetryTime(int telemetryTime, bool inSeconds = true)
     {
-        double time = System.Convert.ToDouble(milliseconds);
+        double time = System.Convert.ToDouble(telemetryTime);
         if (time <= 0)
             return "--:--";
         TimeSpan t = TimeSpan.FromMilliseconds(time);
         string timeStr = string.Format("{0:D2}:{1:D3}", t.Seconds, t.Milliseconds);
+        if (inSeconds)
+        {
+            t = TimeSpan.FromSeconds(time);
+            timeStr = String.Format("00:{0:D2}", t.Seconds);
+        }
+
         if (t.Minutes > 0)
-            timeStr = string.Format("{0:D2}:", t.Minutes) + timeStr;
+            timeStr = string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds);
         if (t.Hours > 0)
             timeStr = string.Format("{0:D2}:", t.Hours) + timeStr;
         return timeStr;

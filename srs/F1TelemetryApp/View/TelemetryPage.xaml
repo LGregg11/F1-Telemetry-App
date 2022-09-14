@@ -28,27 +28,19 @@
             <Grid Grid.Row="0" Background="{StaticResource PrimaryBackground}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
-                    <ColumnDefinition />
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Background="{StaticResource PrimaryBackground}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"  Style="{StaticResource DefaultTextBlockStyle}" Text="Lap Time:" />
-                    <TextBlock Grid.Column="1"  Style="{StaticResource DefaultTextBlockStyle}" Text="{Binding LapTime}"/>
-                </Grid>
-                <Grid Grid.Column="1" Background="{StaticResource PrimaryBackground}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Style="{StaticResource DefaultTextBlockStyle}" Text="Lap Distance (m):" />
-                    <TextBlock  Grid.Column="1" Style="{StaticResource DefaultTextBlockStyle}" Text="{Binding LapDistance}"/>
-                </Grid>
-                <Grid Grid.Column="2" Margin="5,0" Background="{StaticResource PrimaryBackground}">
+                <StackPanel Grid.Column="0"
+                            Margin="5,0"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Background="{StaticResource PrimaryBackground}">
+                    <TextBlock Style="{StaticResource DefaultTextBlockStyle}" Text="Session Time: " />
+                    <TextBlock Style="{StaticResource DefaultTextBlockStyle}" Text="{Binding SessionTime}"/>
+                </StackPanel>
+                <Grid Grid.Column="1" Margin="5,0" Background="{StaticResource PrimaryBackground}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition />
@@ -82,7 +74,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
-                <CheckBox Grid.Column="3"
+                <CheckBox Grid.Column="2"
                           Style="{StaticResource DefaultCheckboxStyle}"
                           Margin="5,0"
                           Content="Show new laps"
@@ -99,7 +91,7 @@
         <Grid Grid.Column="1" Margin="2" Background="{StaticResource PrimaryBackground}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition />
+                <RowDefinition Height="Auto"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Style="{StaticResource DefaultTextBlockStyle}" HorizontalAlignment="Center" Text="Checkboxes"/>
@@ -118,8 +110,8 @@
             </HeaderedContentControl>
             <HeaderedContentControl Grid.Row="2" Style="{StaticResource DefaultHeaderedContentControlStyle}" Header="Drivers">
                 <ScrollViewer Style="{StaticResource DefaultScrollViewerStyle}">
-                    <StackPanel Orientation="Vertical">
-                        <CheckBox Style="{StaticResource DefaultCheckboxStyle}" Content="You" IsChecked="True" />
+                    <StackPanel x:Name="DriversStackPanel" Orientation="Vertical">
+                        <Button Content="Add Drivers" Click="AddDrivers_Click" Foreground="{StaticResource SecondaryBackground}"/>
                     </StackPanel>
                 </ScrollViewer>
             </HeaderedContentControl>

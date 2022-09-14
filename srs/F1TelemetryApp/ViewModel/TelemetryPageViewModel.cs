@@ -13,28 +13,39 @@ using System.Collections.ObjectModel;
 
 public class TelemetryPageViewModel : BasePageViewModel
 {
-    private int myCarIndex = -1;
+    public int MyCarIndex = -1;
 
     public TelemetryPageViewModel()
     {
         log4net.Config.XmlConfigurator.Configure();
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
+        DriverCollection = new();
         Laps = new();
         DisplayedLap = new Lap(1);
         DisplayNewestLap = true;
-
-        GraphPointCollectionMaps = new();
-        UpdateGraphPointCollectionMaps();
+        SessionTime = TelemetryConverter.ToTelemetryTime(0, true);
     }
 
     public event EventHandler? LapUpdated;
+    public event EventHandler? DriverUpdated;
 
-    public List<Dictionary<DataGraphType, GraphPointCollection>> GraphPointCollectionMaps { get; set; }
-    public Dictionary<DataGraphType, GraphPointCollection> GraphPointCollectionMap => GraphPointCollectionMaps[DisplayedLapIndex];
+    public TelemetryDriverCollection DriverCollection { get; set; }
+    public Dictionary<GraphDataType, GraphPointCollection> DataTypeSeriesCollectionMap => DriverCollection.GetGraphPointCollectionMap(DisplayedLapIndex);
 
-    public string LapTime => $"{TelemetryConverter.ToTelemetryTime(DisplayedLap.LapTime)}";
-    public string LapDistance => $"{DisplayedLap.LapDistance}";
+    private string sessionTime;
+    public string SessionTime
+    {
+        get => sessionTime;
+        set
+        {
+            if (sessionTime != value)
+            {
+                sessionTime = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
 
     private bool displayNewestLap;
     public bool DisplayNewestLap
@@ -99,7 +110,6 @@ public class TelemetryPageViewModel : BasePageViewModel
                     DisplayedLapIndex = Laps.IndexOf(Laps.FirstOrDefault(l => l.LapNumber == value.LapNumber)!);
                     DisplayNewestLap = Laps.LastOrDefault()!.LapNumber == value.LapNumber;
                 }
-
             }
         }
     }
@@ -112,30 +122,57 @@ public class TelemetryPageViewModel : BasePageViewModel
         tr.HeaderPacket.Received -= OnHeaderReceived;
         tr.CarTelemetryPacket.Received -= OnCarTelemetryReceived;
         tr.LapDataPacket.Received -= OnLapDataReceived;
+        tr.ParticipantPacket.Received -= OnParticipantReceived;
 
         tr.HeaderPacket.Received += OnHeaderReceived;
         tr.CarTelemetryPacket.Received += OnCarTelemetryReceived;
         tr.LapDataPacket.Received += OnLapDataReceived;
+        tr.ParticipantPacket.Received += OnParticipantReceived;
     }
 
     private void OnHeaderReceived(object? sender, EventArgs e)
     {
         var header = ((HeaderEventArgs)e).Header;
-        if (myCarIndex < 0)
-            myCarIndex = header.playerCarIndex;
+        if (MyCarIndex < 0)
+            MyCarIndex = header.playerCarIndex;
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            SessionTime = TelemetryConverter.ToTelemetryTime((int)header.sessionTime, true);
+        });
+    }
+
+    private void OnParticipantReceived(object? sender, EventArgs e)
+    {
+        var participants = ((ParticipantEventArgs)e).Participant.participants;
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            foreach (var participant in participants)
+            {
+                var name = participant.name;
+                if (string.IsNullOrEmpty(participant.name) || DriverCollection.ContainsDriver(participant.name)) continue;
+
+                DriverCollection.AddDriver(name, MyCarIndex);
+                DriverUpdated?.Invoke(this, new EventArgs());
+            }
+        });
     }
 
     private void OnCarTelemetryReceived(object? sender, EventArgs e)
     {
         var carTelemetry = ((CarTelemetryEventArgs)e).CarTelemetry;
-        var myTelemetry = carTelemetry.carTelemetryData[myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
         {
-            UpdateGraphPointY(DataGraphType.Throttle, myTelemetry.throttle);
-            UpdateGraphPointY(DataGraphType.Brake, myTelemetry.brake);
-            UpdateGraphPointY(DataGraphType.Gear, myTelemetry.gear);
-            UpdateGraphPointY(DataGraphType.Speed, myTelemetry.speed);
-            UpdateGraphPointY(DataGraphType.Steer, myTelemetry.steer);
+            for (int i = 0; i <= GetDriverMaxIndex(carTelemetry.carTelemetryData.Length - 1); i++)
+            {
+                var carTelemetryData = carTelemetry.carTelemetryData[i];
+                var driver = DriverCollection.GetDriver(i);
+                if (driver == null) continue;
+                driver.UpdateGraphPoint(GraphDataType.Throttle, null, carTelemetryData.throttle);
+                driver.UpdateGraphPoint(GraphDataType.Brake, null, carTelemetryData.brake);
+                driver.UpdateGraphPoint(GraphDataType.Gear, null, carTelemetryData.gear);
+                driver.UpdateGraphPoint(GraphDataType.Speed, null, carTelemetryData.speed);
+                driver.UpdateGraphPoint(GraphDataType.Steer, null, carTelemetryData.steer);
+            }
         });
     }
 
@@ -143,20 +180,25 @@ public class TelemetryPageViewModel : BasePageViewModel
     {
         var displayedLap = DisplayedLap;
         var lapData = ((LapDataEventArgs)e).LapData;
-        var myLapData = lapData.carLapData[myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
         {
-            var lap = new Lap(myLapData.currentLapNum, myLapData.currentLapTime, myLapData.lapDistance);
-            UpdateLap(lap);
-            DisplayedLap = Laps[DisplayedLapIndex];
+            for (int i=0; i <= GetDriverMaxIndex(lapData.carLapData.Length - 1); i++)
+            {
+                var carLapData = lapData.carLapData[i];
+                UpdateLap(new Lap(carLapData.currentLapNum, carLapData.currentLapTime, carLapData.lapDistance));
+                DisplayedLap = Laps[DisplayedLapIndex];
 
-            foreach (var key in GraphPointCollectionMap.Keys)
-                UpdateGraphPointX(key, myLapData.lapDistance);
+                var driver = DriverCollection.GetDriver(i);
+                if (driver == null) continue;
+
+                driver.UpdateLapNumber(carLapData.currentLapNum);
+                foreach (var type in DataTypeSeriesCollectionMap.Keys)
+                    driver.UpdateGraphPoint(type, carLapData.lapDistance, null);
+            }
         });
-
-        RaisePropertyChanged(nameof(LapTime));
-        RaisePropertyChanged(nameof(LapDistance));
     }
+
+    #region DEBUG
 
     public void DebugNewLap()
     {
@@ -167,6 +209,37 @@ public class TelemetryPageViewModel : BasePageViewModel
         UpdateLap(new Lap(lapNumber));
         DisplayedLap = Laps[DisplayedLapIndex];
     }
+
+    public void DebugAddDrivers()
+    {
+        OnParticipantReceived(null, new ParticipantEventArgs
+        {
+            Participant = new F1GameTelemetry.Packets.F12021.Participant
+            {
+                participants = new F1GameTelemetry.Packets.F12021.ParticipantData[]
+                {
+                    new F1GameTelemetry.Packets.F12021.ParticipantData
+                    {
+                        name = "a"
+                    },
+                    new F1GameTelemetry.Packets.F12021.ParticipantData
+                    {
+                        name = "b"
+                    },
+                    new F1GameTelemetry.Packets.F12021.ParticipantData
+                    {
+                        name = "c"
+                    },
+                    new F1GameTelemetry.Packets.F12021.ParticipantData
+                    {
+                        name = "d"
+                    }
+                }
+            }
+        });
+    }
+
+    #endregion
 
     public void RedrawLaps()
     {
@@ -180,14 +253,12 @@ public class TelemetryPageViewModel : BasePageViewModel
 
     private void UpdateLap(Lap lap)
     {
+        if (lap.LapNumber < 1) return;
+
         if (!Laps.Any(l => l.LapNumber == lap.LapNumber))
         {
-            // New Lap - Add to Laps,
             Laps.Add(lap);
             UpdateFastestLap();
-
-            if (Laps.Count > 1)
-                UpdateGraphPointCollectionMaps();
 
             if (DisplayNewestLap)
                 DisplayedLapIndex = Laps.Count - 1;
@@ -211,32 +282,27 @@ public class TelemetryPageViewModel : BasePageViewModel
         }
     }
 
-    private void UpdateGraphPointCollectionMaps()
+    private int? TryGetIndexOfLap(int lapNum)
     {
-        GraphPointCollectionMaps.Add(CreateGraphPointCollectionMap());
-        RaisePropertyChanged(nameof(GraphPointCollectionMaps));
+        for (int i=0; i<Laps.Count; i++)
+        {
+            if (Laps[i].LapNumber == lapNum)
+                return i;
+        }
+
+        return null;
     }
 
-    private static Dictionary<DataGraphType, GraphPointCollection> CreateGraphPointCollectionMap()
+    private Lap? TryGetLap(int lapNum)
     {
-        var map = new Dictionary<DataGraphType, GraphPointCollection>();
-        foreach (DataGraphType type in Enum.GetValues(typeof(DataGraphType)))
-            map.Add(type, new GraphPointCollection(type));
+        foreach (var lap in Laps)
+        {
+            if (lap.LapNumber == lapNum)
+                return lap;
+        }
 
-        return map;
+        return null;
     }
 
-    private void UpdateGraphPointX(DataGraphType type, double x)
-    {
-        var point = GraphPointCollectionMap[type].Point;
-        point.X = x;
-        GraphPointCollectionMap[type].Point = point;
-    }
-
-    private void UpdateGraphPointY(DataGraphType type, double y)
-    {
-        var point = GraphPointCollectionMap[type].Point;
-        point.Y = y;
-        GraphPointCollectionMap[type].Point = point;
-    }
+    private int GetDriverMaxIndex(int val) => Math.Max(val, DriverCollection.Size - 1);
 }
