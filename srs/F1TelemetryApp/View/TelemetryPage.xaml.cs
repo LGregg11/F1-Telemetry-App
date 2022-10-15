@@ -79,7 +79,7 @@ public partial class TelemetryPage : Page
             {
                 driverCheckBox.IsChecked = true;
                 driverCheckBox.Content = name + " (You)";
-                DriversStackPanel.Children.Insert(1, driverCheckBox);
+                DriversStackPanel.Children.Insert(0, driverCheckBox);
             }
             else
             {

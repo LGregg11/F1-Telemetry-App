@@ -15,72 +15,46 @@ public class TelemetryDriver : INotifyPropertyChanged
         IdColor = idColor;
         CurrentLap = currentLap;
         IsUser = isUser;
-        LapDataTypeSeriesHandlerMap = new();
-        LapDataTypeSeriesHandlerMap.Add(CurrentLap, CreateDefaultDataTypeSeriesMap());
+        LapDataMap = new() {{ CurrentLap, CreateDefaultDriverLapData(currentLap) }};
     }
 
     public string Name { get; }
     public SolidColorBrush IdColor { get; }
-    public int CurrentLap { get; private set; }
     public bool IsUser { get; }
-    public Dictionary<int, Dictionary<GraphDataType, LineSeriesHandler>> LapDataTypeSeriesHandlerMap { get; private set; }
-    public Dictionary<GraphDataType, LineSeriesHandler> CurrentLapDataTypeSeriesHandlerMap => LapDataTypeSeriesHandlerMap[CurrentLap];
+    public int CurrentLap { get; private set; }
+    public Dictionary<int, TelemetryDriverLapData> LapDataMap { get; private set; }
+    public TelemetryDriverLapData CurrentLapData => LapDataMap[CurrentLap];
 
-    public LineSeries GetLineSeries(int lap, GraphDataType type) => LapDataTypeSeriesHandlerMap[lap][type].LineSeries;
+    public LineSeries GetLineSeries(int lap, GraphDataType type) => LapDataMap[lap].GetLineSeries(type);
 
     public void UpdateVisibility(bool visible)
     {
-        foreach (var lap in LapDataTypeSeriesHandlerMap.Keys)
-        {
-            var typeSeriesMap = LapDataTypeSeriesHandlerMap[lap];
-            foreach (GraphDataType type in typeSeriesMap.Keys)
-            {
-                var typeSeries = typeSeriesMap[type];
-                typeSeries.LineSeries.Stroke = visible ? IdColor : Brushes.Transparent;
-                typeSeriesMap[type] = typeSeries;
-            }
-            LapDataTypeSeriesHandlerMap[lap] = typeSeriesMap;
-        }
-
+        foreach (var lapData in LapDataMap.Values)
+            lapData.UpdateVisibility(visible);
         NotifyPropertyChanged();
     }
 
     public void UpdateGraphPoint(GraphDataType type, double? x, double? y)
     {
-        var point = CurrentLapDataTypeSeriesHandlerMap[type].Point;
-        if (x != null)
-            point.X = x;
-        if (y != null)
-            point.Y = y;
-
-        LapDataTypeSeriesHandlerMap[CurrentLap][type].Point = new GraphPoint(point.X, point.Y);
+        CurrentLapData.UpdateGraphPoint(type, x, y);
         NotifyPropertyChanged();
     }
 
-    public void UpdateLapNumber(int lapNum)
+    public void UpdateCurrentLapNumber(int lapNum)
     {
-        AddLap(lapNum);
+        if (lapNum == CurrentLap) return;
         CurrentLap = lapNum;
         NotifyPropertyChanged();
     }
 
     public void AddLap(int lapNum)
     {
-        if (lapNum <= 0 || LapDataTypeSeriesHandlerMap.ContainsKey(lapNum)) return;
-        LapDataTypeSeriesHandlerMap.Add(lapNum, CreateDefaultDataTypeSeriesMap());
+        if (lapNum < 1 || LapDataMap.ContainsKey(lapNum)) return;
+        LapDataMap.Add(lapNum, CreateDefaultDriverLapData(lapNum));
         NotifyPropertyChanged();
     }
 
-    private Dictionary<GraphDataType, LineSeriesHandler> CreateDefaultDataTypeSeriesMap()
-    {
-        var dataTypeSeriesMap = new Dictionary<GraphDataType, LineSeriesHandler>();
-        foreach (var type in EnumCollections.GraphDataTypes)
-            dataTypeSeriesMap.Add(type, CreateLineSeriesHandler(type));
-
-        return dataTypeSeriesMap;
-    }
-
-    private LineSeriesHandler CreateLineSeriesHandler(GraphDataType type) => new LineSeriesHandler(type, Name, IsUser ? 2 : 1, IdColor);
+    private TelemetryDriverLapData CreateDefaultDriverLapData(int lap) => new(lap, Name, IsUser ? 2 : 1, IdColor);
 
     #region INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;

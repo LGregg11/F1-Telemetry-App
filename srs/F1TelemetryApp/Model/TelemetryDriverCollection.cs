@@ -5,7 +5,6 @@ using Misc;
 
 using System.Collections.Generic;
 using System.Linq;
-using LiveCharts;
 
 public class TelemetryDriverCollection
 {
@@ -25,6 +24,12 @@ public class TelemetryDriverCollection
         if (latestLap == null)
             latestLap = 0;
         Drivers.Add(new TelemetryDriver(name, GraphColors.Colors[numDrivers], (int)latestLap, numDrivers == userIndex));
+    }
+
+    public void AddLap(Lap lap)
+    {
+        foreach (var driver in Drivers)
+            driver.AddLap(lap.LapNumber);
     }
 
     public void UpdateDriverVisibility(string name, bool visibile)
@@ -53,9 +58,9 @@ public class TelemetryDriverCollection
         return map;
     }
 
-    public TelemetryDriver? GetDriver(string name) => Drivers.Any(d => d.Name == name) ? Drivers.FirstOrDefault(d => d.Name == name) : null;
+    public TelemetryDriver? GetDriver(string name) => Drivers.Any(d => d.Name == name) ? Drivers.First(d => d.Name == name) : null;
 
-    public TelemetryDriver? GetDriver(int i) => Size - 1 > i ? Drivers[i] : null;
+    public TelemetryDriver? GetDriver(int i) => Size - 1 > i && i >= 0 ? Drivers[i] : null;
 
     public List<int> GetLatestLaps() => Drivers.Select(d => d.CurrentLap).ToList();
 

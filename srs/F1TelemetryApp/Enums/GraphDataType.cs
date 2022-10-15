@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace F1TelemetryApp.Enums;
 
-namespace F1TelemetryApp.Enums;
+using System;
+using System.Collections.Generic;
 
 public enum GraphDataType
 {

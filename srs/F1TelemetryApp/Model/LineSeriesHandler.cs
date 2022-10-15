@@ -13,9 +13,8 @@ using System.Windows.Media;
 
 public class LineSeriesHandler : INotifyPropertyChanged
 {
-    public LineSeriesHandler(GraphDataType type, string title, int thickness, SolidColorBrush stroke)
+    public LineSeriesHandler(string title, int thickness, SolidColorBrush stroke)
     {
-        Type = type;
         Point = new();
         LineSeries = new LineSeries
         {
@@ -33,8 +32,6 @@ public class LineSeriesHandler : INotifyPropertyChanged
         };
         PreviousXPoint = 0.0;
     }
-
-    public GraphDataType Type { get; }
     public LineSeries LineSeries { get; set; }
     public double? PreviousXPoint { get; set; }
 

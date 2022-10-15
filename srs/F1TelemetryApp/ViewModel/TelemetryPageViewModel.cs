@@ -185,13 +185,16 @@ public class TelemetryPageViewModel : BasePageViewModel
             for (int i=0; i <= GetDriverMaxIndex(lapData.carLapData.Length - 1); i++)
             {
                 var carLapData = lapData.carLapData[i];
-                UpdateLap(new Lap(carLapData.currentLapNum, carLapData.currentLapTime, carLapData.lapDistance));
-                DisplayedLap = Laps[DisplayedLapIndex];
+                var lap = new Lap(carLapData.currentLapNum, carLapData.currentLapTime, carLapData.lapDistance);
+                UpdateLap(lap);
 
                 var driver = DriverCollection.GetDriver(i);
                 if (driver == null) continue;
 
-                driver.UpdateLapNumber(carLapData.currentLapNum);
+                if (lap == Laps.Last())
+                    DriverCollection.AddLap(lap);
+
+                driver.UpdateCurrentLapNumber(carLapData.currentLapNum);
                 foreach (var type in DataTypeSeriesCollectionMap.Keys)
                     driver.UpdateGraphPoint(type, carLapData.lapDistance, null);
             }
@@ -258,10 +261,11 @@ public class TelemetryPageViewModel : BasePageViewModel
         if (!Laps.Any(l => l.LapNumber == lap.LapNumber))
         {
             Laps.Add(lap);
-            UpdateFastestLap();
+            // UpdateFastestLap();
 
             if (DisplayNewestLap)
                 DisplayedLapIndex = Laps.Count - 1;
+            DisplayedLap = Laps[DisplayedLapIndex];
         }
         else
         {
@@ -270,17 +274,17 @@ public class TelemetryPageViewModel : BasePageViewModel
         }
     }
 
-    private void UpdateFastestLap()
-    {
-        if (Laps.Count < 2) return;
+    //private void UpdateFastestLap()
+    //{
+    //    if (Laps.Count < 2) return;
 
-        var lapsToCheck = Laps.SkipLast(1).ToList();
-        var fastestLap = lapsToCheck.Select(l => l.LapTime).Min();
-        for (int i = 0; i < lapsToCheck.Count; i++)
-        {
-            Laps[i].IsFastestLap = lapsToCheck[i].LapTime == fastestLap;
-        }
-    }
+    //    var lapsToCheck = Laps.SkipLast(1).ToList();
+    //    var fastestLap = lapsToCheck.Select(l => l.LapTime).Min();
+    //    for (int i = 0; i < lapsToCheck.Count; i++)
+    //    {
+    //        Laps[i].IsFastestLap = lapsToCheck[i].LapTime == fastestLap;
+    //    }
+    //}
 
     private int? TryGetIndexOfLap(int lapNum)
     {
