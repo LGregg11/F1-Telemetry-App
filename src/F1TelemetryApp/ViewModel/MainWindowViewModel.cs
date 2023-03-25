@@ -2,22 +2,23 @@
 
 using Converters;
 
+using F1GameTelemetry.Listener;
+using F1GameTelemetry.Enums;
+using F1GameTelemetry.Readers;
+
 using log4net;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-
-using F1GameTelemetry.Listener;
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Readers;
+using Microsoft.Win32;
 
 public class MainWindowViewModel : BindableBase
 {
     private const int port = 20777;
 
     private readonly TelemetryReaderFactory readerFactory;
-    private readonly ITelemetryListener telemetryListener;
+    private ITelemetryListener telemetryListener;
 
     public MainWindowViewModel()
     {
@@ -26,7 +27,7 @@ public class MainWindowViewModel : BindableBase
 
         telemetryListener = new TelemetryListener(port);
         readerFactory = new TelemetryReaderFactory(telemetryListener);
-        Version = ReaderVersion.F12021;
+        Version = GameVersion.F12021;
         UpdateTelemetryReader();
     }
 
@@ -35,10 +36,10 @@ public class MainWindowViewModel : BindableBase
     public ILog Log { get; set; }
     public bool IsListenerRunning => telemetryListener.IsListenerRunning;
 
-    public static List<ReaderVersion> Versions => new((IEnumerable<ReaderVersion>)Enum.GetValues(typeof(ReaderVersion)));
+    public static List<GameVersion> Versions => new((IEnumerable<GameVersion>)Enum.GetValues(typeof(GameVersion)));
 
-    private ReaderVersion version;
-    public ReaderVersion Version
+    private GameVersion version;
+    public GameVersion Version
     {
         get => version;
 
@@ -49,6 +50,37 @@ public class MainWindowViewModel : BindableBase
                 version = value;
                 RaisePropertyChanged(nameof(Version));
                 UpdateTelemetryReader();
+            }
+        }
+    }
+
+    private bool isExportEnabled;
+    public bool IsExportEnabled
+    {
+        get => isExportEnabled;
+
+        set
+        {
+            if (isExportEnabled != value)
+            {
+                isExportEnabled = value;
+                RaisePropertyChanged(nameof(IsExportEnabled));
+                TelemetryReader.IsExportEnabled = isExportEnabled;
+            }
+        }
+    }
+
+    private string importTelemetryFilepath;
+    public string ImportTelemetryFilepath
+    {
+        get => importTelemetryFilepath;
+
+        set
+        {
+            if (ImportTelemetryFilepath != value)
+            {
+                importTelemetryFilepath = value;
+                RaisePropertyChanged(nameof(ImportTelemetryFilepath));
             }
         }
     }
@@ -133,5 +165,19 @@ public class MainWindowViewModel : BindableBase
             Log?.Info("Stopping Telemetry feed");
             telemetryListener.Stop();
         }
+    }
+
+    public void ImportTelemetry()
+    {
+        OpenFileDialog dialog = new();
+        // Apparently can only be true or false - https://learn.microsoft.com/en-us/dotnet/api/microsoft.win32.commondialog.showdialog
+        if (!(bool)dialog.ShowDialog()!)
+            return;
+
+        ImportTelemetryFilepath = dialog.FileName;
+        telemetryListener = new TelemetryImporter(ImportTelemetryFilepath);
+        var readerFactory = new TelemetryReaderFactory(telemetryListener);
+        TelemetryReader = readerFactory.GetTelemetryReader(Version)!;
+        RaisePropertyChanged(nameof(TelemetryReader));
     }
 }

@@ -245,7 +245,7 @@ public enum Team : byte
     AlfaRomeo2020 = 94
 }
 
-public enum ReaderVersion : ushort
+public enum GameVersion : ushort
 {
     [Description("F1 2019")]
     F12019 = 2019,

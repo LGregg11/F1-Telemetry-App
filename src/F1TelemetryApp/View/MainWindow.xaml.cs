@@ -38,6 +38,11 @@ public partial class MainWindow : Window
         UpdateTelemetryFeedBtn();
     }
 
+    public void ImportTelemetry(object sender, RoutedEventArgs e)
+    {
+        viewModel.ImportTelemetry();
+    }
+
     private void UpdateTelemetryFeedBtn()
     {
         if (viewModel.IsListenerRunning)

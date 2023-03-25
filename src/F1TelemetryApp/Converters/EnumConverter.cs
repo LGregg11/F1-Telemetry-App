@@ -11,7 +11,7 @@ public class EnumConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        ReaderVersion version = (ReaderVersion)value;
+        GameVersion version = (GameVersion)value;
         return GetEnumDescription(version)!;
     }
 

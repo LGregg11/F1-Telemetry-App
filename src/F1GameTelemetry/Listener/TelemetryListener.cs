@@ -50,7 +50,7 @@ public class TelemetryListener : ITelemetryListener
         Client = null;
     }
 
-    public void TelemetrySubscriber()
+    public virtual void TelemetrySubscriber()
     {
         IPEndPoint ep = new(IPAddress.Any, Port);
 

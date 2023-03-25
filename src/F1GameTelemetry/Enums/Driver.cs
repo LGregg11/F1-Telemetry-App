@@ -115,7 +115,6 @@ public enum DriverId : byte
     JensonButton = 109,
     DavidCoulthard = 110,
     NicoRosberg = 111
-
 }
 
 public enum DriverStatus : byte

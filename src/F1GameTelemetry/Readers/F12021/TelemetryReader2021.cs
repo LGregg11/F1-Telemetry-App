@@ -2,6 +2,7 @@
 
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
+using F1GameTelemetry.Exporter;
 using F1GameTelemetry.Listener;
 using F1GameTelemetry.Packets;
 using F1GameTelemetry.Packets.F12021;
@@ -15,7 +16,11 @@ public class TelemetryReader2021 : BaseTelemetryReader
     private readonly Dictionary<PacketId, IPacket> _packetMap;
     // private readonly Dictionary<PacketId, IEvent> _eventMap;
 
-    public TelemetryReader2021(ITelemetryListener listener) : base(listener)
+    public TelemetryReader2021(ITelemetryListener listener) : this(listener, new TelemetryExporter())
+    {
+    }
+
+    public TelemetryReader2021(ITelemetryListener listener, ITelemetryExporter exporter) : base(listener, exporter)
     {
         HeaderPacket = new HeaderPacket();
         MotionPacket = new MotionPacket();
@@ -49,6 +54,7 @@ public class TelemetryReader2021 : BaseTelemetryReader
 
     public override string Name => "F1 2021 Telemetry Reader";
     public override bool IsSupported => true;
+    public override GameVersion GameVersion => GameVersion.F12021;
 
     public override IPacket HeaderPacket { get; }
     public override IPacket MotionPacket { get; }
@@ -70,8 +76,16 @@ public class TelemetryReader2021 : BaseTelemetryReader
         headerTask.RunSynchronously();
 
         byte[] remainingPacket = e.Message.Skip(HeaderPacketSize).ToArray();
-        Task remainingTask = new(() => RaiseEventHandler((PacketId)header.packetId, remainingPacket));
+        Task remainingTask = new(() => RaiseEventHandler(header.packetId, remainingPacket));
         remainingTask.RunSynchronously();
+
+        if (IsExportEnabled)
+        {
+            if (header.sessionUID != Exporter.SessionUID)
+                Exporter.SetupNewFilePath(header.packetFormat, header.sessionUID);
+
+            Exporter.ExportDataLine(e.Message);
+        }
     }
 
     public object? GetEvent(byte[] remainingPacket)
