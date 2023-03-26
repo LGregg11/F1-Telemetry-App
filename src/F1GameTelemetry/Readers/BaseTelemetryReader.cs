@@ -6,24 +6,32 @@ using System.Text;
 
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Listener;
+using F1GameTelemetry.Exporter;
 using F1GameTelemetry.Packets;
 
 public abstract class BaseTelemetryReader : ITelemetryReader
 {
-    public BaseTelemetryReader(ITelemetryListener listener)
+    public BaseTelemetryReader(ITelemetryListener listener, ITelemetryExporter exporter)
     {
+        IsExportEnabled = false;
         Listener = listener;
+        Exporter = exporter;
         Listener.TelemetryReceived += OnTelemetryReceived;
     }
 
+    ~BaseTelemetryReader()
+    {
+        Listener.TelemetryReceived -= OnTelemetryReceived;
+    }
+
     public ITelemetryListener Listener { get; }
-
+    public ITelemetryExporter Exporter { get; }
     public abstract string Name { get; }
-
     public abstract bool IsSupported { get; }
+    public abstract GameVersion GameVersion { get; }
 
+    public bool IsExportEnabled { get; set; }
     public int MaxCarsPerRace => 22;
-
     public int HeaderPacketSize => 24;
 
     public abstract IPacket HeaderPacket { get; }
@@ -40,7 +48,6 @@ public abstract class BaseTelemetryReader : ITelemetryReader
     public abstract IPacket CarSetupPacket { get; }
 
     public abstract void OnTelemetryReceived(object sender, TelemetryEventArgs e);
-
     public abstract void RaiseEventHandler(PacketId id, byte[] remainingPacket);
 
     public EventType GetEventType(byte[] remainingPacket)

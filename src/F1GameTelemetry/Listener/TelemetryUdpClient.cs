@@ -6,28 +6,28 @@ using System.Net.Sockets;
 
 internal class TelemetryUdpClient : IUdpClient, IDisposable
 {
+    private UdpClient _client;
+
     public TelemetryUdpClient(int port)
     {
-        Client = new UdpClient(port);
+        _client = new UdpClient(port);
     }
-
-    public UdpClient Client { get; }
 
     public void Close()
     {
-        Client.Close();
+        _client.Close();
     }
 
     public void Dispose()
     {
-        Client.Dispose();
+        _client.Dispose();
     }
 
     public byte[]? Receive(ref IPEndPoint ep)
     {
         try
         {
-            return Client.Receive(ref ep);
+            return _client.Receive(ref ep);
         }
         catch (SocketException)
         {

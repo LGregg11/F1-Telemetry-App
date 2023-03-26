@@ -7,8 +7,10 @@ using F1GameTelemetry.Packets;
 public interface ITelemetryReader
 {
     string Name { get; }
+    GameVersion GameVersion { get; }
     ITelemetryListener Listener { get; }
     bool IsSupported { get; }
+    bool IsExportEnabled { get; set; }
     int MaxCarsPerRace { get; }
     int HeaderPacketSize { get; }
 

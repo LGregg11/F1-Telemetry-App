@@ -248,7 +248,7 @@ public class TestPageViewModel : BasePageViewModel
         {
             for (int i = 0; i < HeaderMessages.Count; i++)
             {
-                if (HeaderMessages[i].PacketId == (PacketId)header.packetId)
+                if (HeaderMessages[i].PacketId == header.packetId)
                 {
                     HeaderMessage headerMessage = HeaderMessages[i];
                     headerMessage.Total++;

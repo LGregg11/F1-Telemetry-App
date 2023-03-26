@@ -1,23 +1,23 @@
 ﻿namespace F1GameTelemetry.Readers;
 
-using System.Collections.Generic;
-using F1GameTelemetry.Readers.F12021;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Listener;
+using F1GameTelemetry.Readers.F12021;
+using System.Collections.Generic;
 
 public class TelemetryReaderFactory
 {
-    private readonly Dictionary<ReaderVersion, ITelemetryReader> _readerMap;
+    private readonly Dictionary<GameVersion, ITelemetryReader> _readerMap;
 
     public TelemetryReaderFactory(ITelemetryListener listener)
     {
-        _readerMap = new Dictionary<ReaderVersion, ITelemetryReader>
+        _readerMap = new Dictionary<GameVersion, ITelemetryReader>
         {
-            { ReaderVersion.F12021, new TelemetryReader2021(listener) }
+            { GameVersion.F12021, new TelemetryReader2021(listener) }
         };
     }
 
-    public ITelemetryReader? GetTelemetryReader(ReaderVersion version)
+    public ITelemetryReader? GetTelemetryReader(GameVersion version)
     {
         if (_readerMap.ContainsKey(version))
             return _readerMap[version];

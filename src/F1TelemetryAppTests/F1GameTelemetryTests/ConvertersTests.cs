@@ -49,7 +49,7 @@ public class ConvertersTests
 
         // Assert
         Assert.AreEqual(typeof(Header), result.GetType());
-        Assert.AreEqual(ReaderVersion.F12021, result.packetFormat);
+        Assert.AreEqual(GameVersion.F12021, result.packetFormat);
     }
 
     [Test]
