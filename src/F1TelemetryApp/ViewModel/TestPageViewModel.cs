@@ -92,7 +92,6 @@ public class TestPageViewModel : BasePageViewModel
         telemetryReader.SessionHistoryPacket.Received -= OnSessionHistoryReceived;
         telemetryReader.SessionPacket.Received -= OnSessionReceived;
 
-        MainWindowViewModel.ReaderWarningMessageVisibility = Visibility.Hidden;
         telemetryReader.HeaderPacket.Received += OnHeaderReceived;
         telemetryReader.MotionPacket.Received += OnMotionReceived;
         telemetryReader.CarDamagePacket.Received += OnCarDamageReceived;

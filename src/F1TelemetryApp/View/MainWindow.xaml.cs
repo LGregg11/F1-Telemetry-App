@@ -22,8 +22,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         viewModel = (MainWindowViewModel)DataContext;
-        NavFrame.Navigated += OnNavigate;
-        NavFrame.Navigate(new Uri($"{PACK_URI}/View/HomePage.xaml", UriKind.Absolute));
     }
 
     public void StartTelemetryFeed(object sender, RoutedEventArgs e)
@@ -55,17 +53,5 @@ public partial class MainWindow : Window
             TelemetryFeedBtn.Click -= StopTelemetryFeed;
             TelemetryFeedBtn.Click += StartTelemetryFeed;
         }
-    }
-
-    private void NavBar_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        var selected = NavBar.SelectedItem as NavigationButton;
-        NavFrame.Navigate(selected!.NavigationLink);
-    }
-
-    private void OnNavigate(object sender, NavigationEventArgs e)
-    {
-        var content = (Page)NavFrame.Content;
-        ((IPageViewModel)content.DataContext).MainWindowViewModel = viewModel;
     }
 }

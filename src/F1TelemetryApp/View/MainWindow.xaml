@@ -16,18 +16,118 @@
     <Window.Resources>
         <conv:EnumConverter x:Key="enumConverter"/>
     </Window.Resources>
-    
+
     <Grid x:Name="MainGrid" Background="{StaticResource PrimaryBackground}" Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource DefaultGridStyle}">
+        <Grid Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ToggleButton
+                Grid.Column="0"
+                x:Name="TelemetryFeedBtn"
+                Click="StartTelemetryFeed"
+                Style="{StaticResource SessionToggleBtnStyle}"
+                IsEnabled="{Binding IsSessionBtnEnabled}"
+                IsChecked="{Binding IsListenerRunning, Mode=OneWay}"/>
+            <ComboBox
+                Grid.Column="1"
+                Style="{StaticResource DefaultComboBoxStyle}"
+                ItemsSource="{Binding Versions}"
+                SelectedItem="{Binding Version}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock
+                            Foreground="{StaticResource PrimaryBackground}"
+                            Text="{Binding Converter={StaticResource enumConverter}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock
+                Grid.Column="2"
+                Text="{Binding WarningMessage}"
+                Style="{StaticResource DefaultTextBlockStyle}"
+                Foreground="Red"
+                FontStyle="Oblique"
+                Visibility="{Binding WarningMessageVisibility}"/>
+            <TextBlock
+                Grid.Column="3"
+                Text="F1 Telemetry App"
+                Style="{StaticResource DefaultTextBlockStyle}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                Margin="5,0"
+                FontSize="12"/>
+        </Grid>
+        <!--<TextBlock Grid.Row="1" Grid.Column="0" Foreground="{StaticResource PrimaryText}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Record/ Replay Pane"/>-->
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="10"/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox
+                    Grid.Column="0"
+                    Content="Record"
+                    Style="{StaticResource MainWindowCheckBoxStyle}"
+                    IsChecked="{Binding IsExportCheckboxChecked}"
+                    IsEnabled="{Binding Path=IsExportCheckboxEnabled}"/>
+                <CheckBox
+                    Grid.Column="1"
+                    Content="Replay"
+                    Style="{StaticResource MainWindowCheckBoxStyle}"
+                    IsChecked="{Binding IsImportCheckboxChecked}"
+                    IsEnabled="{Binding Path=IsImportCheckboxEnabled}"/>
+            </Grid>
+
+            <TextBlock
+                Grid.Row="1"
+                Style="{StaticResource DefaultTextBlockStyle}"
+                Text="{Binding ExportDirectory}"
+                Visibility="{Binding ExportDirectoryVisibility}"
+                TextWrapping="Wrap"/>
+            <!-- Leave Grid.Row="2" empty -->
+            <Button
+                Grid.Row="3"
+                Content="Replay.."
+                Click="ImportTelemetry"
+                Style="{StaticResource DefaultBtnStyle}"
+                Margin="5,0"
+                IsEnabled="{Binding IsImportBtnEnabled}"/>
+            <TextBlock
+                Grid.Row="4"
+                Style="{StaticResource DefaultTextBlockStyle}"
+                Text="{Binding ImportTelemetryFilepath}"
+                IsEnabled="{Binding IsImportBtnEnabled}"
+                TextWrapping="Wrap"/>
+
+        </Grid>
+
+        <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{StaticResource PrimaryText}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Test Window Btn"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{StaticResource PrimaryText}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Basic info (track/ weather/ session time)" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="2" Grid.Column="1" Foreground="{StaticResource PrimaryText}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Telemetry Window Btn"/>
+
+        <!--<Grid Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource DefaultGridStyle}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="30" Margin="0,5">
                 <ToggleButton
                     x:Name="TelemetryFeedBtn"
@@ -64,17 +164,6 @@
                     Style="{StaticResource DefaultTextBlockStyle}"
                     Foreground="{StaticResource PrimaryText}"/>
             </StackPanel>
-        </Grid>
-        
-        <Frame Grid.Row="1" Grid.Column="0" x:Name="NavFrame" NavigationUIVisibility="Hidden"/>
-        <ListBox
-            Grid.Row="1" Grid.Column="1"
-            x:Name="NavBar"
-            Style="{StaticResource DefaultListBoxStyle}"
-            SelectionMode="Single"
-            SelectionChanged="NavBar_SelectionChanged">
-            <c:NavigationButton Style="{StaticResource DefaultNavButtonStyle}" NavigationLink="/View/TelemetryPage.xaml" Margin="3" Padding="6" Icon="M 3.3320385,1.9149378 V 186.29645 H 206.31706 v -6.20118 H 9.9466218 V 1.9149378 Z M 15.320971,83.356994 61.623053,49.870666 107.51172,119.7372 167.04297,39.121969 200.94271,79.636291 198.46224,81.289937 167.04297,44.496317 107.09831,124.69814 61.209642,54.418192 17.388028,86.250874 Z"/>
-            <c:NavigationButton Style="{StaticResource DefaultNavButtonStyle}" NavigationLink="/View/TestPage.xaml" Margin="3" Padding="6" Icon="M 320.5625 556.65625 C 318.90564 556.65625 317.5625 557.99939 317.5625 559.65625 L 317.5625 573.65625 C 317.5625 575.31315 318.90564 576.65625 320.5625 576.65625 L 336.5625 576.65625 C 338.2194 576.65625 339.5625 575.31315 339.5625 573.65625 L 339.5625 559.65625 C 339.5625 557.99939 338.2194 556.65625 336.5625 556.65625 L 320.5625 556.65625 z M 320.5625 558.65625 L 336.5625 558.65625 C 337.1147 558.65625 337.5625 559.10394 337.5625 559.65625 L 337.5625 562.65625 L 319.5625 562.65625 L 319.5625 559.65625 C 319.5625 559.10394 320.01019 558.65625 320.5625 558.65625 z M 319.5625 564.65625 L 337.5625 564.65625 L 337.5625 573.65625 C 337.5625 574.20855 337.1147 574.65625 336.5625 574.65625 L 320.5625 574.65625 C 320.01019 574.65625 319.5625 574.20855 319.5625 573.65625 L 319.5625 564.65625 z M 326.5625 566.65625 C 326.01019 566.65625 325.5625 567.10395 325.5625 567.65625 C 325.5625 568.20855 326.01019 568.65625 326.5625 568.65625 L 330.5625 568.65625 C 331.1147 568.65625 331.5625 568.20855 331.5625 567.65625 C 331.5625 567.10395 331.1147 566.65625 330.5625 566.65625 L 326.5625 566.65625 z "/>
-        </ListBox>
+        </Grid>-->
     </Grid>
 </Window>
