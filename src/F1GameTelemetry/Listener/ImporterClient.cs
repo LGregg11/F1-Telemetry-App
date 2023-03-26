@@ -1,13 +1,14 @@
 ﻿namespace F1GameTelemetry.Listener;
 
-using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 
 internal class ImporterClient : IUdpClient
 {
     private readonly StreamReader _streamReader;
+    private const int DELAY_MS = 9;
 
     public ImporterClient(string filepath)
     {
@@ -26,6 +27,9 @@ internal class ImporterClient : IUdpClient
 
     public byte[]? Receive(ref IPEndPoint ep)
     {
+        // Very short delay to try and make the rate of receipt more realistic (otherwise it is like 20x speed..)
+        Thread.Sleep(DELAY_MS);
+
         string? line = _streamReader.ReadLine();
         if (line == null)
             return null;
