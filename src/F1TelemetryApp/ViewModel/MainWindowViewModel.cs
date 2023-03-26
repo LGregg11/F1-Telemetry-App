@@ -7,12 +7,13 @@ using F1GameTelemetry.Exporter;
 using F1GameTelemetry.Listener;
 using F1GameTelemetry.Readers;
 
-using log4net;
 using Prism.Mvvm;
+
+using log4net;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using Microsoft.Win32;
 
 public class MainWindowViewModel : BindableBase
 {
