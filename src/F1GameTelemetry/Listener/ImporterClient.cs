@@ -3,34 +3,44 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 internal class ImporterClient : IUdpClient
 {
-    private readonly StreamReader _streamReader;
     private const int DELAY_MS = 9;
+    private readonly string _filepath;
+    private StreamReader? _streamReader;
 
     public ImporterClient(string filepath)
     {
-        _streamReader = new StreamReader(File.OpenRead(filepath), null, true, -1, true);
+        _filepath = filepath;
+        _streamReader = new StreamReader(File.OpenRead(_filepath), null, true, -1, true);
     }
 
     public void Close()
     {
-        // Do nothing
+        _streamReader = null;
     }
 
     public void Dispose()
     {
-        // Do nothing
+        _streamReader = null;
     }
 
     public byte[]? Receive(ref IPEndPoint ep)
     {
+        // If set to null, client has been closed - reset _streamReader ahead of next 'Start' and throw an exception
+        if (_streamReader == null)
+        {
+            _streamReader = new StreamReader(File.OpenRead(_filepath), null, true, -1, true);
+            throw new SocketException();
+        }
+
         // Very short delay to try and make the rate of receipt more realistic (otherwise it is like 20x speed..)
         Thread.Sleep(DELAY_MS);
 
-        string? line = _streamReader.ReadLine();
+        string? line = _streamReader?.ReadLine();
         if (line == null)
             return null;
 

@@ -29,6 +29,13 @@
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
 
+            <Style x:Key="MainWindowDataTextBlockStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DefaultTextBlockStyle}">
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
             <Style x:Key="DefaultTextBoxStyle" TargetType="{x:Type TextBox}">
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
@@ -108,9 +115,10 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="MainBarCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckboxStyle}">
+            <Style x:Key="MainWindowCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckboxStyle}">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="10,0"/>
+                <Setter Property="FontSize" Value="15"/>
             </Style>
 
             <Style x:Key="DefaultTabControlStyle" TargetType="{x:Type TabControl}">
@@ -190,7 +198,7 @@
                                 CornerRadius="{TemplateBinding Border.CornerRadius}"
                                 Background="{StaticResource PrimaryBackground}" 
                                 BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" >
+                                BorderThickness="{TemplateBinding BorderThickness}">
                                 <ContentPresenter
                                     x:Name="contentPresenter"
                                     ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -205,7 +213,7 @@
                 <Setter Property="Border.CornerRadius" Value="3"/>
             </Style>
 
-            <Style x:Key="DefaultToggleBtnStyle" TargetType="{x:Type ToggleButton}">
+            <Style x:Key="SessionToggleBtnStyle" TargetType="{x:Type ToggleButton}">
                 <Setter Property="Padding" Value="5"/>
                 <Setter Property="Margin" Value="5,0"/>
                 <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
@@ -233,9 +241,9 @@
                                         <Condition Property="IsMouseOver" Value="False"/>
                                         <Condition Property="IsChecked" Value="False"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter Property="Content" Value="Start Telemetry"/>
+                                    <Setter Property="Content" Value="Start Session"/>
                                 </MultiTrigger>
-                                
+
                                 <!-- If not started and hovering over -->
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -243,7 +251,7 @@
                                         <Condition Property="IsChecked" Value="False"/>
                                     </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource SecondaryGreen}"/>
-                                    <Setter Property="Content" Value="Start Telemetry"/>
+                                    <Setter Property="Content" Value="Start Session"/>
                                 </MultiTrigger>
 
                                 <!-- If pressed to start -->
@@ -262,7 +270,7 @@
                                         <Condition Property="IsChecked" Value="True"/>
                                     </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource PrimaryGreen}"/>
-                                    <Setter Property="Content" Value="Telemetry running.."/>
+                                    <Setter Property="Content" Value="Running.."/>
                                 </MultiTrigger>
 
                                 <!-- If started and hovering over -->
@@ -272,9 +280,9 @@
                                         <Condition Property="IsChecked" Value="True"/>
                                     </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="{StaticResource IconHover}"/>
-                                    <Setter Property="Content" Value="Stop Telemetry"/>
+                                    <Setter Property="Content" Value="Stop Session"/>
                                 </MultiTrigger>
-                                
+
                                 <!-- If pressed to stop -->
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -288,9 +296,6 @@
                     </Setter.Value>
                 </Setter>
                 <Setter Property="Border.CornerRadius" Value="3"/>
-            </Style>
-
-            <Style x:Key="StartStopFeedToggleBtnStyle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleBtnStyle}">
                 <Setter Property="Width" Value="120"/>
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>

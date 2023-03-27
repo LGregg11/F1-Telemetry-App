@@ -23,10 +23,10 @@ public class TelemetryExporterFileExistsException : Exception
 
 public class TelemetryExporter : ITelemetryExporter
 {
-    private static readonly string _TELEMETRY_EXPORTER_DIRECTORY = $"{Environment.CurrentDirectory}\\Export_Data";
+    public static readonly string TELEMETRY_EXPORTER_DIRECTORY = $"{Environment.CurrentDirectory}\\Export_Data";
     public TelemetryExporter()
     {
-        Filepath = _TELEMETRY_EXPORTER_DIRECTORY;
+        Filepath = TELEMETRY_EXPORTER_DIRECTORY;
     }
 
     public string Filepath { get; private set; }
@@ -35,7 +35,7 @@ public class TelemetryExporter : ITelemetryExporter
     public void SetupNewFilePath(GameVersion gameVersion, ulong sessionUID)
     {
         // Create the new file
-        string directory = $"{_TELEMETRY_EXPORTER_DIRECTORY}\\{Enum.GetName(gameVersion)}";
+        string directory = $"{TELEMETRY_EXPORTER_DIRECTORY}\\{Enum.GetName(gameVersion)}";
         string filePath = $"{directory}\\Data_{sessionUID}.txt";
         if (File.Exists(filePath))
             throw new TelemetryExporterFileExistsException($"{filePath} exists");

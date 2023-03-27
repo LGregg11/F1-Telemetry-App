@@ -3,19 +3,21 @@
 using Converters;
 using Enums;
 using Model;
+
 using F1GameTelemetry.Listener;
 
 using log4net;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
 
-public class TelemetryPageViewModel : BasePageViewModel
+public class LapTelemetryWindowViewModel : BasePageViewModel
 {
     private int myCarIndex = -1;
 
-    public TelemetryPageViewModel()
+    public LapTelemetryWindowViewModel()
     {
         log4net.Config.XmlConfigurator.Configure();
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
