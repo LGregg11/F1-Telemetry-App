@@ -36,8 +36,15 @@ public partial class MainWindow : Window
 
     public void OpenTestInputsWindow_Click(object sender, RoutedEventArgs e)
     {
-        TestWindow w = new TestWindow();
+        TestWindow w = new();
         ((TestWindowViewModel)w.DataContext).MainWindowViewModel = viewModel; // Do I need this?
+        w.Show();
+    }
+
+    public void OpenTelemetryWindow_Click(object sender, RoutedEventArgs e)
+    {
+        LapTelemetryWindow w = new();
+        ((LapTelemetryWindowViewModel)w.DataContext).MainWindowViewModel = viewModel; // Do I need this?
         w.Show();
     }
 

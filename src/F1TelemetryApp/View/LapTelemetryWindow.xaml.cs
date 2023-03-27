@@ -8,21 +8,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System;
+using System.Windows;
 
 /// <summary>
 /// Interaction logic for TelemetryPage.xaml
 /// </summary>
-public partial class TelemetryPage : Page
+public partial class LapTelemetryWindow : Window
 {
-    private readonly TelemetryPageViewModel vm;
+    private readonly LapTelemetryWindowViewModel viewModel;
     private readonly Dictionary<DataGraphType, CheckBox> checkboxMap = new();
     private Dictionary<CheckBox, TelemetryGraph> graphMap = new();
 
 
-    public TelemetryPage()
+    public LapTelemetryWindow()
     {
         InitializeComponent();
-        vm = (TelemetryPageViewModel)DataContext;
+        viewModel = (LapTelemetryWindowViewModel)DataContext;
 
         checkboxMap = new Dictionary<DataGraphType, CheckBox> {
             { DataGraphType.Throttle, ThrottleCheckbox },
@@ -34,14 +35,14 @@ public partial class TelemetryPage : Page
 
         foreach (var key in checkboxMap.Keys)
         {
-            if (!vm.GraphPointCollectionMap.ContainsKey(key))
+            if (!viewModel.GraphPointCollectionMap.ContainsKey(key))
                 checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
         }
 
         UpdateGraphMap();
         UpdateGrid();
 
-        vm.LapUpdated += OnLapUpdated;
+        viewModel.LapUpdated += OnLapUpdated;
     }
 
     private void OnLapUpdated(object? sender, EventArgs e)
@@ -52,7 +53,7 @@ public partial class TelemetryPage : Page
 
     private void UpdateGraphMap()
     {
-        var vm = (TelemetryPageViewModel)DataContext;
+        var vm = (LapTelemetryWindowViewModel)DataContext;
         graphMap = new();
 
         foreach (var key in checkboxMap.Keys)
@@ -64,7 +65,7 @@ public partial class TelemetryPage : Page
 
     private TelemetryGraph CreateTelemetryGraph(DataGraphType type)
     {
-        var vm = (TelemetryPageViewModel)DataContext;
+        var vm = (LapTelemetryWindowViewModel)DataContext;
 
         var graph = new TelemetryGraph
         {
@@ -114,11 +115,11 @@ public partial class TelemetryPage : Page
 
     private void NewLapButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        vm.DebugNewLap();
+        viewModel.DebugNewLap();
     }
 
     private void LapsComboBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
     {
-        vm.RedrawLaps();
+        viewModel.RedrawLaps();
     }
 }

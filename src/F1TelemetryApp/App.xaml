@@ -29,6 +29,13 @@
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
 
+            <Style x:Key="MainWindowDataTextBlockStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DefaultTextBlockStyle}">
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
             <Style x:Key="DefaultTextBoxStyle" TargetType="{x:Type TextBox}">
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>

@@ -14,6 +14,7 @@
         <vm:MainWindowViewModel />
     </Window.DataContext>
     <Window.Resources>
+        <conv:TelemetryConverter x:Key="telemetryConverter"/>
         <conv:EnumConverter x:Key="enumConverter"/>
     </Window.Resources>
 
@@ -131,11 +132,37 @@
             Style="{StaticResource DefaultBtnStyle}"
             Margin="5" 
             FontSize="15"/>
-        <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{StaticResource PrimaryText}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Basic info (track/ weather/ session time)" TextWrapping="Wrap" />
+
+        <Grid Grid.Row="2" Grid.Column="0" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="Track: "/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="{Binding TrackName}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="Weather: "/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="{Binding WeatherStatus}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="Track Temp (deg C): "/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="{Binding TrackTemperature}"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="Air Temp (deg C): "/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="{Binding AirTemperature}"/>
+        </Grid>
+
         <Button
             Grid.Row="2"
             Grid.Column="1"
-            Content="Telemetry Window"
+            Content="Lap Telemetry"
+            Click="OpenTelemetryWindow_Click"
             Style="{StaticResource DefaultBtnStyle}"
             Margin="5" 
             FontSize="15"/>

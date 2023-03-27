@@ -7,9 +7,9 @@ using F1GameTelemetry.Exporter;
 using F1GameTelemetry.Listener;
 using F1GameTelemetry.Readers;
 
+using log4net;
 using Prism.Mvvm;
 
-using log4net;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,7 @@ public class MainWindowViewModel : BindableBase
 
     private readonly TelemetryReaderFactory readerFactory;
     private ITelemetryListener telemetryListener;
+    private bool isSubscribedToReader = false;
 
     public MainWindowViewModel()
     {
@@ -141,11 +142,31 @@ public class MainWindowViewModel : BindableBase
 
     public bool IsSessionBtnEnabled => string.IsNullOrEmpty(warningMessage);
 
+    public string TrackName { get; private set; }
+    public string WeatherStatus { get; private set; }
+    public string TrackTemperature { get; private set; }
+    public string AirTemperature { get; private set; }
+
     public void UpdateTelemetryReader()
     {
+        if (isSubscribedToReader) UnSubscribeFromCurrentReader();
         TelemetryReader = readerFactory.GetTelemetryReader(Version)!;
+        RaisePropertyChanged(nameof(TelemetryReader));
+        if (!isSubscribedToReader) SubscribeToCurrentReader();
         VersionUpdated?.Invoke(this, new EventArgs());
         CheckWarnings();
+    }
+
+    private void SubscribeToCurrentReader()
+    {
+        TelemetryReader.SessionPacket.Received += OnSessionReceived;
+        isSubscribedToReader = true;
+    }
+
+    private void UnSubscribeFromCurrentReader()
+    {
+        TelemetryReader.SessionPacket.Received -= OnSessionReceived;
+        isSubscribedToReader = false;
     }
 
     private void CheckWarnings()
@@ -208,8 +229,25 @@ public class MainWindowViewModel : BindableBase
         ImportTelemetryFilepath = dialog.FileName;
         telemetryListener = new TelemetryImporter(ImportTelemetryFilepath);
         var readerFactory = new TelemetryReaderFactory(telemetryListener);
+        if (isSubscribedToReader) UnSubscribeFromCurrentReader();
         TelemetryReader = readerFactory.GetTelemetryReader(Version)!;
         RaisePropertyChanged(nameof(TelemetryReader));
+        if (!isSubscribedToReader) SubscribeToCurrentReader();
         CheckWarnings();
+    }
+    private void OnSessionReceived(object? sender, EventArgs e)
+    {
+        var session = ((SessionEventArgs)e).Session;
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            TrackName = Enum.GetName(typeof(Track), session.trackId)!;
+            WeatherStatus = Enum.GetName(typeof(Weather), session.weather)!;
+            TrackTemperature = $"{Convert.ToInt16(session.trackTemperature)}";
+            AirTemperature = $"{Convert.ToInt16(session.airTemperature)}";
+        });
+        RaisePropertyChanged(nameof(TrackName));
+        RaisePropertyChanged(nameof(WeatherStatus));
+        RaisePropertyChanged(nameof(TrackTemperature));
+        RaisePropertyChanged(nameof(AirTemperature));
     }
 }
