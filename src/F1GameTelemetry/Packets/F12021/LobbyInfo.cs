@@ -1,9 +1,7 @@
 ﻿namespace F1GameTelemetry.Packets.F12021;
 
-using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
-using F1GameTelemetry.Listener;
-using System;
+
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1167)]
@@ -27,19 +25,4 @@ public struct LobbyInfoData
 
     public byte carNumber;
     public ReadyStatus readyStatus;
-}
-
-public class LobbyInfoPacket : IPacket
-{
-    public event EventHandler? Received;
-
-    public void ReceivePacket(byte[] remainingPacket)
-    {
-        var args = new LobbyInfoEventArgs
-        {
-            LobbyInfo = Converter.BytesToPacket<LobbyInfo>(remainingPacket)
-        };
-
-        Received?.Invoke(this, args);
-    }
 }
