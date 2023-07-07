@@ -1,6 +1,7 @@
 ﻿namespace F1GameTelemetry.Listener;
 
-using F1GameTelemetry.Events;
+using Events;
+
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;

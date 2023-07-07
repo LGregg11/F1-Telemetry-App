@@ -17,15 +17,15 @@ using F1GameTelemetry.Events;
 
 public class MainWindowViewModel : BindableBase
 {
-    private const int port = 20777;
-    private bool isSubscribedToReader = false;
+    private const int _port = 20777;
+    private bool _isSubscribedToReader = false;
 
     public MainWindowViewModel()
     {
         log4net.Config.XmlConfigurator.Configure();
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
         Version = GameVersion.F12021;
-        SingletonTelemetryReader.SetTelemetryListener(new TelemetryListener(port));
+        SingletonTelemetryReader.SetTelemetryListener(new TelemetryListener(_port));
         UpdateTelemetryReader();
     }
 
@@ -35,34 +35,34 @@ public class MainWindowViewModel : BindableBase
 
     public static List<GameVersion> Versions => new((IEnumerable<GameVersion>)Enum.GetValues(typeof(GameVersion)));
 
-    private GameVersion version;
+    private GameVersion _version;
     public GameVersion Version
     {
-        get => version;
+        get => _version;
 
         set
         {
-            if (version != value)
+            if (_version != value)
             {
-                version = value;
+                _version = value;
                 RaisePropertyChanged(nameof(Version));
                 UpdateTelemetryReader();
             }
         }
     }
 
-    public bool IsExportCheckboxEnabled => !SingletonTelemetryReader.IsListenerRunning && !isImportCheckboxChecked;
+    public bool IsExportCheckboxEnabled => !SingletonTelemetryReader.IsListenerRunning && !_isImportCheckboxChecked;
 
-    private bool isExportCheckboxChecked;
+    private bool _isExportCheckboxChecked;
     public bool IsExportCheckboxChecked
     {
-        get => isExportCheckboxChecked;
+        get => _isExportCheckboxChecked;
 
         set
         {
             if (IsExportCheckboxChecked != value)
             {
-                isExportCheckboxChecked = value;
+                _isExportCheckboxChecked = value;
                 // TODO: Exporting is broken!!
                 //TelemetryReader.IsExportEnabled = IsExportCheckboxChecked;
                 RaisePropertyChanged(nameof(IsExportCheckboxChecked));
@@ -76,18 +76,18 @@ public class MainWindowViewModel : BindableBase
     public Visibility ExportDirectoryVisibility => IsExportCheckboxChecked ? Visibility.Visible : Visibility.Hidden;
     public static string ExportDirectory => $"Data will be stored at\n{TelemetryExporter.TELEMETRY_EXPORTER_DIRECTORY}";
 
-    public bool IsImportCheckboxEnabled => !SingletonTelemetryReader.IsListenerRunning && !isExportCheckboxChecked;
+    public bool IsImportCheckboxEnabled => !SingletonTelemetryReader.IsListenerRunning && !_isExportCheckboxChecked;
 
-    private bool isImportCheckboxChecked;
+    private bool _isImportCheckboxChecked;
     public bool IsImportCheckboxChecked
     {
-        get => isImportCheckboxChecked;
+        get => _isImportCheckboxChecked;
 
         set
         {
-            if (isImportCheckboxChecked != value)
+            if (_isImportCheckboxChecked != value)
             {
-                isImportCheckboxChecked = value;
+                _isImportCheckboxChecked = value;
                 RaisePropertyChanged(nameof(IsImportCheckboxChecked));
                 RaisePropertyChanged(nameof(IsImportCheckboxEnabled));
                 RaisePropertyChanged(nameof(IsExportCheckboxChecked));
@@ -100,31 +100,31 @@ public class MainWindowViewModel : BindableBase
 
     public bool IsImportBtnEnabled => !IsListenerRunning && IsImportCheckboxChecked;
 
-    private string importTelemetryFilepath;
+    private string _importTelemetryFilepath;
     public string ImportTelemetryFilepath
     {
-        get => importTelemetryFilepath;
+        get => _importTelemetryFilepath;
 
         set
         {
             if (ImportTelemetryFilepath != value)
             {
-                importTelemetryFilepath = value;
+                _importTelemetryFilepath = value;
                 RaisePropertyChanged(nameof(ImportTelemetryFilepath));
                 RaisePropertyChanged(nameof(IsSessionBtnEnabled));
             }
         }
     }
 
-    private string warningMessage;
+    private string _warningMessage;
     public string WarningMessage
     {
-        get => warningMessage;
+        get => _warningMessage;
         set
         {
-            if (warningMessage != value)
+            if (_warningMessage != value)
             {
-                warningMessage = value;
+                _warningMessage = value;
                 RaisePropertyChanged(nameof(WarningMessage));
                 RaisePropertyChanged(nameof(WarningMessageVisibility));
                 RaisePropertyChanged(nameof(IsSessionBtnEnabled));
@@ -132,9 +132,9 @@ public class MainWindowViewModel : BindableBase
         }
     }
 
-    public Visibility WarningMessageVisibility => !string.IsNullOrEmpty(warningMessage) ? Visibility.Visible : Visibility.Hidden;
+    public Visibility WarningMessageVisibility => !string.IsNullOrEmpty(_warningMessage) ? Visibility.Visible : Visibility.Hidden;
 
-    public bool IsSessionBtnEnabled => string.IsNullOrEmpty(warningMessage);
+    public bool IsSessionBtnEnabled => string.IsNullOrEmpty(_warningMessage);
 
     public string TrackName { get; private set; }
     public string WeatherStatus { get; private set; }
@@ -143,28 +143,28 @@ public class MainWindowViewModel : BindableBase
 
     public void UpdateTelemetryReader()
     {
-        if (isSubscribedToReader) UnSubscribeFromCurrentReader();
+        if (_isSubscribedToReader) UnSubscribeFromCurrentReader();
         SingletonTelemetryReader.SetTelemetryConverterByVersion(Version);
-        if (!isSubscribedToReader) SubscribeToCurrentReader();
+        if (!_isSubscribedToReader) SubscribeToCurrentReader();
         CheckWarnings();
     }
 
     private void SubscribeToCurrentReader()
     {
         SingletonTelemetryReader.SessionReceived += OnSessionReceived;
-        isSubscribedToReader = true;
+        _isSubscribedToReader = true;
     }
 
     private void UnSubscribeFromCurrentReader()
     {
         SingletonTelemetryReader.SessionReceived -= OnSessionReceived;
-        isSubscribedToReader = false;
+        _isSubscribedToReader = false;
     }
 
     private void CheckWarnings()
     {
         var warningMessage = string.Empty;
-        if (IsImportCheckboxChecked && string.IsNullOrEmpty(importTelemetryFilepath))
+        if (IsImportCheckboxChecked && string.IsNullOrEmpty(_importTelemetryFilepath))
             warningMessage = $"No import file selected";
 
         // Override any previous warnings - this should take precedence

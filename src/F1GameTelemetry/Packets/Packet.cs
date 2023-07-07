@@ -1,7 +1,8 @@
 ﻿namespace F1GameTelemetry.Packets;
 
-using F1GameTelemetry.Converters;
-using F1GameTelemetry.Events;
+using Converters;
+using Events;
+
 using System;
 
 public class Packet<T> : IPacket<T>

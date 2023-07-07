@@ -1,6 +1,7 @@
 ﻿namespace F1GameTelemetry.Exporter;
 
-using F1GameTelemetry.Enums;
+using Enums;
+
 using System;
 using System.IO;
 

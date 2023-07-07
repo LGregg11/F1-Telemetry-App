@@ -1,6 +1,6 @@
 ﻿namespace F1GameTelemetry.Packets.F12021;
 
-using F1GameTelemetry.Enums;
+using Enums;
 
 using System.Runtime.InteropServices;
 

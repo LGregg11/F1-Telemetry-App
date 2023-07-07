@@ -1,6 +1,6 @@
 ﻿namespace F1GameTelemetry.Listener;
 
-using F1GameTelemetry.Events;
+using Events;
 
 public interface ITelemetryListener
 {

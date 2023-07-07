@@ -17,15 +17,15 @@ using F1GameTelemetry.Packets.Standard;
 
 public class TestWindowViewModel : BasePageViewModel
 {
-    private int myCarIndex = -1; // Not really but for example sake this is fine
-    private MotionMessage motionMessage;
-    private TelemetryMessage telemetryMessage;
-    private LapDataMessage lapDataMessage;
-    private SessionMessage sessionMessage;
-    private ParticipantMessage participantMessage;
-    private LobbyInfoMessage lobbyInfoMessage;
-    private CarDamageMessage carDamageMessage;
-    private CarSetupMessage carSetupMessage;
+    private int _myCarIndex = -1; // Not really but for example sake this is fine
+    private MotionMessage _motionMessage;
+    private TelemetryMessage _telemetryMessage;
+    private LapDataMessage _lapDataMessage;
+    private SessionMessage _sessionMessage;
+    private ParticipantMessage _participantMessage;
+    private LobbyInfoMessage _lobbyInfoMessage;
+    private CarDamageMessage _carDamageMessage;
+    private CarSetupMessage _carSetupMessage;
 
     public TestWindowViewModel()
     {
@@ -93,57 +93,57 @@ public class TestWindowViewModel : BasePageViewModel
 
     #region Gui Test Properties
 
-    public string LocalSpeed => $"{motionMessage.Speed:#0.00} m/s";
+    public string LocalSpeed => $"{_motionMessage.Speed:#0.00} m/s";
 
-    public string Speed => $"{telemetryMessage.Speed} km/h";
+    public string Speed => $"{_telemetryMessage.Speed} km/h";
 
-    public string Throttle => $"{telemetryMessage.Throttle}";
+    public string Throttle => $"{_telemetryMessage.Throttle}";
 
-    public string Brake => $"{telemetryMessage.Brake}";
+    public string Brake => $"{_telemetryMessage.Brake}";
 
-    public string Gear => $"{telemetryMessage.Gear}";
+    public string Gear => $"{_telemetryMessage.Gear}";
 
-    public string Steer => $"{telemetryMessage.Steer}";
+    public string Steer => $"{_telemetryMessage.Steer}";
 
-    public string LastLapTime => lapDataMessage.LastLapTime.ToTelemetryTime();
+    public string LastLapTime => _lapDataMessage.LastLapTime.ToTelemetryTime();
 
-    public string TrackName => Enum.GetName(typeof(Track), sessionMessage.Track)!;
+    public string TrackName => Enum.GetName(typeof(Track), _sessionMessage.Track)!;
 
-    public string WeatherStatus => Enum.GetName(typeof(Weather), sessionMessage.Weather)!;
+    public string WeatherStatus => Enum.GetName(typeof(Weather), _sessionMessage.Weather)!;
 
-    public string TrackTemperature => $"{Convert.ToInt32(sessionMessage.TrackTemperature)}";
+    public string TrackTemperature => $"{Convert.ToInt32(_sessionMessage.TrackTemperature)}";
 
-    public string AirTemperature => $"{Convert.ToInt32(sessionMessage.AirTemperature)}";
+    public string AirTemperature => $"{Convert.ToInt32(_sessionMessage.AirTemperature)}";
 
-    public string TotalLaps => $"{sessionMessage.TotalLaps}";
+    public string TotalLaps => $"{_sessionMessage.TotalLaps}";
 
-    public string AiDifficulty => $"{Convert.ToUInt32(sessionMessage.AiDifficulty)}";
+    public string AiDifficulty => $"{Convert.ToUInt32(_sessionMessage.AiDifficulty)}";
 
-    public Dictionary<string, string> Participants => participantMessage.Participants;
+    public Dictionary<string, string> Participants => _participantMessage.Participants;
 
-    public string LobbyPlayers => $"{lobbyInfoMessage.Players}";
+    public string LobbyPlayers => $"{_lobbyInfoMessage.Players}";
 
-    public string LobbyName => lobbyInfoMessage.Name;
+    public string LobbyName => _lobbyInfoMessage.Name;
 
-    public string LobbyTeam => Enum.GetName(typeof(Team), lobbyInfoMessage.Team)!;
+    public string LobbyTeam => Enum.GetName(typeof(Team), _lobbyInfoMessage.Team)!;
 
-    public string LobbyNationality => Enum.GetName(typeof(Nationality), lobbyInfoMessage.Nationality)!;
+    public string LobbyNationality => Enum.GetName(typeof(Nationality), _lobbyInfoMessage.Nationality)!;
 
-    public string RLTyreWear => $"{carDamageMessage.TyreWear[0]:F1}%";
+    public string RLTyreWear => $"{_carDamageMessage.TyreWear[0]:F1}%";
 
-    public string RRTyreWear => $"{carDamageMessage.TyreWear[1]:F1}%";
+    public string RRTyreWear => $"{_carDamageMessage.TyreWear[1]:F1}%";
 
-    public string FLTyreWear => $"{carDamageMessage.TyreWear[2]:F1}%";
+    public string FLTyreWear => $"{_carDamageMessage.TyreWear[2]:F1}%";
 
-    public string FRTyreWear => $"{carDamageMessage.TyreWear[3]:F1}%";
+    public string FRTyreWear => $"{_carDamageMessage.TyreWear[3]:F1}%";
 
-    public string FrontLeftWingDamage => $"{carDamageMessage.FrontLeftWingDamage:F1}%";
+    public string FrontLeftWingDamage => $"{_carDamageMessage.FrontLeftWingDamage:F1}%";
 
-    public string FrontRightWingDamage => $"{carDamageMessage.FrontRightWingDamage:F1}%";
+    public string FrontRightWingDamage => $"{_carDamageMessage.FrontRightWingDamage:F1}%";
 
-    public string BrakeBias => $"{carSetupMessage.BrakeBias}";
+    public string BrakeBias => $"{_carSetupMessage.BrakeBias}";
 
-    public string FuelLoad => $"{carSetupMessage.FuelLoad:F2}";
+    public string FuelLoad => $"{_carSetupMessage.FuelLoad:F2}";
 
     #endregion
 
@@ -153,14 +153,16 @@ public class TestWindowViewModel : BasePageViewModel
     {
         PopulateHeaderMessages();
         PopulateEventMessages();
-        PopulateMotionMessage();
-        PopulateTelemetryMessage();
-        PopulateLapDataMessage();
-        PopulateSessionMessage();
-        PopulateParticipantMessage();
-        PopularCarSetupMessage();
-        PopulateLobbyInfoMessage();
-        PopulateCarDamageMessage();
+
+        _motionMessage = new MotionMessage { Speed = 0.0d };
+        _telemetryMessage = new TelemetryMessage { Speed = 0, Brake = 0.0f, Throttle = 0.0f, Gear = 0, Steer = 0.0f };
+        _lapDataMessage = new LapDataMessage { LastLapTime = 0 };
+        _sessionMessage = new SessionMessage { Track = Track.Unknown, Weather = Weather.Unknown, TotalLaps = 0, TrackTemperature = 0, AirTemperature = 0, AiDifficulty = 0 };
+        _participantMessage = new ParticipantMessage { Participants = new Dictionary<string, string>() };
+        _lobbyInfoMessage = new LobbyInfoMessage { Players = 0, Name = "", Nationality = Nationality.Unknown, Team = Team.Unknown };
+        _carDamageMessage = new CarDamageMessage { TyreWear = new float[4] { 0f, 0f, 0f, 0f }, FrontLeftWingDamage = 0, FrontRightWingDamage = 0 };
+        _carSetupMessage = new CarSetupMessage { BrakeBias = 0, FuelLoad = 0f };
+        
     }
 
     private void PopulateHeaderMessages()
@@ -178,46 +180,6 @@ public class TestWindowViewModel : BasePageViewModel
         foreach (EventType eventType in eventTypes)
             eventMessages.Add(new EventMessage { EventType = eventType, Total = 0 });
     }
-
-    private void PopulateMotionMessage()
-    {
-        motionMessage = new MotionMessage { Speed = 0.0d };
-    }
-
-    private void PopulateTelemetryMessage()
-    {
-        telemetryMessage = new TelemetryMessage { Speed = 0, Brake = 0.0f, Throttle = 0.0f, Gear = 0, Steer = 0.0f };
-    }
-
-    private void PopulateLapDataMessage()
-    {
-        lapDataMessage = new LapDataMessage { LastLapTime = 0 };
-    }
-
-    private void PopulateSessionMessage()
-    {
-        sessionMessage = new SessionMessage { Track = Track.Unknown, Weather = Weather.Unknown, TotalLaps = 0, TrackTemperature = 0, AirTemperature = 0, AiDifficulty = 0 };
-    }
-
-    private void PopulateParticipantMessage()
-    {
-        participantMessage = new ParticipantMessage { Participants = new Dictionary<string, string>() };
-    }
-
-    private void PopulateLobbyInfoMessage()
-    {
-        lobbyInfoMessage = new LobbyInfoMessage { Players = 0, Name = "", Nationality = Nationality.Unknown, Team = Team.Unknown };
-    }
-
-    private void PopulateCarDamageMessage()
-    {
-        carDamageMessage = new CarDamageMessage { TyreWear = new float[4] { 0f, 0f, 0f, 0f }, FrontLeftWingDamage = 0, FrontRightWingDamage = 0 };
-    }
-
-    private void PopularCarSetupMessage()
-    {
-        carSetupMessage = new CarSetupMessage { BrakeBias = 0, FuelLoad = 0f };
-    }
     #endregion
 
     #region Event Handlers
@@ -225,8 +187,8 @@ public class TestWindowViewModel : BasePageViewModel
     private void OnHeaderReceived(object? sender, PacketEventArgs<Header> e)
     {
         var header = e.Packet;
-        if (myCarIndex < 0)
-            myCarIndex = header.playerCarIndex;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
 
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -271,7 +233,7 @@ public class TestWindowViewModel : BasePageViewModel
         var motion = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            _motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
         });
         RaisePropertyChanged(nameof(LocalSpeed));
     }
@@ -281,11 +243,11 @@ public class TestWindowViewModel : BasePageViewModel
         var carTelemetry = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            telemetryMessage.Speed = carTelemetry.carTelemetryData[myCarIndex].speed;
-            telemetryMessage.Throttle = carTelemetry.carTelemetryData[myCarIndex].throttle;
-            telemetryMessage.Brake = carTelemetry.carTelemetryData[myCarIndex].brake;
-            telemetryMessage.Gear = carTelemetry.carTelemetryData[myCarIndex].gear;
-            telemetryMessage.Steer = carTelemetry.carTelemetryData[myCarIndex].steer;
+            _telemetryMessage.Speed = carTelemetry.carTelemetryData[_myCarIndex].speed;
+            _telemetryMessage.Throttle = carTelemetry.carTelemetryData[_myCarIndex].throttle;
+            _telemetryMessage.Brake = carTelemetry.carTelemetryData[_myCarIndex].brake;
+            _telemetryMessage.Gear = carTelemetry.carTelemetryData[_myCarIndex].gear;
+            _telemetryMessage.Steer = carTelemetry.carTelemetryData[_myCarIndex].steer;
         });
         RaisePropertyChanged(nameof(Speed));
         RaisePropertyChanged(nameof(Throttle));
@@ -312,7 +274,7 @@ public class TestWindowViewModel : BasePageViewModel
 
         App.Current.Dispatcher.Invoke(() =>
         {
-            lapDataMessage.LastLapTime = lapData.carLapData[myCarIndex].lastLapTime;
+            _lapDataMessage.LastLapTime = lapData.carLapData[_myCarIndex].lastLapTime;
         });
         RaisePropertyChanged(nameof(LastLapTime));
     }
@@ -322,12 +284,12 @@ public class TestWindowViewModel : BasePageViewModel
         var session = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            sessionMessage.Track = session.trackId;
-            sessionMessage.Weather = session.weather;
-            sessionMessage.TrackTemperature = session.trackTemperature;
-            sessionMessage.AirTemperature = session.airTemperature;
-            sessionMessage.AiDifficulty = session.aiDifficulty;
-            sessionMessage.TotalLaps = session.totalLaps;
+            _sessionMessage.Track = session.trackId;
+            _sessionMessage.Weather = session.weather;
+            _sessionMessage.TrackTemperature = session.trackTemperature;
+            _sessionMessage.AirTemperature = session.airTemperature;
+            _sessionMessage.AiDifficulty = session.aiDifficulty;
+            _sessionMessage.TotalLaps = session.totalLaps;
         });
         RaisePropertyChanged(nameof(TrackName));
         RaisePropertyChanged(nameof(WeatherStatus));
@@ -356,7 +318,7 @@ public class TestWindowViewModel : BasePageViewModel
 
                 i++;
             }
-            participantMessage.Participants = participants;
+            _participantMessage.Participants = participants;
         });
 
         RaisePropertyChanged(nameof(Participants));
@@ -390,10 +352,10 @@ public class TestWindowViewModel : BasePageViewModel
         var info = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            lobbyInfoMessage.Players = info.numPlayers;
-            lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
-            lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
-            lobbyInfoMessage.Team = info.lobbyPlayers.FirstOrDefault().teamId;
+            _lobbyInfoMessage.Players = info.numPlayers;
+            _lobbyInfoMessage.Name = info.lobbyPlayers.FirstOrDefault().name;
+            _lobbyInfoMessage.Nationality = info.lobbyPlayers.FirstOrDefault().nationality;
+            _lobbyInfoMessage.Team = info.lobbyPlayers.FirstOrDefault().teamId;
         });
         RaisePropertyChanged(nameof(LobbyPlayers));
         RaisePropertyChanged(nameof(LobbyName));
@@ -406,9 +368,9 @@ public class TestWindowViewModel : BasePageViewModel
         var damage = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            carDamageMessage.TyreWear = damage.carDamageData[myCarIndex].tyreWear;
-            carDamageMessage.FrontLeftWingDamage = damage.carDamageData[myCarIndex].frontLeftWingDamage;
-            carDamageMessage.FrontRightWingDamage = damage.carDamageData[myCarIndex].frontRightWingDamage;
+            _carDamageMessage.TyreWear = damage.carDamageData[_myCarIndex].tyreWear;
+            _carDamageMessage.FrontLeftWingDamage = damage.carDamageData[_myCarIndex].frontLeftWingDamage;
+            _carDamageMessage.FrontRightWingDamage = damage.carDamageData[_myCarIndex].frontRightWingDamage;
         });
         RaisePropertyChanged(nameof(FLTyreWear));
         RaisePropertyChanged(nameof(FRTyreWear));
@@ -423,8 +385,8 @@ public class TestWindowViewModel : BasePageViewModel
         var setup = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            carSetupMessage.BrakeBias = setup.carSetupData[myCarIndex].brakeBias;
-            carSetupMessage.FuelLoad = setup.carSetupData[myCarIndex].fuelLoad;
+            _carSetupMessage.BrakeBias = setup.carSetupData[_myCarIndex].brakeBias;
+            _carSetupMessage.FuelLoad = setup.carSetupData[_myCarIndex].fuelLoad;
         });
         RaisePropertyChanged(nameof(BrakeBias));
         RaisePropertyChanged(nameof(FuelLoad));

@@ -1,22 +1,21 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
-using F1TelemetryApp.Interfaces;
 using log4net;
 using Prism.Mvvm;
 using System;
 
-public class BasePageViewModel : BindableBase, IPageViewModel
+public class BasePageViewModel : BindableBase
 {
     public ILog Log { get; set; }
 
-    private MainWindowViewModel mainWindowViewModel;
+    private MainWindowViewModel _mainWindowViewModel;
     public MainWindowViewModel MainWindowViewModel
     {
-        get => mainWindowViewModel;
+        get => _mainWindowViewModel;
 
         set
         {
-            mainWindowViewModel = value;
+            _mainWindowViewModel = value;
             SetTelemetryReader();
         }
     }

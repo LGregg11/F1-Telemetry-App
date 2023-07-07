@@ -4,8 +4,6 @@ using Converters;
 using Enums;
 using Model;
 
-using F1GameTelemetry.Listener;
-
 using log4net;
 
 using System;
@@ -18,7 +16,7 @@ using F1GameTelemetry.Events;
 
 public class LapTelemetryWindowViewModel : BasePageViewModel
 {
-    private int myCarIndex = -1;
+    private int _myCarIndex = -1;
 
     public LapTelemetryWindowViewModel()
     {
@@ -41,29 +39,29 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
     public string LapTime => $"{TelemetryConverter.ToTelemetryTime(DisplayedLap.LapTime)}";
     public string LapDistance => $"{DisplayedLap.LapDistance}";
 
-    private bool displayNewestLap;
+    private bool _displayNewestLap;
     public bool DisplayNewestLap
     {
-        get => displayNewestLap;
+        get => _displayNewestLap;
         set
         {
-            displayNewestLap = value;
+            _displayNewestLap = value;
             RaisePropertyChanged();
 
-            if (displayNewestLap)
+            if (_displayNewestLap)
                 DisplayedLapIndex = Math.Max(0, Laps.Count - 1);
         }
     }
 
-    private ObservableCollection<Lap> laps;
+    private ObservableCollection<Lap> _laps;
     public ObservableCollection<Lap> Laps
     {
-        get => laps;
+        get => _laps;
         set
         {
-            if (laps != value)
+            if (_laps != value)
             {
-                laps = value;
+                _laps = value;
                 RaisePropertyChanged();
             }
         }
@@ -84,19 +82,19 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
         }
     }
 
-    private Lap displayedLap;
+    private Lap _displayedLap;
     public Lap DisplayedLap
     {
-        get => displayedLap;
+        get => _displayedLap;
         set
         {
-            if (value != null && displayedLap != value)
+            if (value != null && _displayedLap != value)
             {
                 var lapNum = 1;
-                if (displayedLap != null)
-                    lapNum = displayedLap.LapNumber;
+                if (_displayedLap != null)
+                    lapNum = _displayedLap.LapNumber;
 
-                displayedLap = value;
+                _displayedLap = value;
                 RaisePropertyChanged();
 
                 if (lapNum != value.LapNumber)
@@ -119,14 +117,14 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
     private void OnHeaderReceived(object? sender, PacketEventArgs<Header> e)
     {
         var header = e.Packet;
-        if (myCarIndex < 0)
-            myCarIndex = header.playerCarIndex;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
     }
 
     private void OnCarTelemetryReceived(object? sender, PacketEventArgs<CarTelemetry> e)
     {
         var carTelemetry = e.Packet;
-        var myTelemetry = carTelemetry.carTelemetryData[myCarIndex];
+        var myTelemetry = carTelemetry.carTelemetryData[_myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
         {
             UpdateGraphPointY(DataGraphType.Throttle, myTelemetry.throttle);
@@ -140,7 +138,7 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
     private void OnLapDataReceived(object? sender, PacketEventArgs<LapData> e)
     {
         var lapData = e.Packet;
-        var myLapData = lapData.carLapData[myCarIndex];
+        var myLapData = lapData.carLapData[_myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
         {
             var lap = new Lap(myLapData.currentLapNum, myLapData.currentLapTime, myLapData.lapDistance);

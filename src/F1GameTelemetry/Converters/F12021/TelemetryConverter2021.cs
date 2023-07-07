@@ -9,10 +9,10 @@ using System;
 
 public class TelemetryConverter2021 : BaseTelemetryConverter
 {
-    private const short MARSHAL_ZONES_MAX = 21;
-    private const short WEATHER_FORECAST_SAMPLES_MAX = 56;
-    private const short LAP_HISTORY_MAX = 100;
-    private const short TYRE_STINT_HISTORY_MAX = 8;
+    private const short _MARSHAL_ZONES_MAX = 21;
+    private const short _WEATHER_FORECAST_SAMPLES_MAX = 56;
+    private const short _LAP_HISTORY_MAX = 100;
+    private const short _TYRE_STINT_HISTORY_MAX = 8;
 
     public TelemetryConverter2021() : base()
     {
@@ -95,12 +95,12 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
     {
         Session packet = Converter.BytesToPacket<Session>(bytes);
 
-        Packets.Standard.MarshalZones[] marshalZones = new Packets.Standard.MarshalZones[MARSHAL_ZONES_MAX];
-        Packets.Standard.WeatherForecastSample[] weatherForecastSamples = new Packets.Standard.WeatherForecastSample[WEATHER_FORECAST_SAMPLES_MAX];
+        Packets.Standard.MarshalZones[] marshalZones = new Packets.Standard.MarshalZones[_MARSHAL_ZONES_MAX];
+        Packets.Standard.WeatherForecastSample[] weatherForecastSamples = new Packets.Standard.WeatherForecastSample[_WEATHER_FORECAST_SAMPLES_MAX];
 
-        for (int i = 0; i < WEATHER_FORECAST_SAMPLES_MAX; i++)
+        for (int i = 0; i < _WEATHER_FORECAST_SAMPLES_MAX; i++)
         {
-            if (i < MARSHAL_ZONES_MAX)
+            if (i < _MARSHAL_ZONES_MAX)
             {
                 marshalZones[i] = new Packets.Standard.MarshalZones(
                     packet.marshalZones[i].zoneStart,
@@ -407,12 +407,12 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
     {
         SessionHistory packet = Converter.BytesToPacket<SessionHistory>(bytes);
 
-        Packets.Standard.LapHistoryData[] lapHistoryData = new Packets.Standard.LapHistoryData[LAP_HISTORY_MAX];
-        Packets.Standard.TyreStintHistoryData[] tyreStintHistoryData = new Packets.Standard.TyreStintHistoryData[TYRE_STINT_HISTORY_MAX];
+        Packets.Standard.LapHistoryData[] lapHistoryData = new Packets.Standard.LapHistoryData[_LAP_HISTORY_MAX];
+        Packets.Standard.TyreStintHistoryData[] tyreStintHistoryData = new Packets.Standard.TyreStintHistoryData[_TYRE_STINT_HISTORY_MAX];
 
-        for (int i = 0; i < LAP_HISTORY_MAX; i++)
+        for (int i = 0; i < _LAP_HISTORY_MAX; i++)
         {
-            if (i < TYRE_STINT_HISTORY_MAX)
+            if (i < _TYRE_STINT_HISTORY_MAX)
             {
                 tyreStintHistoryData[i] = new Packets.Standard.TyreStintHistoryData(
                     packet.tyreStintHistoryData[i].endLap,

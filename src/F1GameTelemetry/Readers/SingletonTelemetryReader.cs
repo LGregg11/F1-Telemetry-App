@@ -1,11 +1,11 @@
 ﻿namespace F1GameTelemetry.Readers;
 
-using F1GameTelemetry.Converters;
-using F1GameTelemetry.Converters.F12021;
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Events;
-using F1GameTelemetry.Listener;
-using F1GameTelemetry.Packets.Standard;
+using Converters;
+using Converters.F12021;
+using Enums;
+using Events;
+using Listener;
+using Packets.Standard;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;

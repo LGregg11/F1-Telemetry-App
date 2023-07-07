@@ -1,6 +1,6 @@
 ﻿namespace F1GameTelemetry.Packets;
 
-using F1GameTelemetry.Events;
+using Events;
 
 public interface IPacket<T>
 {
