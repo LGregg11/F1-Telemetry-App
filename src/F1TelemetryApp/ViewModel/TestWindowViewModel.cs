@@ -4,7 +4,6 @@ using Model;
 
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
-using F1GameTelemetry.Listener;
 
 using log4net;
 
@@ -12,6 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using F1GameTelemetry.Readers;
+using F1GameTelemetry.Events;
+using F1GameTelemetry.Packets.Standard;
 
 public class TestWindowViewModel : BasePageViewModel
 {
@@ -75,33 +77,18 @@ public class TestWindowViewModel : BasePageViewModel
 
     public override void SetTelemetryReader()
     {
-        var telemetryReader = MainWindowViewModel.TelemetryReader;
-
-        telemetryReader.HeaderPacket.Received -= OnHeaderReceived;
-        telemetryReader.MotionPacket.Received -= OnMotionReceived;
-        telemetryReader.CarDamagePacket.Received -= OnCarDamageReceived;
-        telemetryReader.CarSetupPacket.Received -= OnCarSetupReceived;
-        //_telemetryReader.CarStatusPacket.Received -= OnCarStatusReceived;
-        telemetryReader.CarTelemetryPacket.Received -= OnCarTelemetryReceived;
-        //_telemetryReader.FinalClassificationPacket.Received -= OnFinalClassificationReceived;
-        telemetryReader.LapDataPacket.Received -= OnLapDataReceived;
-        telemetryReader.LobbyInfoPacket.Received -= OnLobbyInfoReceived;
-        telemetryReader.ParticipantPacket.Received -= OnParticipantReceived;
-        telemetryReader.SessionHistoryPacket.Received -= OnSessionHistoryReceived;
-        telemetryReader.SessionPacket.Received -= OnSessionReceived;
-
-        telemetryReader.HeaderPacket.Received += OnHeaderReceived;
-        telemetryReader.MotionPacket.Received += OnMotionReceived;
-        telemetryReader.CarDamagePacket.Received += OnCarDamageReceived;
-        telemetryReader.CarSetupPacket.Received += OnCarSetupReceived;
-        //_telemetryReader.CarStatusPacket.Received += OnCarStatusReceived;
-        telemetryReader.CarTelemetryPacket.Received += OnCarTelemetryReceived;
-        //_telemetryReader.FinalClassificationPacket.Received += OnFinalClassificationReceived;
-        telemetryReader.LapDataPacket.Received += OnLapDataReceived;
-        telemetryReader.LobbyInfoPacket.Received += OnLobbyInfoReceived;
-        telemetryReader.ParticipantPacket.Received += OnParticipantReceived;
-        telemetryReader.SessionHistoryPacket.Received += OnSessionHistoryReceived;
-        telemetryReader.SessionPacket.Received += OnSessionReceived;
+        SingletonTelemetryReader.HeaderReceived += OnHeaderReceived;
+        SingletonTelemetryReader.MotionReceived += OnMotionReceived;
+        SingletonTelemetryReader.CarDamageReceived += OnCarDamageReceived;
+        SingletonTelemetryReader.CarSetupReceived += OnCarSetupReceived;
+        //SingletonTelemetryReader.CarStatusReceived += OnCarStatusReceived;
+        SingletonTelemetryReader.CarTelemetryReceived += OnCarTelemetryReceived;
+        //SingletonTelemetryReader.FinalClassificationReceived += OnFinalClassificationReceived;
+        SingletonTelemetryReader.LapDataReceived += OnLapDataReceived;
+        SingletonTelemetryReader.LobbyInfoReceived += OnLobbyInfoReceived;
+        SingletonTelemetryReader.ParticipantReceived += OnParticipantReceived;
+        SingletonTelemetryReader.SessionHistoryReceived += OnSessionHistoryReceived;
+        SingletonTelemetryReader.SessionReceived += OnSessionReceived;
     }
 
     #region Gui Test Properties
@@ -235,9 +222,9 @@ public class TestWindowViewModel : BasePageViewModel
 
     #region Event Handlers
 
-    private void OnHeaderReceived(object? sender, EventArgs e)
+    private void OnHeaderReceived(object? sender, PacketEventArgs<Header> e)
     {
-        var header = ((HeaderEventArgs)e).Header;
+        var header = e.Packet;
         if (myCarIndex < 0)
             myCarIndex = header.playerCarIndex;
 
@@ -257,31 +244,31 @@ public class TestWindowViewModel : BasePageViewModel
         });
     }
 
-    private void UpdateEvents(byte[] eventPacket)
+    //private void UpdateEvents(byte[] eventPacket)
+    //{
+    //    var telemetryReader = MainWindowViewModel.TelemetryReader;
+    //    if (telemetryReader == null) return;
+
+    //    EventType eventType = SingletonTelemetryReader.GetEventType(eventPacket);
+    //    App.Current.Dispatcher.Invoke(() =>
+    //    {
+    //        for (int i = 0; i < EventMessages.Count; i++)
+    //        {
+    //            if (EventMessages[i].EventType == eventType)
+    //            {
+    //                EventMessage eventMessage = EventMessages[i];
+    //                eventMessage.Total++;
+
+    //                EventMessages[i] = eventMessage;
+    //                break;
+    //            }
+    //        }
+    //    });
+    //}
+
+    private void OnMotionReceived(object? sender, PacketEventArgs<Motion> e)
     {
-        var telemetryReader = MainWindowViewModel.TelemetryReader;
-        if (telemetryReader == null) return;
-
-        EventType eventType = telemetryReader.GetEventType(eventPacket);
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            for (int i = 0; i < EventMessages.Count; i++)
-            {
-                if (EventMessages[i].EventType == eventType)
-                {
-                    EventMessage eventMessage = EventMessages[i];
-                    eventMessage.Total++;
-
-                    EventMessages[i] = eventMessage;
-                    break;
-                }
-            }
-        });
-    }
-
-    private void OnMotionReceived(object? sender, EventArgs e)
-    {
-        var motion = ((MotionEventArgs)e).Motion;
+        var motion = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
@@ -289,9 +276,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(LocalSpeed));
     }
 
-    private void OnCarTelemetryReceived(object? sender, EventArgs e)
+    private void OnCarTelemetryReceived(object? sender, PacketEventArgs<CarTelemetry> e)
     {
-        var carTelemetry = ((CarTelemetryEventArgs)e).CarTelemetry;
+        var carTelemetry = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             telemetryMessage.Speed = carTelemetry.carTelemetryData[myCarIndex].speed;
@@ -307,9 +294,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(Steer));
     }
 
-    private void OnLapDataReceived(object? sender, EventArgs e)
+    private void OnLapDataReceived(object? sender, PacketEventArgs<LapData> e)
     {
-        var lapData = ((LapDataEventArgs)e).LapData;
+        var lapData = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             for (int i = 0; i < lapData.carLapData.Length; i++)
@@ -330,9 +317,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(LastLapTime));
     }
 
-    private void OnSessionReceived(object? sender, EventArgs e)
+    private void OnSessionReceived(object? sender, PacketEventArgs<Session> e)
     {
-        var session = ((SessionEventArgs)e).Session;
+        var session = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             sessionMessage.Track = session.trackId;
@@ -350,9 +337,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(AiDifficulty));
     }
 
-    private void OnParticipantReceived(object? sender, EventArgs e)
+    private void OnParticipantReceived(object? sender, PacketEventArgs<Participant> e)
     {
-        var participant = ((ParticipantEventArgs)e).Participant;
+        var participant = e.Packet;
         var participants = new Dictionary<string, string>();
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -375,9 +362,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(Participants));
     }
 
-    private void OnSessionHistoryReceived(object? sender, EventArgs e)
+    private void OnSessionHistoryReceived(object? sender, PacketEventArgs<SessionHistory> e)
     {
-        var history = ((SessionHistoryEventArgs)e).SessionHistory;
+        var history = e.Packet;
         // TODO: Add converter for sector time like this (00.000)
 
         var name = ((int)history.carIdx).ToString();
@@ -398,9 +385,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(Drivers));
     }
 
-    private void OnLobbyInfoReceived(object? sender, EventArgs e)
+    private void OnLobbyInfoReceived(object? sender, PacketEventArgs<LobbyInfo> e)
     {
-        var info = ((LobbyInfoEventArgs)e).LobbyInfo;
+        var info = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             lobbyInfoMessage.Players = info.numPlayers;
@@ -414,9 +401,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(LobbyTeam));
     }
 
-    private void OnCarDamageReceived(object? sender, EventArgs e)
+    private void OnCarDamageReceived(object? sender, PacketEventArgs<CarDamage> e)
     {
-        var damage = ((CarDamageEventArgs)e).CarDamage;
+        var damage = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             carDamageMessage.TyreWear = damage.carDamageData[myCarIndex].tyreWear;
@@ -431,9 +418,9 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(FrontRightWingDamage));
     }
 
-    private void OnCarSetupReceived(object? sender, EventArgs e)
+    private void OnCarSetupReceived(object? sender, PacketEventArgs<CarSetup> e)
     {
-        var setup = ((CarSetupEventArgs)e).CarSetup;
+        var setup = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
             carSetupMessage.BrakeBias = setup.carSetupData[myCarIndex].brakeBias;
@@ -449,9 +436,6 @@ public class TestWindowViewModel : BasePageViewModel
     private bool TryGetDriver(int index, out Driver? driver)
     {
         driver = Drivers.FirstOrDefault(d => d.Index == index);
-        if (driver == null)
-            return false;
-        return true;
+        return driver != null;
     }
-
 }

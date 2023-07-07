@@ -12,6 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using F1GameTelemetry.Readers;
+using F1GameTelemetry.Packets.Standard;
+using F1GameTelemetry.Events;
 
 public class LapTelemetryWindowViewModel : BasePageViewModel
 {
@@ -108,28 +111,21 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
 
     public override void SetTelemetryReader()
     {
-        var tr = MainWindowViewModel.TelemetryReader;
-
-        // TODO: This is wrong surely.. (Need to unsubscribe before the reader is changed)
-        tr.HeaderPacket.Received -= OnHeaderReceived;
-        tr.CarTelemetryPacket.Received -= OnCarTelemetryReceived;
-        tr.LapDataPacket.Received -= OnLapDataReceived;
-
-        tr.HeaderPacket.Received += OnHeaderReceived;
-        tr.CarTelemetryPacket.Received += OnCarTelemetryReceived;
-        tr.LapDataPacket.Received += OnLapDataReceived;
+        SingletonTelemetryReader.HeaderReceived += OnHeaderReceived;
+        SingletonTelemetryReader.CarTelemetryReceived += OnCarTelemetryReceived;
+        SingletonTelemetryReader.LapDataReceived += OnLapDataReceived;
     }
 
-    private void OnHeaderReceived(object? sender, EventArgs e)
+    private void OnHeaderReceived(object? sender, PacketEventArgs<Header> e)
     {
-        var header = ((HeaderEventArgs)e).Header;
+        var header = e.Packet;
         if (myCarIndex < 0)
             myCarIndex = header.playerCarIndex;
     }
 
-    private void OnCarTelemetryReceived(object? sender, EventArgs e)
+    private void OnCarTelemetryReceived(object? sender, PacketEventArgs<CarTelemetry> e)
     {
-        var carTelemetry = ((CarTelemetryEventArgs)e).CarTelemetry;
+        var carTelemetry = e.Packet;
         var myTelemetry = carTelemetry.carTelemetryData[myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -141,10 +137,9 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
         });
     }
 
-    private void OnLapDataReceived(object? sender, EventArgs e)
+    private void OnLapDataReceived(object? sender, PacketEventArgs<LapData> e)
     {
-        var displayedLap = DisplayedLap;
-        var lapData = ((LapDataEventArgs)e).LapData;
+        var lapData = e.Packet;
         var myLapData = lapData.carLapData[myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
         {

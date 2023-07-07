@@ -50,7 +50,7 @@ public partial class MainWindow : Window
 
     private void UpdateTelemetryFeedBtn()
     {
-        if (viewModel.IsListenerRunning)
+        if (MainWindowViewModel.IsListenerRunning)
         {
             TelemetryFeedBtn.Click -= StartTelemetryFeed;
             TelemetryFeedBtn.Click += StopTelemetryFeed;
