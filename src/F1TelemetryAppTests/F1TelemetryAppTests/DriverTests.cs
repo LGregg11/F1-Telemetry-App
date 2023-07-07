@@ -1,6 +1,6 @@
 ﻿namespace F1TelemetryAppTests.F1TelemetryAppTests;
 
-using F1GameTelemetry.Packets.F12021;
+using F1GameTelemetry.Packets.Standard;
 using F1GameTelemetry.Enums;
 using NUnit.Framework;
 using F1TelemetryApp.Model;
