@@ -1,4 +1,4 @@
-﻿namespace F1GameTelemetry.Packets.F12021;
+﻿namespace F1GameTelemetry.Packets.Standard;
 
 using Enums;
 
@@ -7,6 +7,30 @@ using System.Runtime.InteropServices;
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
 public struct Header
 {
+    public Header(
+        GameVersion packetFormat,
+        byte gameMajorVersion,
+        byte gameMinorVersion,
+        byte packetVersion,
+        PacketId packetId,
+        ulong sessionUID,
+        float sessionTime,
+        uint frameIdentifier,
+        byte playerCarIndex,
+        byte secondaryPlayerCarIndex)
+    {
+        this.packetFormat = packetFormat;
+        this.gameMajorVersion = gameMajorVersion;
+        this.gameMinorVersion = gameMinorVersion;
+        this.packetVersion = packetVersion;
+        this.packetId = packetId;
+        this.sessionUID = sessionUID;
+        this.sessionTime = sessionTime;
+        this.frameIdentifier = frameIdentifier;
+        this.playerCarIndex = playerCarIndex;
+        this.secondaryPlayerCarIndex = secondaryPlayerCarIndex;
+    }
+
     public GameVersion packetFormat; // 2021
     public byte gameMajorVersion; // Game major version - "X.00"
     public byte gameMinorVersion; // Game minor version - "1.XX"

@@ -9,19 +9,18 @@ using System.Text;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Packets.F12021;
-using F1GameTelemetry.Readers.F12021;
 using F1GameTelemetry.Listener;
+using F1GameTelemetry.Converters.F12021;
 
 [TestFixture]
 public class F12021ReaderTests
 {
-    private TelemetryReader2021 _cut;
-    private Mock<ITelemetryListener> _telemetryListenerMock;
+    private TelemetryConverter2021 _cut;
+
     [SetUp]
     public void SetUp()
     {
-        _telemetryListenerMock = new Mock<ITelemetryListener>();
-        _cut = new TelemetryReader2021(_telemetryListenerMock.Object);
+        _cut = new TelemetryConverter2021();
     }
 
     #region Events

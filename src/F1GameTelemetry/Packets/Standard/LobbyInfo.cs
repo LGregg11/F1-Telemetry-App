@@ -1,4 +1,4 @@
-﻿namespace F1GameTelemetry.Packets.F12021;
+﻿namespace F1GameTelemetry.Packets.Standard;
 
 using Enums;
 
@@ -7,6 +7,12 @@ using System.Runtime.InteropServices;
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1167)]
 public struct LobbyInfo
 {
+    public LobbyInfo(byte numPlayers, LobbyInfoData[] lobbyPlayers)
+    {
+        this.numPlayers = numPlayers;
+        this.lobbyPlayers = lobbyPlayers;
+    }
+
     public byte numPlayers;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
@@ -16,6 +22,22 @@ public struct LobbyInfo
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 53)]
 public struct LobbyInfoData
 {
+    public LobbyInfoData(
+        AiControlled aiControlled,
+        Team teamId,
+        Nationality nationality,
+        string name,
+        byte carNumber,
+        ReadyStatus readyStatus)
+    {
+        this.aiControlled = aiControlled;
+        this.teamId = teamId;
+        this.nationality = nationality;
+        this.name = name;
+        this.carNumber = carNumber;
+        this.readyStatus = readyStatus;
+    }
+
     public AiControlled aiControlled;
     public Team teamId;
     public Nationality nationality;

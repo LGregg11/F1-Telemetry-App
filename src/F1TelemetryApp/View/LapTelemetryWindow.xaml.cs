@@ -15,17 +15,17 @@ using System.Windows;
 /// </summary>
 public partial class LapTelemetryWindow : Window
 {
-    private readonly LapTelemetryWindowViewModel viewModel;
-    private readonly Dictionary<DataGraphType, CheckBox> checkboxMap = new();
-    private Dictionary<CheckBox, TelemetryGraph> graphMap = new();
+    private readonly LapTelemetryWindowViewModel _viewModel;
+    private readonly Dictionary<DataGraphType, CheckBox> _checkboxMap = new();
+    private Dictionary<CheckBox, TelemetryGraph> _graphMap = new();
 
 
     public LapTelemetryWindow()
     {
         InitializeComponent();
-        viewModel = (LapTelemetryWindowViewModel)DataContext;
+        _viewModel = (LapTelemetryWindowViewModel)DataContext;
 
-        checkboxMap = new Dictionary<DataGraphType, CheckBox> {
+        _checkboxMap = new Dictionary<DataGraphType, CheckBox> {
             { DataGraphType.Throttle, ThrottleCheckbox },
             { DataGraphType.Brake, BrakeCheckbox },
             { DataGraphType.Gear, GearCheckbox },
@@ -33,16 +33,16 @@ public partial class LapTelemetryWindow : Window
             { DataGraphType.Steer, SteerCheckbox },
         };
 
-        foreach (var key in checkboxMap.Keys)
+        foreach (var key in _checkboxMap.Keys)
         {
-            if (!viewModel.GraphPointCollectionMap.ContainsKey(key))
-                checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
+            if (!_viewModel.GraphPointCollectionMap.ContainsKey(key))
+                _checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
         }
 
         UpdateGraphMap();
         UpdateGrid();
 
-        viewModel.LapUpdated += OnLapUpdated;
+        _viewModel.LapUpdated += OnLapUpdated;
     }
 
     private void OnLapUpdated(object? sender, EventArgs e)
@@ -54,12 +54,12 @@ public partial class LapTelemetryWindow : Window
     private void UpdateGraphMap()
     {
         var vm = (LapTelemetryWindowViewModel)DataContext;
-        graphMap = new();
+        _graphMap = new();
 
-        foreach (var key in checkboxMap.Keys)
+        foreach (var key in _checkboxMap.Keys)
         {
             if (vm.GraphPointCollectionMap.ContainsKey(key))
-                graphMap.Add(checkboxMap[key], CreateTelemetryGraph(key));
+                _graphMap.Add(_checkboxMap[key], CreateTelemetryGraph(key));
         }
     }
 
@@ -100,26 +100,26 @@ public partial class LapTelemetryWindow : Window
 
     private void UpdateGrid()
     {
-        var checkBoxes = graphMap.Keys.ToList().Where(c => c.IsChecked != null && (bool)c.IsChecked!);
+        var checkBoxes = _graphMap.Keys.ToList().Where(c => c.IsChecked != null && (bool)c.IsChecked!);
         DataGraphGrid.Children.Clear();
         DataGraphGrid.RowDefinitions.Clear();
         int i = 0;
         foreach (var checkBox in checkBoxes)
         {
             DataGraphGrid.RowDefinitions.Add(new RowDefinition());
-            DataGraphGrid.Children.Add(graphMap[checkBox]);
-            Grid.SetRow(graphMap[checkBox], i);
+            DataGraphGrid.Children.Add(_graphMap[checkBox]);
+            Grid.SetRow(_graphMap[checkBox], i);
             i++;
         }
     }
 
     private void NewLapButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        viewModel.DebugNewLap();
+        _viewModel.DebugNewLap();
     }
 
     private void LapsComboBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
     {
-        viewModel.RedrawLaps();
+        _viewModel.RedrawLaps();
     }
 }

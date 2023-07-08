@@ -8,11 +8,11 @@ using ViewModel;
 /// </summary>
 public partial class TestWindow : Window
 {
-    private TestWindowViewModel viewModel;
+    private TestWindowViewModel _viewModel;
 
     public TestWindow()
     {
         InitializeComponent();
-        viewModel = (TestWindowViewModel)DataContext;
+        _viewModel = (TestWindowViewModel)DataContext;
     }
 }

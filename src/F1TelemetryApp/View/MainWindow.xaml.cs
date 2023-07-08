@@ -9,48 +9,48 @@ using System.Windows;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private MainWindowViewModel viewModel;
+    private MainWindowViewModel _viewModel;
 
     public MainWindow()
     {
         InitializeComponent();
-        viewModel = (MainWindowViewModel)DataContext;
+        _viewModel = (MainWindowViewModel)DataContext;
     }
 
     public void StartTelemetryFeed(object sender, RoutedEventArgs e)
     {
-        viewModel.StartTelemetryFeed();
+        _viewModel.StartTelemetryFeed();
         UpdateTelemetryFeedBtn();
     }
 
     public void StopTelemetryFeed(object sender, RoutedEventArgs e)
     {
-        viewModel.StopTelemetryFeed();
+        _viewModel.StopTelemetryFeed();
         UpdateTelemetryFeedBtn();
     }
 
     public void ImportTelemetry(object sender, RoutedEventArgs e)
     {
-        viewModel.ImportTelemetry();
+        _viewModel.ImportTelemetry();
     }
 
     public void OpenTestInputsWindow_Click(object sender, RoutedEventArgs e)
     {
         TestWindow w = new();
-        ((TestWindowViewModel)w.DataContext).MainWindowViewModel = viewModel; // Do I need this?
+        ((TestWindowViewModel)w.DataContext).MainWindowViewModel = _viewModel; // Do I need this?
         w.Show();
     }
 
     public void OpenTelemetryWindow_Click(object sender, RoutedEventArgs e)
     {
         LapTelemetryWindow w = new();
-        ((LapTelemetryWindowViewModel)w.DataContext).MainWindowViewModel = viewModel; // Do I need this?
+        ((LapTelemetryWindowViewModel)w.DataContext).MainWindowViewModel = _viewModel; // Do I need this?
         w.Show();
     }
 
     private void UpdateTelemetryFeedBtn()
     {
-        if (viewModel.IsListenerRunning)
+        if (MainWindowViewModel.IsListenerRunning)
         {
             TelemetryFeedBtn.Click -= StartTelemetryFeed;
             TelemetryFeedBtn.Click += StopTelemetryFeed;

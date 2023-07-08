@@ -1,9 +1,7 @@
 ﻿namespace F1GameTelemetry.Packets.F12021;
 
-using F1GameTelemetry.Converters;
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Listener;
-using System;
+using Enums;
+
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1323)]
@@ -13,9 +11,7 @@ public struct CarTelemetry
     public CarTelemetryData[] carTelemetryData;
 
     public MFDPanelIndexType mfdPanelIndex;
-
     public MFDPanelIndexType mfdPanelIndexSecondaryPlayer;
-
     public sbyte suggestedGear; // 1-8 (0 if no gear suggested)
 }
 
@@ -23,23 +19,14 @@ public struct CarTelemetry
 public struct CarTelemetryData
 {
     public ushort speed; // km/h
-
     public float throttle; // 0.0 - 1.0
-
     public float steer; // -1.0 (full lock left) - 1.0 (full lock right)
-
     public float brake; // 0.0 - 1.0
-
     public byte clutch; // 0 - 100
-
-    public sbyte gear; // Gears=1-8 Neutral=0, Reverse=-1
-
+    public sbyte gear; // Gears=1-8, Neutral=0, Reverse=-1
     public ushort engineRPM;
-
     public byte drs; // 0 = Off, 1 = On
-
     public byte revLightsPercent;
-
     public ushort revLightsBitValue; // bit 0 = leftmost LED, bit 14 = rightmost LED
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -58,19 +45,4 @@ public struct CarTelemetryData
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
     public SurfaceType[] surfaceType;
-}
-
-public class CarTelemetryPacket : IPacket
-{
-    public event EventHandler? Received;
-
-    public void ReceivePacket(byte[] remainingPacket)
-    {
-        var args = new CarTelemetryEventArgs
-        {
-            CarTelemetry = Converter.BytesToPacket<CarTelemetry>(remainingPacket)
-        };
-
-        Received?.Invoke(this, args);
-    }
 }

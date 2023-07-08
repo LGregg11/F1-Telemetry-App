@@ -32,16 +32,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="Images\star.png" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Content Include="Images\star.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  
-  <ItemGroup>
     <PackageReference Include="LiveCharts.Wpf.NetCore3" Version="0.9.7" />
     <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Prism.Core" Version="8.1.97" />
@@ -49,6 +39,10 @@
   
   <ItemGroup>
     <ProjectReference Include="..\F1GameTelemetry\F1GameTelemetry.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
   
 </Project>

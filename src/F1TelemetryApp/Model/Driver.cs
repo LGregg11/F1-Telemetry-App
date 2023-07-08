@@ -2,7 +2,7 @@
 
 using System;
 using F1GameTelemetry.Enums;
-using F1GameTelemetry.Packets.F12021;
+using F1GameTelemetry.Packets.Standard;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;

@@ -1,9 +1,7 @@
 ﻿namespace F1GameTelemetry.Packets.F12021;
 
-using F1GameTelemetry.Converters;
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Listener;
-using System;
+using Enums;
+
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 1131)]
@@ -42,21 +40,4 @@ public struct TyreStintHistoryData
     public byte endLap; // 255 of current tyre
     public TyreCompoundType tyreActualCompound;
     public TyreVisualType tyreVisualCompound;
-}
-
-public class SessionHistoryPacket : IPacket
-{
-    public event EventHandler? Received;
-
-    public void ReceivePacket(byte[] remainingPacket)
-    {
-        var args = new SessionHistoryEventArgs
-        {
-            // We can add a new GUID ID here when the even is sent?
-
-            SessionHistory = Converter.BytesToPacket<SessionHistory>(remainingPacket)
-        };
-
-        Received?.Invoke(this, args);
-    }
 }

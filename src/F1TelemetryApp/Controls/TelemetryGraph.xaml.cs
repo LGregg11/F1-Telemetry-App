@@ -5,7 +5,6 @@ using Model;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using LiveCharts;
 
 /// <summary>
 /// Interaction logic for TelemetryGraphControl.xaml

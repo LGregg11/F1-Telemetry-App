@@ -6,7 +6,7 @@ using System.Net.Sockets;
 
 internal class TelemetryUdpClient : IUdpClient, IDisposable
 {
-    private UdpClient _client;
+    private readonly UdpClient _client;
 
     public TelemetryUdpClient(int port)
     {
