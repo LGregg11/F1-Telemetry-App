@@ -13,7 +13,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using F1GameTelemetry.Readers;
 using F1GameTelemetry.Events;
-using F1GameTelemetry.Packets.Standard;
+using F1GameTelemetry.Models;
 
 public class TestWindowViewModel : BasePageViewModel
 {
@@ -80,7 +80,7 @@ public class TestWindowViewModel : BasePageViewModel
         SingletonTelemetryReader.HeaderReceived += OnHeaderReceived;
         SingletonTelemetryReader.MotionReceived += OnMotionReceived;
         SingletonTelemetryReader.CarDamageReceived += OnCarDamageReceived;
-        SingletonTelemetryReader.CarSetupReceived += OnCarSetupReceived;
+        //SingletonTelemetryReader.CarSetupReceived += OnCarSetupReceived;
         //SingletonTelemetryReader.CarStatusReceived += OnCarStatusReceived;
         SingletonTelemetryReader.CarTelemetryReceived += OnCarTelemetryReceived;
         //SingletonTelemetryReader.FinalClassificationReceived += OnFinalClassificationReceived;
@@ -129,13 +129,13 @@ public class TestWindowViewModel : BasePageViewModel
 
     public string LobbyNationality => Enum.GetName(typeof(Nationality), _lobbyInfoMessage.Nationality)!;
 
-    public string RLTyreWear => $"{_carDamageMessage.TyreWear[0]:F1}%";
+    public string RLTyreWear => $"{_carDamageMessage.TyreWear.rearLeft:F1}%";
 
-    public string RRTyreWear => $"{_carDamageMessage.TyreWear[1]:F1}%";
+    public string RRTyreWear => $"{_carDamageMessage.TyreWear.rearRight:F1}%";
 
-    public string FLTyreWear => $"{_carDamageMessage.TyreWear[2]:F1}%";
+    public string FLTyreWear => $"{_carDamageMessage.TyreWear.frontLeft:F1}%";
 
-    public string FRTyreWear => $"{_carDamageMessage.TyreWear[3]:F1}%";
+    public string FRTyreWear => $"{_carDamageMessage.TyreWear.frontRight:F1}%";
 
     public string FrontLeftWingDamage => $"{_carDamageMessage.FrontLeftWingDamage:F1}%";
 
@@ -160,7 +160,7 @@ public class TestWindowViewModel : BasePageViewModel
         _sessionMessage = new SessionMessage { Track = Track.Unknown, Weather = Weather.Unknown, TotalLaps = 0, TrackTemperature = 0, AirTemperature = 0, AiDifficulty = 0 };
         _participantMessage = new ParticipantMessage { Participants = new Dictionary<string, string>() };
         _lobbyInfoMessage = new LobbyInfoMessage { Players = 0, Name = "", Nationality = Nationality.Unknown, Team = Team.Unknown };
-        _carDamageMessage = new CarDamageMessage { TyreWear = new float[4] { 0f, 0f, 0f, 0f }, FrontLeftWingDamage = 0, FrontRightWingDamage = 0 };
+        _carDamageMessage = new CarDamageMessage { TyreWear = new FourAxleFloat(0f, 0f, 0f, 0f), FrontLeftWingDamage = 0, FrontRightWingDamage = 0 };
         _carSetupMessage = new CarSetupMessage { BrakeBias = 0, FuelLoad = 0f };
         
     }
@@ -288,7 +288,6 @@ public class TestWindowViewModel : BasePageViewModel
             _sessionMessage.Weather = session.weather;
             _sessionMessage.TrackTemperature = session.trackTemperature;
             _sessionMessage.AirTemperature = session.airTemperature;
-            _sessionMessage.AiDifficulty = session.aiDifficulty;
             _sessionMessage.TotalLaps = session.totalLaps;
         });
         RaisePropertyChanged(nameof(TrackName));
@@ -380,17 +379,17 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(FrontRightWingDamage));
     }
 
-    private void OnCarSetupReceived(object? sender, PacketEventArgs<CarSetup> e)
-    {
-        var setup = e.Packet;
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            _carSetupMessage.BrakeBias = setup.carSetupData[_myCarIndex].brakeBias;
-            _carSetupMessage.FuelLoad = setup.carSetupData[_myCarIndex].fuelLoad;
-        });
-        RaisePropertyChanged(nameof(BrakeBias));
-        RaisePropertyChanged(nameof(FuelLoad));
-    }
+    //private void OnCarSetupReceived(object? sender, PacketEventArgs<CarSetup> e)
+    //{
+    //    var setup = e.Packet;
+    //    App.Current.Dispatcher.Invoke(() =>
+    //    {
+    //        _carSetupMessage.BrakeBias = setup.carSetupData[_myCarIndex].brakeBias;
+    //        _carSetupMessage.FuelLoad = setup.carSetupData[_myCarIndex].fuelLoad;
+    //    });
+    //    RaisePropertyChanged(nameof(BrakeBias));
+    //    RaisePropertyChanged(nameof(FuelLoad));
+    //}
     #endregion
 
     private int[] GetDriverIndexes() => Drivers.Select(d => d.Index).ToArray();

@@ -2,6 +2,7 @@
 
 using log4net;
 using Prism.Mvvm;
+
 using System;
 
 public class BasePageViewModel : BindableBase

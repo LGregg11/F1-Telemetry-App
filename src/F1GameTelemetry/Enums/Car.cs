@@ -46,3 +46,9 @@ public enum DrsFault : byte
     OK = 0,
     Fault = 1
 }
+
+public enum DrsActivation : byte
+{
+    Off = 0,
+    On = 1
+}

@@ -4,15 +4,16 @@ using Converters;
 using Enums;
 using Model;
 
+using F1GameTelemetry.Events;
+using F1GameTelemetry.Models;
+using F1GameTelemetry.Readers;
+
 using log4net;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using F1GameTelemetry.Readers;
-using F1GameTelemetry.Packets.Standard;
-using F1GameTelemetry.Events;
 
 public class LapTelemetryWindowViewModel : BasePageViewModel
 {

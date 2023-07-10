@@ -4,14 +4,17 @@ using Converters;
 using Converters.F12021;
 using Enums;
 using Events;
+using Models;
 using Listener;
-using Packets.Standard;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 public static class SingletonTelemetryReader
 {
+    private static int HeaderPacketSize => 24;
+
     private static ITelemetryListener? _telemetryListener;
     private static ITelemetryConverter? _telemetryConverter;
     private static readonly List<ITelemetryConverter> _converters = new()
@@ -24,7 +27,7 @@ public static class SingletonTelemetryReader
     public static event PacketEventHandler<Session>? SessionReceived;
     public static event PacketEventHandler<LapData>? LapDataReceived;
     public static event PacketEventHandler<Participant>? ParticipantReceived;
-    public static event PacketEventHandler<CarSetup>? CarSetupReceived;
+    //public static event PacketEventHandler<CarSetup>? CarSetupReceived;
     public static event PacketEventHandler<CarTelemetry>? CarTelemetryReceived;
     public static event PacketEventHandler<CarStatus>? CarStatusReceived;
     public static event PacketEventHandler<FinalClassification>? FinalClassificationReceived;
@@ -72,34 +75,39 @@ public static class SingletonTelemetryReader
 
     private static void OnTelemetryReceived(object sender, TelemetryEventArgs e)
     {
-        Header header = Converter.BytesToPacket<Header>(e.Message);
+        if (_telemetryConverter == null)
+            _telemetryConverter = _converters.FirstOrDefault();
 
-        Task headerTask = new(() => HeaderReceived?.Invoke(typeof(SingletonTelemetryReader), new PacketEventArgs<Header>(header)));
-        headerTask.RunSynchronously();
+        Header header = _telemetryConverter!.ConvertBytesToHeader(e.Message);
+        HeaderReceived?.Invoke(
+                    typeof(SingletonTelemetryReader),
+                    new PacketEventArgs<Header>(header, header));
 
-        Task remainingTask = new(() => ConvertAndRaiseEvent(header.packetId, e.Message));
+        byte[] remainingPacket = e.Message.Skip(HeaderPacketSize).ToArray();
+        Task remainingTask = new(() => ConvertAndRaiseEvent(header, remainingPacket));
         remainingTask.RunSynchronously();
     }
-    private static void ConvertAndRaiseEvent(PacketId id, byte[] packet)
-    {
-        object? convertedPacket = _telemetryConverter?.ConvertBytesToStandardPacket(id, packet);
 
-        switch (id)
+    private static void ConvertAndRaiseEvent(Header header, byte[] packet)
+    {
+        object? convertedPacket = _telemetryConverter?.ConvertBytesToStandardPacket(header.packetId, packet);
+
+        switch (header.packetId)
         {
             case PacketId.Motion:
                 MotionReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<Motion>((Motion)convertedPacket!));
+                    new PacketEventArgs<Motion>(header, (Motion)convertedPacket!));
                 break;
             case PacketId.Session:
                 SessionReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<Session>((Session)convertedPacket!));
+                    new PacketEventArgs<Session>(header, (Session)convertedPacket!));
                 break;
             case PacketId.LapData:
                 LapDataReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<LapData>((LapData)convertedPacket!));
+                    new PacketEventArgs<LapData>(header, (LapData)convertedPacket!));
                 break;
             case PacketId.Event:
                 // TODO: Events
@@ -107,42 +115,42 @@ public static class SingletonTelemetryReader
             case PacketId.Participant:
                 ParticipantReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<Participant>((Participant)convertedPacket!));
+                    new PacketEventArgs<Participant>(header, (Participant)convertedPacket!));
                 break;
             case PacketId.CarSetup:
-                CarSetupReceived?.Invoke(
-                    typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<CarSetup>((CarSetup)convertedPacket!));
+                //CarSetupReceived?.Invoke(
+                //    typeof(SingletonTelemetryReader),
+                //    new PacketEventArgs<CarSetup>((CarSetup)convertedPacket!));
                 break;
             case PacketId.CarTelemetry:
                 CarTelemetryReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<CarTelemetry>((CarTelemetry)convertedPacket!));
+                    new PacketEventArgs<CarTelemetry>(header, (CarTelemetry)convertedPacket!));
                 break;
             case PacketId.CarStatus:
                 CarStatusReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<CarStatus>((CarStatus)convertedPacket!));
+                    new PacketEventArgs<CarStatus>(header, (CarStatus)convertedPacket!));
                 break;
             case PacketId.FinalClassification:
                 FinalClassificationReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<FinalClassification>((FinalClassification)convertedPacket!));
+                    new PacketEventArgs<FinalClassification>(header, (FinalClassification)convertedPacket!));
                 break;
             case PacketId.LobbyInfo:
                 LobbyInfoReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<LobbyInfo>((LobbyInfo)convertedPacket!));
+                    new PacketEventArgs<LobbyInfo>(header, (LobbyInfo)convertedPacket!));
                 break;
             case PacketId.CarDamage:
                 CarDamageReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<CarDamage>((CarDamage)convertedPacket!));
+                    new PacketEventArgs<CarDamage>(header, (CarDamage)convertedPacket!));
                 break;
             case PacketId.SessionHistory:
                 SessionHistoryReceived?.Invoke(
                     typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<SessionHistory>((SessionHistory)convertedPacket!));
+                    new PacketEventArgs<SessionHistory>(header, (SessionHistory)convertedPacket!));
                 break;
         }
     }

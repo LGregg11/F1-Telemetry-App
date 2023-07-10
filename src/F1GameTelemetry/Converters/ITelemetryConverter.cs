@@ -1,7 +1,7 @@
 ﻿namespace F1GameTelemetry.Converters;
 
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Packets.Standard;
+using Enums;
+using Models;
 
 public interface ITelemetryConverter
 {
@@ -10,7 +10,6 @@ public interface ITelemetryConverter
     bool IsSupported { get; }
     bool IsExportEnabled { get; }
     int MaxCarsPerRace { get; }
-    int HeaderPacketSize { get; }
     Header ConvertBytesToHeader(byte[] bytes);
     object? ConvertBytesToStandardPacket(PacketId packetType, byte[] bytes);
 }
