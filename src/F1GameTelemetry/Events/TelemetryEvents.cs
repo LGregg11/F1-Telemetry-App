@@ -1,5 +1,7 @@
 ﻿namespace F1GameTelemetry.Events;
 
+using Models;
+
 using System;
 
 public class TelemetryEventArgs : EventArgs
@@ -16,11 +18,13 @@ public delegate void TelemetryEventHandler(object source, TelemetryEventArgs e);
 
 public class PacketEventArgs<T> : EventArgs
 {
-    public PacketEventArgs(T packet)
+    public PacketEventArgs(Header header, T packet)
     {
+        Header = header;
         Packet = packet;
     }
 
+    public Header Header { get; init; }
     public T Packet { get; init; }
 }
 

@@ -1,8 +1,9 @@
 ﻿namespace F1TelemetryApp.Model;
 
-using System;
 using F1GameTelemetry.Enums;
-using F1GameTelemetry.Packets.Standard;
+using F1GameTelemetry.Models;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
@@ -16,8 +17,6 @@ public class Driver : INotifyPropertyChanged
         Nationality = p.nationality;
         Team = p.teamId;
         RaceNumber = p.raceNumber;
-        ControlledBy = p.aiControlled;
-        TelemetrySetting = p.yourTelemetry;
         DriverId = p.driverId;
     }
     public int Index { get; private set; }
@@ -51,10 +50,7 @@ public class Driver : INotifyPropertyChanged
 
     public void ApplyCarLapData(CarLapData lapData)
     {
-        if (GridPosition == 0)
-            GridPosition = lapData.gridPosition;
         Position = lapData.carPosition;
-        DriverStatus = lapData.driverStatus;
         ResultStatus = lapData.resultStatus;
         Sector = lapData.sector;
         CurrentLapTime = Convert.ToInt32(lapData.currentLapTime);

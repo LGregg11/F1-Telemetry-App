@@ -1,15 +1,15 @@
 ﻿namespace F1GameTelemetry.Converters.F12021;
 
-using F1GameTelemetry.Converters;
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Packets.F12021;
+using Converters;
+using Enums;
+using Models;
+using Packet = Packets.F12021;
 
-using System.Linq;
 using System;
+
 
 public class TelemetryConverter2021 : BaseTelemetryConverter
 {
-    private const short _MARSHAL_ZONES_MAX = 21;
     private const short _WEATHER_FORECAST_SAMPLES_MAX = 56;
     private const short _LAP_HISTORY_MAX = 100;
     private const short _TYRE_STINT_HISTORY_MAX = 8;
@@ -21,104 +21,77 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
     public override string Name => "F1 2021 Telemetry Reader";
     public override bool IsSupported => true;
     public override GameVersion GameVersion => GameVersion.F12021;
-    public override Packets.Standard.Header ConvertBytesToHeader(byte[] bytes)
+    public override Header ConvertBytesToHeader(byte[] bytes)
     {
-        Header packet = Converter.BytesToPacket<Header>(bytes);
-        return new Packets.Standard.Header(
-            packet.packetFormat,
-            packet.gameMajorVersion,
-            packet.gameMinorVersion,
-            packet.packetVersion,
+        Packet.Header packet = Converter.BytesToPacket<Packet.Header>(bytes);
+        return new Header(
             packet.packetId,
             packet.sessionUID,
             packet.sessionTime,
             packet.frameIdentifier,
-            packet.playerCarIndex,
-            packet.secondaryPlayerCarIndex
-        );
+            packet.playerCarIndex
+            );
     }
 
     public override object? ConvertBytesToStandardPacket(PacketId packetType, byte[] bytes)
     {
-        byte[] remainingPacket = bytes.Skip(HeaderPacketSize).ToArray();
         return packetType switch
         {
-            PacketId.Motion => ConvertBytesToMotionPacket(remainingPacket),
-            PacketId.Session => ConvertBytesToSessionPacket(remainingPacket),
-            PacketId.LapData => ConvertBytesToLapDataPacket(remainingPacket),
-            //PacketId.Event
-            PacketId.Participant => ConvertBytesToParticipantPacket(remainingPacket),
-            PacketId.CarSetup => ConvertBytesToCarSetupPacket(remainingPacket),
-            PacketId.CarTelemetry => ConvertBytesToCarTelemetryPacket(remainingPacket),
-            PacketId.CarStatus => ConvertBytesToCarStatusPacket(remainingPacket),
-            PacketId.FinalClassification => ConvertBytesToFinalClassificationPacket(remainingPacket),
-            PacketId.LobbyInfo => ConvertBytesToLobbyInfoPacket(remainingPacket),
-            PacketId.CarDamage => ConvertBytesToCarDamagePacket(remainingPacket),
-            PacketId.SessionHistory => ConvertBytesToSessionHistoryPacket(remainingPacket),
+            PacketId.Motion => ConvertBytesToMotionPacket(bytes),
+            PacketId.Session => ConvertBytesToSessionPacket(bytes),
+            PacketId.LapData => ConvertBytesToLapDataPacket(bytes),
             PacketId.Event => null,
+            PacketId.Participant => ConvertBytesToParticipantPacket(bytes),
+            PacketId.CarSetup => null,
+            PacketId.CarTelemetry => ConvertBytesToCarTelemetryPacket(bytes),
+            PacketId.CarStatus => ConvertBytesToCarStatusPacket(bytes),
+            PacketId.FinalClassification => ConvertBytesToFinalClassificationPacket(bytes),
+            PacketId.LobbyInfo => ConvertBytesToLobbyInfoPacket(bytes),
+            PacketId.CarDamage => ConvertBytesToCarDamagePacket(bytes),
+            PacketId.SessionHistory => ConvertBytesToSessionHistoryPacket(bytes),
             _ => throw new NotImplementedException($"Unknown PacketId: {Enum.GetName(packetType)}")
         };
     }
 
-    Packets.Standard.Motion ConvertBytesToMotionPacket(byte[] bytes)
+    Motion ConvertBytesToMotionPacket(byte[] bytes)
     {
-        Motion packet = Converter.BytesToPacket<Motion>(bytes);
+        Packet.Motion packet = Converter.BytesToPacket<Packet.Motion>(bytes);
 
-        Packets.Standard.CarMotionData[] carMotionDatas = new Packets.Standard.CarMotionData[MaxCarsPerRace];
+        CarMotionData[] carMotionDatas = new CarMotionData[MaxCarsPerRace];
         for (int i = 0; i < MaxCarsPerRace; i++)
         {
-            carMotionDatas[i] = new Packets.Standard.CarMotionData(
-                packet.carMotionData[i].worldPosition,
-                packet.carMotionData[i].worldVelocity,
-                packet.carMotionData[i].worldForwardDir,
-                packet.carMotionData[i].worldRightDir,
-                packet.carMotionData[i].gForce,
-                packet.carMotionData[i].rotation
+            carMotionDatas[i] = new CarMotionData(
+                new Vector3d(packet.carMotionData[i].worldPosition),
+                new Vector3d(packet.carMotionData[i].worldVelocity)
                 );
         }
 
-        return new Packets.Standard.Motion(
+        return new Motion(
             carMotionDatas,
-            new Packets.Standard.ExtraCarMotionData(
-                packet.extraCarMotionData.suspensionPosition,
-                packet.extraCarMotionData.suspensionVelocity,
-                packet.extraCarMotionData.suspensionAcceleration,
-                packet.extraCarMotionData.wheelSpeed,
-                packet.extraCarMotionData.wheelSlip,
-                packet.extraCarMotionData.localVelocity,
-                packet.extraCarMotionData.angularVelocity,
-                packet.extraCarMotionData.angularAcceleration)
-        );
+            new ExtraCarMotionData(
+                new Vector3d(packet.extraCarMotionData.localVelocity))
+            );
     }
 
-    Packets.Standard.Session ConvertBytesToSessionPacket(byte[] bytes)
+    Session ConvertBytesToSessionPacket(byte[] bytes)
     {
-        Session packet = Converter.BytesToPacket<Session>(bytes);
-
-        Packets.Standard.MarshalZones[] marshalZones = new Packets.Standard.MarshalZones[_MARSHAL_ZONES_MAX];
-        Packets.Standard.WeatherForecastSample[] weatherForecastSamples = new Packets.Standard.WeatherForecastSample[_WEATHER_FORECAST_SAMPLES_MAX];
+        Packet.Session packet = Converter.BytesToPacket<Packet.Session>(bytes);
+        WeatherForecastSample[] weatherForecastSamples = new WeatherForecastSample[_WEATHER_FORECAST_SAMPLES_MAX];
 
         for (int i = 0; i < _WEATHER_FORECAST_SAMPLES_MAX; i++)
         {
-            if (i < _MARSHAL_ZONES_MAX)
-            {
-                marshalZones[i] = new Packets.Standard.MarshalZones(
-                    packet.marshalZones[i].zoneStart,
-                    packet.marshalZones[i].zoneFlag);
-            }
+            var sample = packet.weatherForecastSamples[i];
 
-            weatherForecastSamples[i] = new Packets.Standard.WeatherForecastSample(
-                packet.weatherForecastSamples[i].sessionType,
-                packet.weatherForecastSamples[i].timeOffset,
-                packet.weatherForecastSamples[i].weather,
-                packet.weatherForecastSamples[i].trackTemperature,
-                packet.weatherForecastSamples[i].trackTemperatureChange,
-                packet.weatherForecastSamples[i].airTemperature,
-                packet.weatherForecastSamples[i].airTemperatureChange,
-                packet.weatherForecastSamples[i].rainPercentage);
+            weatherForecastSamples[i] = new WeatherForecastSample(
+                sample.sessionType,
+                sample.timeOffset,
+                sample.weather,
+                sample.trackTemperature,
+                sample.rainPercentage
+                );
         }
 
-        return new Packets.Standard.Session(
+        return new Session(
             packet.weather,
             packet.trackTemperature,
             packet.airTemperature,
@@ -126,309 +99,201 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
             packet.trackLength,
             packet.sessionType,
             packet.trackId,
-            packet.formula,
-            packet.sessionTimeLeft,
             packet.sessionDuration,
-            packet.pitSpeedLimit,
-            packet.gamePaused,
-            packet.isSpectating,
-            packet.spectatorCarIndex,
-            packet.sliPriNativeSupport,
-            packet.numMarshalZones,
-            marshalZones,
             packet.safetyCarStatus,
-            packet.networkGame,
             packet.numWeatherForecastSamples,
             weatherForecastSamples,
-            packet.forecastAccuracy,
-            packet.aiDifficulty,
-            packet.seasonLinkIdentifier,
-            packet.weekendLinkIdentifier,
-            packet.sessionLinkIdentifier,
             packet.pitStopWindowIdealLap,
             packet.pitStopWindowLatestLap,
-            packet.pitStopRejoinPosition,
-            packet.steeringAssist,
-            packet.brakingAssist,
-            packet.gearboxAssist,
-            packet.pitAssist,
-            packet.pitReleaseAssist,
-            packet.ERSAssist,
-            packet.DRSAssist,
-            packet.dynamicRacingLine,
-            packet.dynamicRacingLineType);
+            packet.pitStopRejoinPosition
+            );
     }
 
-    Packets.Standard.LapData ConvertBytesToLapDataPacket(byte[] bytes)
+    LapData ConvertBytesToLapDataPacket(byte[] bytes)
     {
-        LapData packet = Converter.BytesToPacket<LapData>(bytes);
+        Packet.LapData packet = Converter.BytesToPacket<Packet.LapData>(bytes);
 
-        Packets.Standard.CarLapData[] carLapDatas = new Packets.Standard.CarLapData[MaxCarsPerRace];
+        CarLapData[] carLapDatas = new CarLapData[MaxCarsPerRace];
         for (int i = 0; i < MaxCarsPerRace; i++)
         {
-            carLapDatas[i] = new Packets.Standard.CarLapData(
-                packet.carLapData[i].lastLapTime,
-                packet.carLapData[i].currentLapTime,
-                packet.carLapData[i].sector1Time,
-                packet.carLapData[i].sector2Time,
-                packet.carLapData[i].lapDistance,
-                packet.carLapData[i].totalDistance,
-                packet.carLapData[i].safetyCarDelta,
-                packet.carLapData[i].carPosition,
-                packet.carLapData[i].currentLapNum,
-                packet.carLapData[i].pitStatus,
-                packet.carLapData[i].numPitStops,
-                packet.carLapData[i].sector,
-                packet.carLapData[i].currentLapInvalid,
-                packet.carLapData[i].penalties,
-                packet.carLapData[i].warnings,
-                packet.carLapData[i].numUnservedDriveThroughPenalties,
-                packet.carLapData[i].numUnservedStopGoPenalties,
-                packet.carLapData[i].gridPosition,
-                packet.carLapData[i].driverStatus,
-                packet.carLapData[i].resultStatus,
-                packet.carLapData[i].pitLaneTimerActive,
-                packet.carLapData[i].pitLaneTimeInLane,
-                packet.carLapData[i].pitStopTimer,
-                packet.carLapData[i].pitStopShouldServePen);
-        }
+            var data = packet.carLapData[i];
 
-        return new Packets.Standard.LapData(carLapDatas);
-    }
-
-    // Event ConvertBytesToEventPacket(byte[] bytes)
-    //{
-    //}
-
-    Packets.Standard.Participant ConvertBytesToParticipantPacket(byte[] bytes)
-    {
-        Participant packet = Converter.BytesToPacket<Participant>(bytes);
-
-        Packets.Standard.ParticipantData[] participants = new Packets.Standard.ParticipantData[MaxCarsPerRace];
-        for (int i = 0; i < MaxCarsPerRace; i++)
-        {
-            participants[i] = new Packets.Standard.ParticipantData(
-                packet.participants[i].aiControlled,
-                packet.participants[i].driverId,
-                packet.participants[i].networkId,
-                packet.participants[i].teamId,
-                packet.participants[i].myTeam,
-                packet.participants[i].raceNumber,
-                packet.participants[i].nationality,
-                packet.participants[i].name,
-                packet.participants[i].yourTelemetry);
-        }
-
-        return new Packets.Standard.Participant(packet.numActiveCars, participants);
-    }
-
-    Packets.Standard.CarSetup ConvertBytesToCarSetupPacket(byte[] bytes)
-    {
-        CarSetup packet = Converter.BytesToPacket<CarSetup>(bytes);
-
-        Packets.Standard.CarSetupData[] carSetups = new Packets.Standard.CarSetupData[MaxCarsPerRace];
-        for (int i = 0; i < MaxCarsPerRace; i++)
-        {
-            carSetups[i] = new Packets.Standard.CarSetupData(
-                packet.carSetupData[i].frontWing,
-                packet.carSetupData[i].rearWing,
-                packet.carSetupData[i].onThrottle,
-                packet.carSetupData[i].offThrottle,
-                packet.carSetupData[i].frontCamber,
-                packet.carSetupData[i].rearCamber,
-                packet.carSetupData[i].frontToe,
-                packet.carSetupData[i].rearToe,
-                packet.carSetupData[i].frontSuspension,
-                packet.carSetupData[i].rearSuspension,
-                packet.carSetupData[i].frontAntiRollBar,
-                packet.carSetupData[i].rearAntiRollBar,
-                packet.carSetupData[i].frontSuspensionHeight,
-                packet.carSetupData[i].rearSuspensionHeight,
-                packet.carSetupData[i].brakePressure,
-                packet.carSetupData[i].brakeBias,
-                packet.carSetupData[i].rearLeftTyrePressure,
-                packet.carSetupData[i].rearRightTyrePressure,
-                packet.carSetupData[i].frontLeftTyrePressure,
-                packet.carSetupData[i].frontRightTyrePressure,
-                packet.carSetupData[i].ballast,
-                packet.carSetupData[i].fuelLoad);
-        }
-
-        return new Packets.Standard.CarSetup(carSetups);
-    }
-
-    Packets.Standard.CarTelemetry ConvertBytesToCarTelemetryPacket(byte[] bytes)
-    {
-        CarTelemetry packet = Converter.BytesToPacket<CarTelemetry>(bytes);
-
-        Packets.Standard.CarTelemetryData[] carTelemetryData = new Packets.Standard.CarTelemetryData[MaxCarsPerRace];
-        for (int i = 0; i < MaxCarsPerRace; i++)
-        {
-            carTelemetryData[i] = new Packets.Standard.CarTelemetryData(
-                packet.carTelemetryData[i].speed,
-                packet.carTelemetryData[i].throttle,
-                packet.carTelemetryData[i].steer,
-                packet.carTelemetryData[i].brake,
-                packet.carTelemetryData[i].clutch,
-                packet.carTelemetryData[i].gear,
-                packet.carTelemetryData[i].engineRPM,
-                packet.carTelemetryData[i].drs,
-                packet.carTelemetryData[i].revLightsPercent,
-                packet.carTelemetryData[i].revLightsBitValue,
-                packet.carTelemetryData[i].brakesTemperature,
-                packet.carTelemetryData[i].tyresSurfaceTemperature,
-                packet.carTelemetryData[i].tyresInnerTemperature,
-                packet.carTelemetryData[i].engineTemperature,
-                packet.carTelemetryData[i].tyrePressure,
-                packet.carTelemetryData[i].surfaceType);
-        }
-
-        return new Packets.Standard.CarTelemetry(
-            carTelemetryData,
-            packet.mfdPanelIndex,
-            packet.mfdPanelIndexSecondaryPlayer,
-            packet.suggestedGear);
-    }
-
-    Packets.Standard.CarStatus ConvertBytesToCarStatusPacket(byte[] bytes)
-    {
-        CarStatus packet = Converter.BytesToPacket<CarStatus>(bytes);
-
-        Packets.Standard.CarStatusData[] carStatusData = new Packets.Standard.CarStatusData[MaxCarsPerRace];
-        for (int i = 0; i < MaxCarsPerRace; i++)
-        {
-            carStatusData[i] = new Packets.Standard.CarStatusData(
-                packet.carStatusData[i].trackionControl,
-                packet.carStatusData[i].antiLockBrakes,
-                packet.carStatusData[i].fuelMix,
-                packet.carStatusData[i].frontBrakeBias,
-                packet.carStatusData[i].pitLimiterStatus,
-                packet.carStatusData[i].fuelInTank,
-                packet.carStatusData[i].fuelCapacity,
-                packet.carStatusData[i].fuelRemainingLaps,
-                packet.carStatusData[i].maxRPM,
-                packet.carStatusData[i].idleRPM,
-                packet.carStatusData[i].maxGears,
-                packet.carStatusData[i].drsAllowed,
-                packet.carStatusData[i].drsActivationDistance,
-                packet.carStatusData[i].actualTyreCompound,
-                packet.carStatusData[i].visualTyreCompound,
-                packet.carStatusData[i].tyresAgeLaps,
-                packet.carStatusData[i].vehicleFiaFlags,
-                packet.carStatusData[i].ersStoreEnergy,
-                packet.carStatusData[i].ersDeployMode,
-                packet.carStatusData[i].ersHarvestedThisLapMGUK,
-                packet.carStatusData[i].ersHarvestedThisLapMGUH,
-                packet.carStatusData[i].ersDeployedThisLap,
-                packet.carStatusData[i].networkPaused
+            carLapDatas[i] = new CarLapData(
+                data.lastLapTime,
+                data.currentLapTime,
+                data.sector1Time,
+                data.sector2Time,
+                data.lapDistance,
+                data.carPosition,
+                data.currentLapNum,
+                data.sector,
+                data.currentLapInvalid,
+                data.resultStatus
                 );
         }
 
-        return new Packets.Standard.CarStatus(carStatusData);
+        return new LapData(carLapDatas);
     }
 
-    Packets.Standard.FinalClassification ConvertBytesToFinalClassificationPacket(byte[] bytes)
+    Participant ConvertBytesToParticipantPacket(byte[] bytes)
     {
-        FinalClassification packet = Converter.BytesToPacket<FinalClassification>(bytes);
+        Packet.Participant packet = Converter.BytesToPacket<Packet.Participant>(bytes);
 
-        Packets.Standard.FinalClassificationData[] finalClassificationData = new Packets.Standard.FinalClassificationData[MaxCarsPerRace];
+        ParticipantData[] participants = new ParticipantData[MaxCarsPerRace];
         for (int i = 0; i < MaxCarsPerRace; i++)
         {
-            finalClassificationData[i] = new Packets.Standard.FinalClassificationData(
-                packet.finalClassificationData[i].position,
-                packet.finalClassificationData[i].numberLaps,
-                packet.finalClassificationData[i].gridPosition,
-                packet.finalClassificationData[i].points,
-                packet.finalClassificationData[i].numberPitStops,
-                packet.finalClassificationData[i].resultStatus,
-                packet.finalClassificationData[i].bestLapTime,
-                packet.finalClassificationData[i].totalRaceTime,
-                packet.finalClassificationData[i].penalitesTime,
-                packet.finalClassificationData[i].numberPenalties,
-                packet.finalClassificationData[i].numberTyreStints,
-                packet.finalClassificationData[i].tyreStintsActual,
-                packet.finalClassificationData[i].tyreStintsVisual);
+            var participant = packet.participants[i];
+
+            participants[i] = new ParticipantData(
+                participant.driverId,
+                participant.teamId,
+                participant.raceNumber,
+                participant.nationality,
+                participant.name
+                );
         }
 
-        return new Packets.Standard.FinalClassification(packet.numberCars, finalClassificationData);
+        return new Participant(packet.numActiveCars, participants);
     }
 
-    Packets.Standard.LobbyInfo ConvertBytesToLobbyInfoPacket(byte[] bytes)
+    CarTelemetry ConvertBytesToCarTelemetryPacket(byte[] bytes)
     {
-        LobbyInfo packet = Converter.BytesToPacket<LobbyInfo>(bytes);
+        Packet.CarTelemetry packet = Converter.BytesToPacket<Packet.CarTelemetry>(bytes);
 
-        Packets.Standard.LobbyInfoData[] lobbyInfoData = new Packets.Standard.LobbyInfoData[MaxCarsPerRace];
+        CarTelemetryData[] carTelemetryData = new CarTelemetryData[MaxCarsPerRace];
         for (int i = 0; i < MaxCarsPerRace; i++)
         {
-            lobbyInfoData[i] = new Packets.Standard.LobbyInfoData(
-                packet.lobbyPlayers[i].aiControlled,
-                packet.lobbyPlayers[i].teamId,
-                packet.lobbyPlayers[i].nationality,
-                packet.lobbyPlayers[i].name,
-                packet.lobbyPlayers[i].carNumber,
-                packet.lobbyPlayers[i].readyStatus);
+            var data = packet.carTelemetryData[i];
+
+            carTelemetryData[i] = new CarTelemetryData(
+                data.speed,
+                data.throttle,
+                data.steer,
+                data.brake,
+                data.gear,
+                data.drs,
+                new FourAxleUnsignedShort(data.brakesTemperature),
+                new FourAxleByte(data.tyresSurfaceTemperature),
+                new FourAxleByte(data.tyresInnerTemperature)
+                );
         }
 
-        return new Packets.Standard.LobbyInfo(packet.numPlayers, lobbyInfoData);
+        return new CarTelemetry(carTelemetryData);
     }
 
-    Packets.Standard.CarDamage ConvertBytesToCarDamagePacket(byte[] bytes)
+    CarStatus ConvertBytesToCarStatusPacket(byte[] bytes)
     {
-        CarDamage packet = Converter.BytesToPacket<CarDamage>(bytes);
+        Packet.CarStatus packet = Converter.BytesToPacket<Packet.CarStatus>(bytes);
 
-        Packets.Standard.CarDamageData[] carDamageData = new Packets.Standard.CarDamageData[MaxCarsPerRace];
+        CarStatusData[] carStatusData = new CarStatusData[MaxCarsPerRace];
         for (int i = 0; i < MaxCarsPerRace; i++)
         {
-            carDamageData[i] = new Packets.Standard.CarDamageData(
-                packet.carDamageData[i].tyreWear,
-                packet.carDamageData[i].tyreDamage,
-                packet.carDamageData[i].brakeDamage,
-                packet.carDamageData[i].frontLeftWingDamage,
-                packet.carDamageData[i].frontRightWingDamage,
-                packet.carDamageData[i].rearWingDamage,
-                packet.carDamageData[i].floorDamage,
-                packet.carDamageData[i].diffuserDamage,
-                packet.carDamageData[i].sidepodDamage,
-                packet.carDamageData[i].drsFault,
-                packet.carDamageData[i].gearBoxDamage,
-                packet.carDamageData[i].engineDamage,
-                packet.carDamageData[i].engineMGUHWear,
-                packet.carDamageData[i].engineESWear,
-                packet.carDamageData[i].engineCEWear,
-                packet.carDamageData[i].engineICEWear,
-                packet.carDamageData[i].engineMGUKWear,
-                packet.carDamageData[i].engineICWear);
+            var data = packet.carStatusData[i];
+
+            carStatusData[i] = new CarStatusData(
+                data.fuelRemainingLaps,
+                data.visualTyreCompound,
+                data.tyresAgeLaps
+                );
         }
 
-        return new Packets.Standard.CarDamage(carDamageData);
+        return new CarStatus(carStatusData);
     }
 
-    Packets.Standard.SessionHistory ConvertBytesToSessionHistoryPacket(byte[] bytes)
+    FinalClassification ConvertBytesToFinalClassificationPacket(byte[] bytes)
     {
-        SessionHistory packet = Converter.BytesToPacket<SessionHistory>(bytes);
+        Packet.FinalClassification packet = Converter.BytesToPacket<Packet.FinalClassification>(bytes);
 
-        Packets.Standard.LapHistoryData[] lapHistoryData = new Packets.Standard.LapHistoryData[_LAP_HISTORY_MAX];
-        Packets.Standard.TyreStintHistoryData[] tyreStintHistoryData = new Packets.Standard.TyreStintHistoryData[_TYRE_STINT_HISTORY_MAX];
+        FinalClassificationData[] finalClassificationData = new FinalClassificationData[packet.numberCars];
+        for (int i = 0; i < packet.numberCars; i++)
+        {
+            var data = packet.finalClassificationData[i];
+
+            finalClassificationData[i] = new FinalClassificationData(
+                data.position,
+                data.numberLaps,
+                data.gridPosition,
+                data.points,
+                data.numberPitStops,
+                data.resultStatus,
+                data.bestLapTime,
+                data.totalRaceTime,
+                data.penalitesTime,
+                data.numberPenalties,
+                data.numberTyreStints,
+                data.tyreStintsVisual
+                );
+        }
+
+        return new FinalClassification(packet.numberCars, finalClassificationData);
+    }
+
+    LobbyInfo ConvertBytesToLobbyInfoPacket(byte[] bytes)
+    {
+        Packet.LobbyInfo packet = Converter.BytesToPacket<Packet.LobbyInfo>(bytes);
+
+        LobbyInfoData[] lobbyInfoData = new LobbyInfoData[packet.numPlayers];
+        for (int i = 0; i < packet.numPlayers; i++)
+        {
+            var player = packet.lobbyPlayers[i];
+
+            lobbyInfoData[i] = new LobbyInfoData(
+                player.aiControlled,
+                player.teamId,
+                player.nationality,
+                player.name);
+        }
+
+        return new LobbyInfo(packet.numPlayers, lobbyInfoData);
+    }
+
+    CarDamage ConvertBytesToCarDamagePacket(byte[] bytes)
+    {
+        Packet.CarDamage packet = Converter.BytesToPacket<Packet.CarDamage>(bytes);
+
+        CarDamageData[] carDamageData = new CarDamageData[MaxCarsPerRace];
+        for (int i = 0; i < MaxCarsPerRace; i++)
+        {
+            var data = packet.carDamageData[i];
+
+            carDamageData[i] = new CarDamageData(
+                new FourAxleFloat(data.tyreWear),
+                new FourAxleByte(data.tyreDamage),
+                new FourAxleByte(data.brakeDamage),
+                data.frontLeftWingDamage,
+                data.frontRightWingDamage,
+                data.rearWingDamage);
+        }
+
+        return new CarDamage(carDamageData);
+    }
+
+    SessionHistory ConvertBytesToSessionHistoryPacket(byte[] bytes)
+    {
+        Packet.SessionHistory packet = Converter.BytesToPacket<Packet.SessionHistory>(bytes);
+
+        LapHistoryData[] lapHistoryData = new LapHistoryData[_LAP_HISTORY_MAX];
+        TyreStintHistoryData[] tyreStintHistoryData = new TyreStintHistoryData[_TYRE_STINT_HISTORY_MAX];
 
         for (int i = 0; i < _LAP_HISTORY_MAX; i++)
         {
             if (i < _TYRE_STINT_HISTORY_MAX)
             {
-                tyreStintHistoryData[i] = new Packets.Standard.TyreStintHistoryData(
+                tyreStintHistoryData[i] = new TyreStintHistoryData(
                     packet.tyreStintHistoryData[i].endLap,
-                    packet.tyreStintHistoryData[i].tyreActualCompound,
-                    packet.tyreStintHistoryData[i].tyreVisualCompound);
+                    packet.tyreStintHistoryData[i].tyreVisualCompound
+                    );
             }
 
-            lapHistoryData[i] = new Packets.Standard.LapHistoryData(
+            lapHistoryData[i] = new LapHistoryData(
                 packet.lapHistoryData[i].lapTime,
                 packet.lapHistoryData[i].sector1Time,
                 packet.lapHistoryData[i].sector2Time,
-                packet.lapHistoryData[i].sector3Time,
-                packet.lapHistoryData[i].lapValidBitFlags);
+                packet.lapHistoryData[i].sector3Time
+                );
         }
 
-        return new Packets.Standard.SessionHistory(
+        return new SessionHistory(
             packet.carIdx,
             packet.numLaps,
             packet.numTyreStints,
@@ -437,7 +302,8 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
             packet.bestSector2LapNum,
             packet.bestSector3LapNum,
             lapHistoryData,
-            tyreStintHistoryData);
+            tyreStintHistoryData
+            );
     }
 
     public object? GetEvent(byte[] remainingPacket)
@@ -445,18 +311,18 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
         EventType eventType = GetEventType(remainingPacket);
         return eventType switch
         {
-            EventType.BUTN => Converter.BytesToPacket<Buttons>(remainingPacket),
-            EventType.FLBK => Converter.BytesToPacket<Flashback>(remainingPacket),
-            EventType.STLG => Converter.BytesToPacket<StartLights>(remainingPacket),
-            EventType.LGOT => Converter.BytesToPacket<StartLights>(remainingPacket),
-            EventType.SPTP => Converter.BytesToPacket<SpeedTrap>(remainingPacket),
-            EventType.FTLP => Converter.BytesToPacket<FastestLap>(remainingPacket),
-            EventType.TMPT => Converter.BytesToPacket<TeamMateInPits>(remainingPacket),
-            EventType.RCWN => Converter.BytesToPacket<RaceWinner>(remainingPacket),
-            EventType.RTMT => Converter.BytesToPacket<Retirement>(remainingPacket),
-            EventType.PENA => Converter.BytesToPacket<Penalty>(remainingPacket),
-            EventType.SGSV => Converter.BytesToPacket<StopGoPenaltyServed>(remainingPacket),
-            EventType.DTSV => Converter.BytesToPacket<DriveThroughPenaltyServed>(remainingPacket),
+            EventType.BUTN => Converter.BytesToPacket<Packet.Buttons>(remainingPacket),
+            EventType.FLBK => Converter.BytesToPacket<Packet.Flashback>(remainingPacket),
+            EventType.STLG => Converter.BytesToPacket<Packet.StartLights>(remainingPacket),
+            EventType.LGOT => Converter.BytesToPacket<Packet.StartLights>(remainingPacket),
+            EventType.SPTP => Converter.BytesToPacket<Packet.SpeedTrap>(remainingPacket),
+            EventType.FTLP => Converter.BytesToPacket<Packet.FastestLap>(remainingPacket),
+            EventType.TMPT => Converter.BytesToPacket<Packet.TeamMateInPits>(remainingPacket),
+            EventType.RCWN => Converter.BytesToPacket<Packet.RaceWinner>(remainingPacket),
+            EventType.RTMT => Converter.BytesToPacket<Packet.Retirement>(remainingPacket),
+            EventType.PENA => Converter.BytesToPacket<Packet.Penalty>(remainingPacket),
+            EventType.SGSV => Converter.BytesToPacket<Packet.StopGoPenaltyServed>(remainingPacket),
+            EventType.DTSV => Converter.BytesToPacket<Packet.DriveThroughPenaltyServed>(remainingPacket),
             _ => null,
         };
     }

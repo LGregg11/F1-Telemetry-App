@@ -1,9 +1,10 @@
 ﻿namespace F1TelemetryAppTests.F1GameTelemetryTests;
 
 using F1GameTelemetry.Converters;
-using NUnit.Framework;
-using F1GameTelemetry.Packets.F12021;
 using F1GameTelemetry.Enums;
+using F1GameTelemetry.Packets.F12021;
+
+using NUnit.Framework;
 
 [TestFixture]
 public class ConvertersTests

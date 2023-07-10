@@ -1,5 +1,7 @@
 ﻿namespace F1GameTelemetry.Converters;
 
+using F1GameTelemetry.Models;
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -27,6 +29,11 @@ public static class Converter
     public static double GetMagnitudeFromVectorData(float[] vector)
     {
         return Math.Round(Math.Sqrt(Math.Pow(vector[0], 2) + Math.Pow(vector[1], 2) + Math.Pow(vector[2], 2)), 3);
+    }
+
+    public static double GetMagnitudeFromVectorData(Vector3d vector)
+    {
+        return Math.Round(Math.Sqrt(Math.Pow(vector.x, 2) + Math.Pow(vector.y, 2) + Math.Pow(vector.z, 2)), 3);
     }
 
     /// <summary>

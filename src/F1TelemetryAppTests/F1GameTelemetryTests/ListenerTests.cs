@@ -1,9 +1,9 @@
 namespace F1TelemetryAppTests.F1GameTelemetryTests;
 
+using F1GameTelemetry.Listener;
+
 using Moq;
 using NUnit.Framework;
-
-using F1GameTelemetry.Listener;
 
 internal class ListenerTests
 {

@@ -192,7 +192,7 @@ public enum Nationality : byte
 
 public enum Team : byte
 {
-    // TODO: Add descriptions to all thesse..
+    // TODO: Add descriptions to all these..
     Unknown = 255,
 
     // F1 Latest

@@ -1,7 +1,7 @@
 ﻿namespace F1GameTelemetry.Converters;
 
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Packets.Standard;
+using Enums;
+using Models;
 
 using System;
 using System.Linq;
@@ -20,7 +20,6 @@ public abstract class BaseTelemetryConverter : ITelemetryConverter
 
     public bool IsExportEnabled { get; set; }
     public int MaxCarsPerRace => 22;
-    public int HeaderPacketSize => 24;
 
     public abstract Header ConvertBytesToHeader(byte[] bytes);
 

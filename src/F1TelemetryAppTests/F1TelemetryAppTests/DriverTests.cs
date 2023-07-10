@@ -1,9 +1,11 @@
 ﻿namespace F1TelemetryAppTests.F1TelemetryAppTests;
 
-using F1GameTelemetry.Packets.Standard;
 using F1GameTelemetry.Enums;
-using NUnit.Framework;
+using F1GameTelemetry.Models;
+
 using F1TelemetryApp.Model;
+
+using NUnit.Framework;
 
 internal class DriverTests
 {
@@ -18,9 +20,7 @@ internal class DriverTests
             nationality = Nationality.Welsh,
             teamId = Team.McLaren,
             raceNumber = 11,
-            aiControlled = AiControlled.Human,
-            driverId = DriverId.Human,
-            yourTelemetry = UdpSetting.Public
+            driverId = DriverId.Human
         };
     }
 
@@ -48,11 +48,9 @@ internal class DriverTests
         var driver = new Driver(0, participantData);
         var raceFinishedData = new CarLapData
         {
-            gridPosition = 8,
             carPosition = 5,
             currentLapNum = 3,
             resultStatus = ResultStatus.Finished,
-            lastLapTime = 72125, // 01:12:125
             sector1Time = 25100,
             sector2Time = 26100,
             currentLapTime = 72400 // 01:12:400

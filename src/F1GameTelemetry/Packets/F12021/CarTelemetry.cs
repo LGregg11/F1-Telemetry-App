@@ -25,7 +25,7 @@ public struct CarTelemetryData
     public byte clutch; // 0 - 100
     public sbyte gear; // Gears=1-8, Neutral=0, Reverse=-1
     public ushort engineRPM;
-    public byte drs; // 0 = Off, 1 = On
+    public DrsActivation drs; // 0 = Off, 1 = On
     public byte revLightsPercent;
     public ushort revLightsBitValue; // bit 0 = leftmost LED, bit 14 = rightmost LED
 

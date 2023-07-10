@@ -1,8 +1,10 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
 using F1GameTelemetry.Enums;
+using F1GameTelemetry.Events;
 using F1GameTelemetry.Exporter;
 using F1GameTelemetry.Listener;
+using F1GameTelemetry.Models;
 using F1GameTelemetry.Readers;
 
 using log4net;
@@ -12,8 +14,6 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using F1GameTelemetry.Packets.Standard;
-using F1GameTelemetry.Events;
 
 public class MainWindowViewModel : BindableBase
 {

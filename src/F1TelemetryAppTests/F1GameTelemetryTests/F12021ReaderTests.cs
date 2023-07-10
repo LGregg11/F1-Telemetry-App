@@ -1,16 +1,14 @@
 ﻿namespace F1TelemetryAppTests.F1GameTelemetryTests;
 
-using Moq;
+using F1GameTelemetry.Enums;
+using F1GameTelemetry.Converters;
+using F1GameTelemetry.Packets.F12021;
+using F1GameTelemetry.Converters.F12021;
+
 using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Text;
-
-using F1GameTelemetry.Enums;
-using F1GameTelemetry.Converters;
-using F1GameTelemetry.Packets.F12021;
-using F1GameTelemetry.Listener;
-using F1GameTelemetry.Converters.F12021;
 
 [TestFixture]
 public class F12021ReaderTests
