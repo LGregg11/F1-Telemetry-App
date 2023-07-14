@@ -4,26 +4,6 @@ using Enums;
 
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 5)]
-public struct MarshalZones
-{
-    public float zoneStart; // Fraction (0..1) of way through the lap the marshal zone starts
-    public ZoneFlag zoneFlag;
-}
-
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
-public struct WeatherForecastSample
-{
-    public SessionType sessionType;
-    public byte timeOffset; // Time in minutes the forecast is for
-    public Weather weather;
-    public sbyte trackTemperature; // Celcius
-    public TemperatureChange trackTemperatureChange;
-    public sbyte airTemperature; // Celcius
-    public TemperatureChange airTemperatureChange;
-    public byte rainPercentage;
-}
-
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 601)]
 public struct Session
 {
@@ -71,4 +51,24 @@ public struct Session
     public BasicAssist DRSAssist;
     public DynamicRacingLine dynamicRacingLine;
     public DynamicRacingLineType dynamicRacingLineType;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 5)]
+public struct MarshalZones
+{
+    public float zoneStart; // Fraction (0..1) of way through the lap the marshal zone starts
+    public ZoneFlag zoneFlag;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+public struct WeatherForecastSample
+{
+    public SessionType sessionType;
+    public byte timeOffset; // Time in minutes the forecast is for
+    public Weather weather;
+    public sbyte trackTemperature; // Celcius
+    public TemperatureChange trackTemperatureChange;
+    public sbyte airTemperature; // Celcius
+    public TemperatureChange airTemperatureChange;
+    public byte rainPercentage;
 }

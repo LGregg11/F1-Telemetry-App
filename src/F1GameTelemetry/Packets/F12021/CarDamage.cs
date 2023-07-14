@@ -31,7 +31,7 @@ public struct CarDamageData
     public byte floorDamage;
     public byte diffuserDamage;
     public byte sidepodDamage;
-    public DrsFault drsFault;
+    public Fault drsFault;
     public byte gearBoxDamage;
     public byte engineDamage;
     public byte engineMGUHWear;
