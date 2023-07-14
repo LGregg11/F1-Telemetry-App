@@ -33,7 +33,8 @@ public enum Track : sbyte
     Zandvoort = 26,
     Imola = 27,
     Portimao = 28,
-    Jeddah = 29
+    Jeddah = 29,
+    Miami = 30
 }
 
 public enum SurfaceType : byte

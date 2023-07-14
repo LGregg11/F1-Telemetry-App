@@ -114,7 +114,33 @@ public enum DriverId : byte
     // No 104 - 108
     JensonButton = 109,
     DavidCoulthard = 110,
-    NicoRosberg = 111
+    NicoRosberg = 111,
+    OscarPiastri = 112,
+    LiamLawson = 113,
+    JuriVips = 114,
+    TheoPourchaire = 115,
+    RichardVerschoor = 116,
+    LirimZendeli = 117,
+    DavidBeckmann = 118,
+    // No 119 or 120
+    AlessioDeledda = 121,
+    BentViscaal = 122,
+    EnzoFittipaldi = 123,
+    // No 124
+    MarkWebber = 125,
+    JacquesVlleneuve = 126,
+    JakeHughes = 127,
+    FrederikVesti = 128,
+    OlliCaldwell = 129,
+    LoganSargeant = 130,
+    CemBolukbasi = 131,
+    AyumaIwasa = 132,
+    ClementNovolak = 133,
+    DennisHauger = 134,
+    CalanWilliams = 135,
+    JackDoohan = 136,
+    AmauryCordeel = 137,
+    MikaHakkinen = 138
 }
 
 public enum DriverStatus : byte
