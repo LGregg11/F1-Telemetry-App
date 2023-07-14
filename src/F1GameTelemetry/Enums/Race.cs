@@ -90,7 +90,6 @@ public enum RuleSet : byte
 
 public enum SessionLength : byte
 {
-    // TODO: Check session lengths from appendix
     None = 0,
     VeryShort = 2,
     Short = 3,

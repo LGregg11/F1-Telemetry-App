@@ -77,5 +77,5 @@ public enum ZoneFlag : sbyte
     Green = 1,
     Blue = 2,
     Yellow = 3,
-    Red = 4
+    Red = 4 // No longer in F1 2023
 }

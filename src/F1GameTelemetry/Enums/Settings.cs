@@ -46,3 +46,15 @@ public enum DynamicRacingLineType : byte
     TwoD = 0,
     ThreeD = 1
 }
+
+public enum SpeedUnit : byte
+{
+    MPH = 0,
+    KPH = 1
+}
+
+public enum TemperatureUnit : byte
+{
+    Celcius = 0,
+    Fahrenheit = 1
+}

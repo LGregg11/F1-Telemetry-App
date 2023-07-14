@@ -293,5 +293,17 @@ public enum GameVersion : ushort
     [Description("F1 2021")]
     F12021 = 2021,
     [Description("F1 2022")]
-    F12022 = 2022
+    F12022 = 2022,
+    [Description("F1 2023")]
+    F12023 = 2023
+}
+
+public enum Platform : byte
+{
+    Unknown = 255,
+
+    Steam = 1,
+    Playstation = 3,
+    Xbox = 4,
+    Origin = 6
 }
