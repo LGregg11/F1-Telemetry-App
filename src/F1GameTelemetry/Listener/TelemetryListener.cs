@@ -18,11 +18,12 @@ public class TelemetryListener : ITelemetryListener
 
     public TelemetryListener(int port, IUdpClient? client)
     {
+        _port = port;
+
         if (client == null)
             client = CreateClient();
-
-        _port = port;
         _client = client;
+
         _listenerThread = CreateThread();
     }
 
