@@ -50,39 +50,39 @@ public class Driver : INotifyPropertyChanged
 
     public void ApplyCarLapData(CarLapData lapData)
     {
-        Position = lapData.carPosition;
-        ResultStatus = lapData.resultStatus;
-        Sector = lapData.sector;
-        CurrentLapTime = Convert.ToInt32(lapData.currentLapTime);
-        NotifyPropertyChanged();
+        //Position = lapData.carPosition;
+        //ResultStatus = lapData.resultStatus;
+        //Sector = lapData.sector;
+        //CurrentLapTime = Convert.ToInt32(lapData.currentLapTime);
+        //NotifyPropertyChanged();
     }
 
     public void ApplySessionHistory(SessionHistory history)
     {
-        if (history.lapHistoryData.Length < Index)
-            throw new IndexOutOfRangeException($"{Index} of Driver {Name} is out of range for the most recent SessionHistory packet");
+        //if (history.lapHistoryData.Length < Index)
+        //    throw new IndexOutOfRangeException($"{Index} of Driver {Name} is out of range for the most recent SessionHistory packet");
 
-        if (Laps < history.numLaps)
-        {
-            // One final lap update before starting the new lap data
-            if (Laps >= 1)
-                LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
-            Laps = history.numLaps;
-            LapTimes.Add(new LapHistoryData { lapTime = 0, sector1Time = 0, sector2Time = 0, sector3Time = 0 });
-        }
+        //if (Laps < history.numLaps)
+        //{
+        //    // One final lap update before starting the new lap data
+        //    if (Laps >= 1)
+        //        LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
+        //    Laps = history.numLaps;
+        //    LapTimes.Add(new LapHistoryData { lapTime = 0, sector1Time = 0, sector2Time = 0, sector3Time = 0 });
+        //}
 
-        // Just completely update the lap data
-        BestSector1Lap = history.bestSector1LapNum;
-        BestSector2Lap = history.bestSector2LapNum;
-        BestSector3Lap = history.bestSector3LapNum;
-        BestLapTimeLap = history.bestLapTimeLapNum;
-        LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
+        //// Just completely update the lap data
+        //BestSector1Lap = history.bestSector1LapNum;
+        //BestSector2Lap = history.bestSector2LapNum;
+        //BestSector3Lap = history.bestSector3LapNum;
+        //BestLapTimeLap = history.bestLapTimeLapNum;
+        //LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
 
-        LastSector1Time = LapTimes.Select(l => l.sector1Time).Where(t => t > 0).LastOrDefault();
-        LastSector2Time = LapTimes.Select(l => l.sector2Time).Where(t => t > 0).LastOrDefault();
-        LastSector3Time = LapTimes.Select(l => l.sector3Time).Where(t => t > 0).LastOrDefault();
-        LastLapTime = Convert.ToInt32(LapTimes.Select(l => l.lapTime).Where(t => t > 0).LastOrDefault());
-        NotifyPropertyChanged();
+        //LastSector1Time = LapTimes.Select(l => l.sector1Time).Where(t => t > 0).LastOrDefault();
+        //LastSector2Time = LapTimes.Select(l => l.sector2Time).Where(t => t > 0).LastOrDefault();
+        //LastSector3Time = LapTimes.Select(l => l.sector3Time).Where(t => t > 0).LastOrDefault();
+        //LastLapTime = Convert.ToInt32(LapTimes.Select(l => l.lapTime).Where(t => t > 0).LastOrDefault());
+        //NotifyPropertyChanged();
     }
 
     private void NotifyPropertyChanged(string propertyName = "")

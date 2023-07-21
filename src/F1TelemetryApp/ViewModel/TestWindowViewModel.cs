@@ -233,7 +233,7 @@ public class TestWindowViewModel : BasePageViewModel
         var motion = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
-            _motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.extraCarMotionData.localVelocity);
+            _motionMessage.Speed = Converter.GetMagnitudeFromVectorData(motion.carMotionData[_myCarIndex].worldVelocity);
         });
         RaisePropertyChanged(nameof(LocalSpeed));
     }
