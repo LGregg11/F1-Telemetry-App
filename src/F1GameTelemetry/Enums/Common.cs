@@ -38,7 +38,13 @@ public enum PacketId : byte
     CarDamage = 10,
 
     // Lap and tyre data for session
-    SessionHistory = 11
+    SessionHistory = 11,
+
+    // New for 2023 - Extended tyre set data
+    TyreSets = 12,
+
+    // New for 2023 - Extended motion data for player car
+    MotionEx = 13
 }
 
 public enum EventType
@@ -195,7 +201,7 @@ public enum Team : byte
     // TODO: Add descriptions to all these..
     Unknown = 255,
 
-    // F1 Latest
+    // F1 2021
     Mercedes = 0,
     Ferrari = 1,
     RedBullRacing = 2,
@@ -242,7 +248,46 @@ public enum Team : byte
     AlphaTauri2020 = 91,
     Haas2020 = 92,
     McLaren2020 = 93,
-    AlfaRomeo2020 = 94
+    AlfaRomeo2020 = 94,
+
+    // F1 2022 - Supercars
+    AstonMartinDB11V12 = 95,
+    AstonMartinVantageF1Edition = 96,
+    AstonMartinVantageSafetyCar = 97,
+    FerrariF8Tributo = 98,
+    FerrariRoma = 99,
+    McLaren720S = 100,
+    McLarenArtura = 101,
+    MercedesAMGGTBlackSeriesSafetyCar = 102,
+    MercedesAMGGTRPro = 103,
+
+    // F1 2022
+    F1CustomTeam = 104,
+
+    Prema21 = 106,
+    UniVirtuosi21 = 107,
+    Carlin21 = 108,
+    Hitech21 = 109,
+    ArtGP21 = 110,
+    MPMotorsport21 = 111,
+    Charouz21 = 112,
+    Dams21 = 113,
+    Campos21 = 114,
+    BWT21 = 115,
+    Trident21 = 116,
+    MercedesAMGGTBlackSeries = 117,
+    
+    Prema22 = 118,
+    Virtuosi22 = 119,
+    Carlin22 = 120,
+    Hitech22 = 121,
+    ArtGP22 = 122,
+    MPMotorsport22 = 123,
+    Charouz22 = 124,
+    Dams22 = 125,
+    Campos22 = 126,
+    VanAmersfoortRacing22 = 127,
+    Trident22 = 128
 }
 
 public enum GameVersion : ushort
@@ -252,5 +297,19 @@ public enum GameVersion : ushort
     [Description("F1 2020")]
     F12020 = 2020,
     [Description("F1 2021")]
-    F12021 = 2021
+    F12021 = 2021,
+    [Description("F1 2022")]
+    F12022 = 2022,
+    [Description("F1 2023")]
+    F12023 = 2023
+}
+
+public enum Platform : byte
+{
+    Unknown = 255,
+
+    Steam = 1,
+    Playstation = 3,
+    Xbox = 4,
+    Origin = 6
 }

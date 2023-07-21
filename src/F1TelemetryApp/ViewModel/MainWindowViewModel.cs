@@ -1,5 +1,6 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
+using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Events;
 using F1GameTelemetry.Exporter;
@@ -14,9 +15,17 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Linq;
 
 public class MainWindowViewModel : BindableBase
 {
+    private static readonly List<ITelemetryConverter> _converters = new()
+    {
+        new TelemetryConverter2021(),
+        new TelemetryConverter2022(),
+        new TelemetryConverter2023()
+    };
+
     private const int _port = 20777;
     private bool _isSubscribedToReader = false;
 
@@ -26,14 +35,23 @@ public class MainWindowViewModel : BindableBase
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
         Version = GameVersion.F12021;
         SingletonTelemetryReader.SetTelemetryListener(new TelemetryListener(_port));
-        UpdateTelemetryReader();
+        UpdateTelemetryConverter();
     }
 
     public ILog Log { get; set; }
 
     public static bool IsListenerRunning => SingletonTelemetryReader.IsListenerRunning;
 
-    public static List<GameVersion> Versions => new((IEnumerable<GameVersion>)Enum.GetValues(typeof(GameVersion)));
+    public static List<GameVersion> Versions => GetConverterVersions();
+    private static List<GameVersion> GetConverterVersions()
+    {
+        var versions = new List<GameVersion>();
+        foreach (var converter in _converters)
+            versions.Add(converter.GameVersion);
+
+        return versions;
+    }
+
 
     private GameVersion _version;
     public GameVersion Version
@@ -46,7 +64,7 @@ public class MainWindowViewModel : BindableBase
             {
                 _version = value;
                 RaisePropertyChanged(nameof(Version));
-                UpdateTelemetryReader();
+                UpdateTelemetryConverter();
             }
         }
     }
@@ -73,6 +91,7 @@ public class MainWindowViewModel : BindableBase
             }
         }
     }
+
     public Visibility ExportDirectoryVisibility => IsExportCheckboxChecked ? Visibility.Visible : Visibility.Hidden;
     public static string ExportDirectory => $"Data will be stored at\n{TelemetryExporter.TELEMETRY_EXPORTER_DIRECTORY}";
 
@@ -141,21 +160,30 @@ public class MainWindowViewModel : BindableBase
     public string TrackTemperature { get; private set; }
     public string AirTemperature { get; private set; }
 
-    public void UpdateTelemetryReader()
+    public void UpdateTelemetryConverter()
     {
-        if (_isSubscribedToReader) UnSubscribeFromCurrentReader();
-        SingletonTelemetryReader.SetTelemetryConverterByVersion(Version);
-        if (!_isSubscribedToReader) SubscribeToCurrentReader();
+        ITelemetryConverter? newConverter = null;
+        foreach (var converter in _converters)
+        {
+            if (converter.GameVersion == Version)
+                newConverter = converter;
+        }
+
+        if (_isSubscribedToReader) UnSubscribeFromCurrentConverter();
+        SingletonTelemetryReader.SetTelemetryConverterByVersion(newConverter!);
+        if (!_isSubscribedToReader) SubscribeToCurrentConverter();
+
+        Log.Info($"Updated converter version to {Enum.GetName(Version)}");
         CheckWarnings();
     }
 
-    private void SubscribeToCurrentReader()
+    private void SubscribeToCurrentConverter()
     {
         SingletonTelemetryReader.SessionReceived += OnSessionReceived;
         _isSubscribedToReader = true;
     }
 
-    private void UnSubscribeFromCurrentReader()
+    private void UnSubscribeFromCurrentConverter()
     {
         SingletonTelemetryReader.SessionReceived -= OnSessionReceived;
         _isSubscribedToReader = false;
@@ -167,10 +195,6 @@ public class MainWindowViewModel : BindableBase
         if (IsImportCheckboxChecked && string.IsNullOrEmpty(_importTelemetryFilepath))
             warningMessage = $"No import file selected";
 
-        // Override any previous warnings - this should take precedence
-        if (!SingletonTelemetryReader.IsConverterSupported())
-            warningMessage = $"Converter is not supported";
-
         UpdateWarning(warningMessage);
     }
 
@@ -178,6 +202,7 @@ public class MainWindowViewModel : BindableBase
     {
         if (!string.IsNullOrEmpty(message))
             Log?.Warn(message);
+
         WarningMessage = message;
     }
 

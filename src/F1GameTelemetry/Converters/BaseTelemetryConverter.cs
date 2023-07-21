@@ -15,9 +15,8 @@ public abstract class BaseTelemetryConverter : ITelemetryConverter
     }
 
     public abstract string Name { get; }
-    public abstract bool IsSupported { get; }
     public abstract GameVersion GameVersion { get; }
-
+    public abstract int PacketHeaderSize { get; }
     public bool IsExportEnabled { get; set; }
     public int MaxCarsPerRace => 22;
 

@@ -1,7 +1,6 @@
 ﻿namespace F1GameTelemetry.Readers;
 
 using Converters;
-using Converters.F12021;
 using Enums;
 using Events;
 using Models;
@@ -10,19 +9,12 @@ using Listener;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using System;
 
 public static class SingletonTelemetryReader
 {
-    private static int HeaderPacketSize => 24;
 
     private static ITelemetryListener? _telemetryListener;
     private static ITelemetryConverter? _telemetryConverter;
-    private static readonly List<ITelemetryConverter> _converters = new()
-    {
-        new TelemetryConverter2021()
-    };
 
     public static event PacketEventHandler<Header>? HeaderReceived;
     public static event PacketEventHandler<Motion>? MotionReceived;
@@ -58,27 +50,15 @@ public static class SingletonTelemetryReader
         _telemetryListener?.Stop();
     }
 
-    public static void SetTelemetryConverterByVersion(GameVersion version)
+    public static void SetTelemetryConverterByVersion(ITelemetryConverter converter)
     {
-        if (_telemetryConverter?.GameVersion == version)
-            return;
-
-        foreach (var converter in _converters)
-        {
-            if (converter.GameVersion == version)
-            {
-                _telemetryConverter = converter;
-                return;
-            }
-        }
+        _telemetryConverter = converter;
     }
-
-    public static bool IsConverterSupported() => _telemetryConverter != null && _telemetryConverter.IsSupported;
 
     private static void OnTelemetryReceived(object sender, TelemetryEventArgs e)
     {
         if (_telemetryConverter == null)
-            _telemetryConverter = _converters.FirstOrDefault();
+            return;
 
         Header header = _telemetryConverter!.ConvertBytesToHeader(e.Message);
         HeaderReceived?.Invoke(
@@ -87,7 +67,7 @@ public static class SingletonTelemetryReader
 
         // Trace.WriteLine($"--> Frame id: {header.frameIdentifier} Packet type: {Enum.GetName(header.packetId)}");
 
-        byte[] remainingPacket = e.Message.Skip(HeaderPacketSize).ToArray();
+        byte[] remainingPacket = e.Message.Skip(_telemetryConverter.PacketHeaderSize).ToArray();
         Task remainingTask = new(() => ConvertAndRaiseEvent(header, remainingPacket));
         remainingTask.RunSynchronously();
     }

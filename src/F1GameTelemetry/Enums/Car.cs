@@ -8,6 +8,7 @@ public enum TyreCompoundType : byte
     C3 = 18,
     C2 = 19,
     C1 = 20,
+    C0 = 21, // New to 2023
     Intermediate = 7,
     Wet = 8,
 
@@ -20,7 +21,7 @@ public enum TyreCompoundType : byte
     F2Soft = 12,
     F2Medium = 13,
     F2Hard = 14,
-    F2Wet = 15
+    F2Wet = 15,
 }
 
 public enum TyreVisualType : byte
@@ -38,10 +39,9 @@ public enum TyreVisualType : byte
     F2Soft = 20,
     F2Medium = 21,
     F2Hard = 22
-
 }
 
-public enum DrsFault : byte
+public enum Fault : byte
 {
     OK = 0,
     Fault = 1

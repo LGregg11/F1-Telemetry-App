@@ -1,17 +1,17 @@
-﻿namespace F1GameTelemetry.Packets.F12021;
+﻿namespace F1GameTelemetry.Packets.F12022;
 
 using Enums;
 
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 858)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 924)]
 public struct CarDamage
 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
     public CarDamageData[] carDamageData;
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 39)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 42)]
 public struct CarDamageData
 {
     // All non-enum properties are percentage unless specified otherwise
@@ -32,6 +32,7 @@ public struct CarDamageData
     public byte diffuserDamage;
     public byte sidepodDamage;
     public Fault drsFault;
+    public Fault ersFault; // New to 2022
     public byte gearBoxDamage;
     public byte engineDamage;
     public byte engineMGUHWear;
@@ -40,4 +41,6 @@ public struct CarDamageData
     public byte engineICEWear;
     public byte engineMGUKWear;
     public byte engineICWear;
+    public Fault engineBlown; // New to 2022
+    public Fault engineSeized; // New to 2022
 }

@@ -1,10 +1,10 @@
-﻿namespace F1GameTelemetry.Packets.F12021;
+﻿namespace F1GameTelemetry.Packets.F12023;
 
 using Enums;
 
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 601)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 615)]
 public struct Session
 {
     public Weather weather;
@@ -51,6 +51,17 @@ public struct Session
     public BasicAssist DRSAssist;
     public DynamicRacingLine dynamicRacingLine;
     public DynamicRacingLineType dynamicRacingLineType;
+    public GameMode gameMode; // New to 2022
+    public RuleSet ruleSet; // New to 2022
+    public uint timeOfDay; //  New to 2022 - Local - time since midnight
+    public SessionLength sessionLength; // New to 2022
+    public SpeedUnit speedUnitsLeadPlayer; // New to 2023
+    public TemperatureUnit temperatureUnitsLeadPlayer; // New to 2023
+    public SpeedUnit speedUnitsSecondaryPlayer; // New to 2023
+    public TemperatureUnit temperatureUnitsSecondaryPlayer; // New to 2023
+    public byte numSafetyCarPeriods; // New to 2023
+    public byte numVirtualSafetyCarPeriods; // New to 2023
+    public byte numRedFlagPeriods; // New to 2023
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 5)]

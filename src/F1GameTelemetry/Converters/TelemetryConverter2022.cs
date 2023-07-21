@@ -1,26 +1,26 @@
-﻿namespace F1GameTelemetry.Converters.F12021;
+﻿namespace F1GameTelemetry.Converters;
 
 using Converters;
 using Enums;
 using Models;
-using Packet = Packets.F12021;
+using Packet = Packets.F12022;
 
 using System;
 
 
-public class TelemetryConverter2021 : BaseTelemetryConverter
+public class TelemetryConverter2022 : BaseTelemetryConverter
 {
     private const short _WEATHER_FORECAST_SAMPLES_MAX = 56;
     private const short _LAP_HISTORY_MAX = 100;
     private const short _TYRE_STINT_HISTORY_MAX = 8;
 
-    public TelemetryConverter2021() : base()
+    public TelemetryConverter2022() : base()
     {
     }
 
-    public override string Name => "F1 2021 Telemetry Reader";
-    public override bool IsSupported => true;
-    public override GameVersion GameVersion => GameVersion.F12021;
+    public override string Name => "F1 2022 Telemetry Converter";
+    public override GameVersion GameVersion => GameVersion.F12022;
+    public override int PacketHeaderSize => 24;
     public override Header ConvertBytesToHeader(byte[] bytes)
     {
         Packet.Header packet = Converter.BytesToPacket<Packet.Header>(bytes);
@@ -66,11 +66,7 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
                 );
         }
 
-        return new Motion(
-            carMotionDatas,
-            new ExtraCarMotionData(
-                new Vector3d(packet.extraCarMotionData.localVelocity))
-            );
+        return new Motion(carMotionDatas);
     }
 
     Session ConvertBytesToSessionPacket(byte[] bytes)

@@ -4,15 +4,12 @@
 public struct Motion
 {
     public Motion(
-        CarMotionData[] carMotionData,
-        ExtraCarMotionData extraCarMotionData)
+        CarMotionData[] carMotionData)
     {
         this.carMotionData = carMotionData;
-        this.extraCarMotionData = extraCarMotionData;
     }
 
     public CarMotionData[] carMotionData;
-    public ExtraCarMotionData extraCarMotionData;
 }
 
 public struct CarMotionData
@@ -27,16 +24,6 @@ public struct CarMotionData
 
     public Vector3d worldPosition;
     public Vector3d worldVelocity;
-}
-
-public struct ExtraCarMotionData
-{
-    public ExtraCarMotionData(Vector3d localVelocity)
-    {
-        this.localVelocity = localVelocity;
-    }
-
-    public Vector3d localVelocity;
 }
 
 public struct Vector3d

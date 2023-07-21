@@ -33,7 +33,8 @@ public enum Track : sbyte
     Zandvoort = 26,
     Imola = 27,
     Portimao = 28,
-    Jeddah = 29
+    Jeddah = 29,
+    Miami = 30
 }
 
 public enum SurfaceType : byte
@@ -76,5 +77,5 @@ public enum ZoneFlag : sbyte
     Green = 1,
     Blue = 2,
     Yellow = 3,
-    Red = 4
+    Red = 4 // No longer in F1 2023
 }
