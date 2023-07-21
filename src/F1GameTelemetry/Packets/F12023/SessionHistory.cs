@@ -33,7 +33,7 @@ public struct LapHistoryData
     public byte sector1TimeMinutes; // New to 2023
     public ushort sector2TimeMS;
     public byte sector2TimeMinutes; // New to 2023
-    public ushort sector3TimeMs;
+    public ushort sector3TimeMS;
     public byte sector3TimeMinutes; 
     public byte lapValidBitFlags; // 0x01 bit set-lap valid, 0x02 bit set-sector 1 valid, 0x04 bit set-sector 2 valid, 0x08 bit set-sector 3 valid
 }

@@ -38,7 +38,13 @@ public enum PacketId : byte
     CarDamage = 10,
 
     // Lap and tyre data for session
-    SessionHistory = 11
+    SessionHistory = 11,
+
+    // New for 2023 - Extended tyre set data
+    TyreSets = 12,
+
+    // New for 2023 - Extended motion data for player car
+    MotionEx = 13
 }
 
 public enum EventType
