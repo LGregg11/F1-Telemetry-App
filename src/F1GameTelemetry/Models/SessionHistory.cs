@@ -36,7 +36,6 @@ public struct SessionHistory
     public byte bestSector3LapNum;
     public LapHistoryData[] lapHistoryData;
     public TyreStintHistoryData[] tyreStintHistoryData;
-
 }
 
 public struct LapHistoryData
@@ -64,12 +63,12 @@ public struct TyreStintHistoryData
 {
     public TyreStintHistoryData(
         byte endLap,
-        TyreVisualType tyreVisualCompound)
+        TyreVisual tyreVisualCompound)
     {
         this.endLap = endLap;
         this.tyreVisualCompound = tyreVisualCompound;
     }
 
     public byte endLap; // 255 of current tyre
-    public TyreVisualType tyreVisualCompound;
+    public TyreVisual tyreVisualCompound;
 }

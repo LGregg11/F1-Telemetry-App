@@ -17,7 +17,7 @@ public struct CarStatusData
 {
     public CarStatusData(
         float fuelRemainingLaps,
-        TyreVisualType visualTyreCompound,
+        TyreVisual visualTyreCompound,
         byte tyresAgeLaps)
     {
         this.fuelRemainingLaps = fuelRemainingLaps;
@@ -26,6 +26,6 @@ public struct CarStatusData
     }
 
     public float fuelRemainingLaps;
-    public TyreVisualType visualTyreCompound;
+    public TyreVisual visualTyreCompound;
     public byte tyresAgeLaps;
 }

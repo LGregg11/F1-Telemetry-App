@@ -1,6 +1,8 @@
 ﻿namespace F1GameTelemetry.Enums;
 
-public enum TyreCompoundType : byte
+using System.ComponentModel;
+
+public enum TyreCompound : byte
 {
     // F1 Modern
     C5 = 16,
@@ -24,13 +26,22 @@ public enum TyreCompoundType : byte
     F2Wet = 15,
 }
 
-public enum TyreVisualType : byte
+public enum TyreVisual : byte
 {
     // F1 Modern & Classic
+    [Description("S")]
     Soft = 16,
+
+    [Description("M")]
     Medium = 17,
+
+    [Description("H")]
     Hard = 18,
+
+    [Description("I")]
     Intermediate = 7,
+
+    [Description("W")]
     Wet = 8,
 
     // F2 '19

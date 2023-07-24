@@ -16,8 +16,8 @@ public struct TyreSetsData
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 10)]
 public struct TyreSetData
 {
-    public TyreCompoundType actualTyreCompound;
-    public TyreVisualType visualTyreCompound;
+    public TyreCompound actualTyreCompound;
+    public TyreVisual visualTyreCompound;
     public byte wear; // Percentage
     public byte available;
     public byte recommendedSession;

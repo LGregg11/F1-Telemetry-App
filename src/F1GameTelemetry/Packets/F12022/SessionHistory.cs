@@ -39,6 +39,6 @@ public struct LapHistoryData
 public struct TyreStintHistoryData
 {
     public byte endLap; // 255 of current tyre
-    public TyreCompoundType tyreActualCompound;
-    public TyreVisualType tyreVisualCompound;
+    public TyreCompound tyreActualCompound;
+    public TyreVisual tyreVisualCompound;
 }

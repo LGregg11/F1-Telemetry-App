@@ -29,10 +29,10 @@ public struct FinalClassificationData
     public byte numberTyreStints;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-    public TyreCompoundType[] tyreStintsActual;
+    public TyreCompound[] tyreStintsActual;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-    public TyreVisualType[] tyreStintsVisual;
+    public TyreVisual[] tyreStintsVisual;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
     public byte[] tyreStintsEndLaps; // New to 2022 - The lap number stints end on
