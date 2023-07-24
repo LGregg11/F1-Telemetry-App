@@ -1,18 +1,25 @@
 ﻿namespace F1TelemetryApp.Converters;
 
 using F1GameTelemetry.Enums;
+
 using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 
 public class EnumConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        GameVersion version = (GameVersion)value;
-        return GetEnumDescription(version)!;
+        if (value.GetType() == typeof(GameVersion))
+            return GetEnumDescription((GameVersion)value)!;
+
+        if (value.GetType() == typeof(TyreVisual))
+            return GetEnumDescription((TyreVisual)value)!;
+
+        return DependencyProperty.UnsetValue;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

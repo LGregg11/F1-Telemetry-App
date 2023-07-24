@@ -300,6 +300,25 @@
                 <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
             </Style>
 
+
+            <!-- DataGrid -->
+            <Style x:Key="DefaultDataGridStyle" TargetType="{x:Type DataGrid}">
+                <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+            </Style>
+            
+            <!-- DataGrid Column Header -->
+            <Style x:Key="DefaultDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+                <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+            </Style>
+            
+            <!-- DataGrid Row-->
+            <Style x:Key="DefaultDataGridRowStyle" TargetType="{x:Type DataGridRow}">
+                <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+            </Style>
+
             <!-- Telemetry Graph -->
             <Style TargetType="{x:Type controls:TelemetryGraph}">
                 <Setter Property="Margin" Value="2"/>

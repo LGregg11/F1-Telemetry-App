@@ -1,0 +1,63 @@
+﻿<Window x:Class="F1TelemetryApp.View.TimesheetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:F1TelemetryApp.View"
+        xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+        xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
+        mc:Ignorable="d"
+        d:DesignHeight="450" Width="700"
+        Closed="OnWindowClosed"
+        Title="Timesheet">
+    <Window.DataContext>
+        <vm:TimesheetWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <conv:EnumConverter x:Key="enumConverter"/>
+        <conv:TelemetryConverter x:Key="telemetryConverter"/>
+    </Window.Resources>
+    <Grid Background="{StaticResource PrimaryBackground}" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Grid.Row="0"
+                       Text="Session Time: "
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="{Binding SessionTime}"
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+        </StackPanel>
+        
+
+        <DataGrid Grid.Row="1"
+                  x:Name="TimesheetDataGrid"
+                  ItemsSource="{Binding Drivers}"
+                  FontSize="12"
+                  Style="{StaticResource DefaultDataGridStyle}"
+                  ColumnHeaderStyle="{StaticResource DefaultDataGridColumnHeaderStyle}"
+                  RowStyle="{StaticResource DefaultDataGridRowStyle}"
+                  AutoGenerateColumns="False"
+                  HorizontalAlignment="Stretch"
+                  GridLinesVisibility="None">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Pos." Binding="{Binding Position}" Width="*" SortDirection="Ascending"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="3*"/>
+                <DataGridTextColumn Header="Tyre" Binding="{Binding CurrentTyre, Converter={StaticResource enumConverter}}" Width="1*"/>
+                <DataGridTextColumn Header="Laps" Binding="{Binding TimesheetData.Laps}" Width="*"/>
+                <DataGridTextColumn Header="Sector 1" Binding="{Binding TimesheetData.Sector1Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                <DataGridTextColumn Header="Sector 2" Binding="{Binding TimesheetData.Sector2Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                <DataGridTextColumn Header="Sector 3" Binding="{Binding TimesheetData.Sector3Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
+                <DataGridTextColumn Header="Last Lap" Binding="{Binding TimesheetData.LastLapTime, Converter={StaticResource telemetryConverter}}" Width="3*"/>
+                <DataGridTextColumn Header="Best Lap" Binding="{Binding TimesheetData.BestLapTime, Converter={StaticResource telemetryConverter}}" Width="3*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
