@@ -8,7 +8,7 @@ using System.Threading;
 
 internal class ImporterClient : IUdpClient
 {
-    private const int DELAY_MS = 9;
+    private const int DELAY_MS = 3;
     private readonly string _filepath;
     private StreamReader? _streamReader;
 
