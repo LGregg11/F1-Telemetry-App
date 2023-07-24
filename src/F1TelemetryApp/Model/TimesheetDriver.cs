@@ -36,13 +36,17 @@ public class TimesheetDriver : INotifyPropertyChanged
         if (numLaps > 1)
             lastLapTime = lapDataList[numLaps - 2].lapTime;
 
+        var lap = numLaps - 1;
+        if (lap > 0 && lapDataList[lap].sector1Time == 0)
+            lap--;
+
         LapData = lapDataList;
         TimesheetData = new TimesheetData()
         {
             Laps = numLaps,
-            Sector1Time = lapDataList[numLaps - 1].sector1Time,
-            Sector2Time = lapDataList[numLaps - 1].sector2Time,
-            Sector3Time = lapDataList[numLaps - 1].sector3Time,
+            Sector1Time = lapDataList[lap].sector1Time,
+            Sector2Time = lapDataList[lap].sector2Time,
+            Sector3Time = lapDataList[lap].sector3Time,
             LastLapTime = lastLapTime,
             BestLapTime = lapDataList[_bestLapTimeLapNumber - 1].lapTime
         };
