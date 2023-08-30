@@ -9,12 +9,9 @@ using F1GameTelemetry.Readers;
 
 using log4net;
 
-using System.Collections.ObjectModel;
-using System;
-using System.Diagnostics;
-
 public class TimesheetWindowViewModel : BasePageViewModel
 {
+    private const int _numSectors = 3;
     private ulong _sessionUID;
 
     public TimesheetWindowViewModel()
@@ -24,8 +21,8 @@ public class TimesheetWindowViewModel : BasePageViewModel
     }
 
     // private public drivers observable collection
-    private ObservableCollection<TimesheetDriver> _drivers = new();
-    public ObservableCollection<TimesheetDriver> Drivers
+    private ObservableTimesheetDriverCollection _drivers = new();
+    public ObservableTimesheetDriverCollection Drivers
     {
         get => _drivers;
         set
@@ -84,13 +81,23 @@ public class TimesheetWindowViewModel : BasePageViewModel
 
         InvokeDispatcherAsync(() =>
         {
-            Drivers[driverIndex].SetData(
-                sessionHistoryPacket.lapHistoryData,
+            var driver = Drivers[driverIndex];
+            var lapOfFastestSectors = new int[_numSectors];
+            for (byte i = 0; i < _numSectors; i++)
+                lapOfFastestSectors[i] = driver.LapData.BestSectorIndexes[i];
+
+            Drivers[driverIndex].UpdateLapHistoryData(
                 sessionHistoryPacket.numLaps,
-                sessionHistoryPacket.tyreStintHistoryData,
-                sessionHistoryPacket.numTyreStints
-                );
-            Drivers[driverIndex].SetBestLapTimeLapNum(sessionHistoryPacket.bestLapTimeLapNum);
+                sessionHistoryPacket.lapHistoryData);
+
+            if (driver.LapData.BestLapIndex == sessionHistoryPacket.bestLapTimeLapNum - 1)
+                Drivers.UpdateFastestLap(driverIndex);
+
+            for (byte i=0; i < _numSectors; i++)
+            {
+                if (lapOfFastestSectors[i] == sessionHistoryPacket.bestSectorTimeLapNums[i] - 1)
+                    Drivers.UpdateFastestSector(i, driverIndex);
+            }
         });
 
         RaisePropertyChanged(nameof(Drivers));

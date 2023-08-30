@@ -16,6 +16,8 @@
     <Window.Resources>
         <conv:EnumConverter x:Key="enumConverter"/>
         <conv:TelemetryConverter x:Key="telemetryConverter"/>
+        <conv:TyreColourConverter x:Key="tyreColourConverter"/>
+        <conv:SectorStatusColourConverter x:Key="sectorStatusColourConverter"/>
     </Window.Resources>
     <Grid Background="{StaticResource PrimaryBackground}" Margin="5">
         <Grid.RowDefinitions>
@@ -50,13 +52,56 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Pos." Binding="{Binding Position}" Width="*" SortDirection="Ascending"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="3*"/>
-                <DataGridTextColumn Header="Tyre" Binding="{Binding CurrentTyre, Converter={StaticResource enumConverter}}" Width="1*"/>
-                <DataGridTextColumn Header="Laps" Binding="{Binding TimesheetData.Laps}" Width="*"/>
-                <DataGridTextColumn Header="Sector 1" Binding="{Binding TimesheetData.Sector1Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
-                <DataGridTextColumn Header="Sector 2" Binding="{Binding TimesheetData.Sector2Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
-                <DataGridTextColumn Header="Sector 3" Binding="{Binding TimesheetData.Sector3Time, Converter={StaticResource telemetryConverter}}" Width="2*"/>
-                <DataGridTextColumn Header="Last Lap" Binding="{Binding TimesheetData.LastLapTime, Converter={StaticResource telemetryConverter}}" Width="3*"/>
-                <DataGridTextColumn Header="Best Lap" Binding="{Binding TimesheetData.BestLapTime, Converter={StaticResource telemetryConverter}}" Width="3*"/>
+                <DataGridTemplateColumn Header="Tyre" Width="1*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding CurrentTyre, Converter={StaticResource enumConverter}}"
+                                       Foreground="{Binding CurrentTyre, Converter={StaticResource tyreColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Laps" Binding="{Binding LapData.Laps}" Width="*"/>
+                <DataGridTemplateColumn Header="Sector 1" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[0].Time, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapData.DisplayedLapData.SectorTimes[0].Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Sector 2" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[1].Time, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapData.DisplayedLapData.SectorTimes[1].Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Sector 3" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[2].Time, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapData.DisplayedLapData.SectorTimes[2].Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Last Lap" Width="3*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LapData.LastLapData.LapTime.Time, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapData.LastLapData.LapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Best Lap" Width="3*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LapData.BestLapTime.Time, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapData.BestLapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

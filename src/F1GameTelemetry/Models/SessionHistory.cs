@@ -20,9 +20,12 @@ public struct SessionHistory
         this.numLaps = numLaps;
         this.numTyreStints = numTyreStints;
         this.bestLapTimeLapNum = bestLapTimeLapNum;
-        this.bestSector1LapNum = bestSector1LapNum;
-        this.bestSector2LapNum = bestSector2LapNum;
-        this.bestSector3LapNum = bestSector3LapNum;
+        this.bestSectorTimeLapNums = new byte[3]
+        {
+            bestSector1LapNum,
+            bestSector2LapNum,
+            bestSector3LapNum
+        };
         this.lapHistoryData = lapHistoryData;
         this.tyreStintHistoryData = tyreStintHistoryData;
     }
@@ -31,9 +34,7 @@ public struct SessionHistory
     public byte numLaps;
     public byte numTyreStints;
     public byte bestLapTimeLapNum;
-    public byte bestSector1LapNum;
-    public byte bestSector2LapNum;
-    public byte bestSector3LapNum;
+    public byte[] bestSectorTimeLapNums;
     public LapHistoryData[] lapHistoryData;
     public TyreStintHistoryData[] tyreStintHistoryData;
 }
@@ -47,16 +48,17 @@ public struct LapHistoryData
         ushort sector3Time)
     {
         this.lapTime = lapTime;
-        this.sector1Time = sector1Time;
-        this.sector2Time = sector2Time;
-        this.sector3Time = sector3Time;
+        this.sectorTimes = new ushort[3]
+        {
+            sector1Time,
+            sector2Time,
+            sector3Time
+        };
     }
 
     // All times in milliseconds
     public uint lapTime;
-    public ushort sector1Time;
-    public ushort sector2Time;
-    public ushort sector3Time;
+    public ushort[] sectorTimes;
 }
 
 public struct TyreStintHistoryData
