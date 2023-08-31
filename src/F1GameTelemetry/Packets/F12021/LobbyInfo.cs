@@ -20,8 +20,8 @@ public struct LobbyInfoData
     public Team teamId;
     public Nationality nationality;
 
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)]
-    public string name; // Will be truncated with '...' (U+2026) if too long
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
+    public byte[] name; // Will be truncated with '...' (U+2026) if too long
 
     public byte carNumber;
     public ReadyStatus readyStatus;

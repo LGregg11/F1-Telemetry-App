@@ -1,12 +1,11 @@
 ﻿namespace F1GameTelemetry.Converters;
 
-using Converters;
 using Enums;
 using Models;
 using Packet = Packets.F12021;
 
 using System;
-
+using System.Text;
 
 public class TelemetryConverter2021 : BaseTelemetryConverter
 {
@@ -146,7 +145,7 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
                 participant.teamId,
                 participant.raceNumber,
                 participant.nationality,
-                participant.name
+                Encoding.UTF8.GetString(participant.name)
                 );
         }
 
@@ -238,7 +237,8 @@ public class TelemetryConverter2021 : BaseTelemetryConverter
                 player.aiControlled,
                 player.teamId,
                 player.nationality,
-                player.name);
+                Encoding.UTF8.GetString(player.name)
+                );
         }
 
         return new LobbyInfo(packet.numPlayers, lobbyInfoData);
