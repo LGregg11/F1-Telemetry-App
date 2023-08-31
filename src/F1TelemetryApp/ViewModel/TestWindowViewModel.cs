@@ -77,7 +77,6 @@ public class TestWindowViewModel : BasePageViewModel
 
     public override void SetTelemetryReader()
     {
-        SingletonTelemetryReader.HeaderReceived += OnHeaderReceived;
         SingletonTelemetryReader.MotionReceived += OnMotionReceived;
         SingletonTelemetryReader.CarDamageReceived += OnCarDamageReceived;
         //SingletonTelemetryReader.CarSetupReceived += OnCarSetupReceived;
@@ -184,28 +183,6 @@ public class TestWindowViewModel : BasePageViewModel
 
     #region Event Handlers
 
-    private void OnHeaderReceived(object? sender, PacketEventArgs<Header> e)
-    {
-        var header = e.Packet;
-        if (_myCarIndex < 0)
-            _myCarIndex = header.playerCarIndex;
-
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            for (int i = 0; i < HeaderMessages.Count; i++)
-            {
-                if (HeaderMessages[i].PacketId == header.packetId)
-                {
-                    HeaderMessage headerMessage = HeaderMessages[i];
-                    headerMessage.Total++;
-
-                    HeaderMessages[i] = headerMessage;
-                    break;
-                }
-            }
-        });
-    }
-
     //private void UpdateEvents(byte[] eventPacket)
     //{
     //    var telemetryReader = MainWindowViewModel.TelemetryReader;
@@ -230,6 +207,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnMotionReceived(object? sender, PacketEventArgs<Motion> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var motion = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -258,6 +239,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnLapDataReceived(object? sender, PacketEventArgs<LapData> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var lapData = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -281,6 +266,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnSessionReceived(object? sender, PacketEventArgs<Session> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var session = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -300,6 +289,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnParticipantReceived(object? sender, PacketEventArgs<Participant> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var participant = e.Packet;
         var participants = new Dictionary<string, string>();
         App.Current.Dispatcher.Invoke(() =>
@@ -325,6 +318,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnSessionHistoryReceived(object? sender, PacketEventArgs<SessionHistory> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var history = e.Packet;
         // TODO: Add converter for sector time like this (00.000)
 
@@ -348,6 +345,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnLobbyInfoReceived(object? sender, PacketEventArgs<LobbyInfo> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var info = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -364,6 +365,10 @@ public class TestWindowViewModel : BasePageViewModel
 
     private void OnCarDamageReceived(object? sender, PacketEventArgs<CarDamage> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var damage = e.Packet;
         App.Current.Dispatcher.Invoke(() =>
         {

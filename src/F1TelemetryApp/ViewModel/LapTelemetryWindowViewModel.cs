@@ -110,20 +110,16 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
 
     public override void SetTelemetryReader()
     {
-        SingletonTelemetryReader.HeaderReceived += OnHeaderReceived;
         SingletonTelemetryReader.CarTelemetryReceived += OnCarTelemetryReceived;
         SingletonTelemetryReader.LapDataReceived += OnLapDataReceived;
     }
 
-    private void OnHeaderReceived(object? sender, PacketEventArgs<Header> e)
-    {
-        var header = e.Packet;
-        if (_myCarIndex < 0)
-            _myCarIndex = header.playerCarIndex;
-    }
-
     private void OnCarTelemetryReceived(object? sender, PacketEventArgs<CarTelemetry> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var carTelemetry = e.Packet;
         var myTelemetry = carTelemetry.carTelemetryData[_myCarIndex];
         App.Current.Dispatcher.Invoke(() =>
@@ -138,6 +134,10 @@ public class LapTelemetryWindowViewModel : BasePageViewModel
 
     private void OnLapDataReceived(object? sender, PacketEventArgs<LapData> e)
     {
+        var header = e.Header;
+        if (_myCarIndex < 0)
+            _myCarIndex = header.playerCarIndex;
+
         var lapData = e.Packet;
         var myLapData = lapData.carLapData[_myCarIndex];
         App.Current.Dispatcher.Invoke(() =>

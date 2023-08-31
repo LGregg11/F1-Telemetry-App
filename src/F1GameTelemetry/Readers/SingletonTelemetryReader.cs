@@ -16,7 +16,6 @@ public static class SingletonTelemetryReader
     private static ITelemetryListener? _telemetryListener;
     private static ITelemetryConverter? _telemetryConverter;
 
-    public static event PacketEventHandler<Header>? HeaderReceived;
     public static event PacketEventHandler<Motion>? MotionReceived;
     public static event PacketEventHandler<Session>? SessionReceived;
     public static event PacketEventHandler<LapData>? LapDataReceived;
@@ -61,10 +60,6 @@ public static class SingletonTelemetryReader
             return;
 
         Header header = _telemetryConverter!.ConvertBytesToHeader(e.Message);
-        HeaderReceived?.Invoke(
-                    typeof(SingletonTelemetryReader),
-                    new PacketEventArgs<Header>(header, header));
-
         // Trace.WriteLine($"--> Frame id: {header.frameIdentifier} Packet type: {Enum.GetName(header.packetId)}");
 
         byte[] remainingPacket = e.Message.Skip(_telemetryConverter.PacketHeaderSize).ToArray();
