@@ -8,6 +8,7 @@ using F1GameTelemetry.Models;
 using F1GameTelemetry.Readers;
 
 using log4net;
+using System;
 
 public class TimesheetWindowViewModel : BasePageViewModel
 {
@@ -20,7 +21,6 @@ public class TimesheetWindowViewModel : BasePageViewModel
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
     }
 
-    // private public drivers observable collection
     private ObservableTimesheetDriverCollection _drivers = new();
     public ObservableTimesheetDriverCollection Drivers
     {
@@ -28,7 +28,10 @@ public class TimesheetWindowViewModel : BasePageViewModel
         set
         {
             if (_drivers != value)
+            {
                 _drivers = value;
+                RaisePropertyChanged();
+            }
         }
     }
 
@@ -39,6 +42,22 @@ public class TimesheetWindowViewModel : BasePageViewModel
         SingletonTelemetryReader.ParticipantReceived += OnParticipantReceived;
         SingletonTelemetryReader.SessionHistoryReceived += OnSessionHistoryReceived;
         SingletonTelemetryReader.LapDataReceived += OnLapDataReceived;
+    }
+
+    internal int GetDriverPosition(int driverIndex)
+    {
+        if (driverIndex < 0 || driverIndex >= Drivers.Count)
+            return 0;
+
+        return Drivers[driverIndex].Position;
+    }
+
+    internal int GetDriverLap(int driverIndex)
+    {
+        if (driverIndex < 0 || driverIndex >= Drivers.Count)
+            return 0;
+
+        return Drivers[driverIndex].LapData.Laps;
     }
 
     private void OnParticipantReceived(object? sender, PacketEventArgs<Participant> e)
@@ -62,7 +81,7 @@ public class TimesheetWindowViewModel : BasePageViewModel
                 if (string.IsNullOrEmpty(participantName))
                     return;
 
-                Drivers.Add(new TimesheetDriver(participantName, i));
+                Drivers.Add(new TimesheetDriver(participantName.Replace("\0", string.Empty), i));
             }
         });
 
@@ -98,6 +117,10 @@ public class TimesheetWindowViewModel : BasePageViewModel
                 if (lapOfFastestSectors[i] == sessionHistoryPacket.bestSectorTimeLapNums[i] - 1)
                     Drivers.UpdateFastestSector(i, driverIndex);
             }
+
+            Drivers[driverIndex].UpdateTyreStintHistoryData(
+                sessionHistoryPacket.numTyreStints,
+                sessionHistoryPacket.tyreStintHistoryData);
         });
 
         RaisePropertyChanged(nameof(Drivers));

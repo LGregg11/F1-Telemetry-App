@@ -37,7 +37,6 @@
                        Margin="5,0"
                        FontSize="12" />
         </StackPanel>
-        
 
         <DataGrid Grid.Row="1"
                   x:Name="TimesheetDataGrid"
@@ -45,10 +44,15 @@
                   FontSize="12"
                   Style="{StaticResource DefaultDataGridStyle}"
                   ColumnHeaderStyle="{StaticResource DefaultDataGridColumnHeaderStyle}"
-                  RowStyle="{StaticResource DefaultDataGridRowStyle}"
+                  IsReadOnly="True"
                   AutoGenerateColumns="False"
                   HorizontalAlignment="Stretch"
                   GridLinesVisibility="None">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource DefaultDataGridRowStyle}">
+                    <EventSetter Event="MouseDoubleClick" Handler="TimesheetDataGrid_MouseDoubleClick"/>
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Pos." Binding="{Binding Position}" Width="*" SortDirection="Ascending"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="3*"/>

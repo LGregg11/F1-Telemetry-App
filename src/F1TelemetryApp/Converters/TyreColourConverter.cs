@@ -9,6 +9,8 @@ using System.Windows.Media;
 
 public class TyreColourConverter : IValueConverter
 {
+    private static readonly SolidColorBrush WetBlue = new(Color.FromRgb(29, 148, 222));
+
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is not TyreVisual)
@@ -20,7 +22,7 @@ public class TyreColourConverter : IValueConverter
             TyreVisual.Medium => Brushes.Yellow,
             TyreVisual.Hard => Brushes.White,
             TyreVisual.Intermediate => Brushes.Green,
-            TyreVisual.Wet => Brushes.Blue,
+            TyreVisual.Wet => WetBlue,
             _ => Brushes.White
         };
     }

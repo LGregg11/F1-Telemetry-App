@@ -1,0 +1,61 @@
+﻿<Window x:Class="F1TelemetryApp.View.TimesheetDriverWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:F1TelemetryApp.View"
+        xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+        xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
+        mc:Ignorable="d"
+        d:DesignHeight="450" Width="700">
+    <Window.DataContext>
+        <vm:TimesheetDriverWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <conv:EnumConverter x:Key="enumConverter"/>
+        <conv:TelemetryConverter x:Key="telemetryConverter"/>
+        <conv:TyreColourConverter x:Key="tyreColourConverter"/>
+        <conv:SectorStatusColourConverter x:Key="sectorStatusColourConverter"/>
+    </Window.Resources>
+    <Grid Background="{StaticResource PrimaryBackground}" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Grid.Row="0"
+                       Text="Pos: "
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="{Binding Position}"
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="Laps: "
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="{Binding Laps}"
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="1"
+                  x:Name="TimesheetDataGrid"
+                  FontSize="12"
+                  Style="{StaticResource DefaultDataGridStyle}"
+                  RowStyle="{StaticResource DefaultDataGridRowStyle}"
+                  ColumnHeaderStyle="{StaticResource DefaultDataGridColumnHeaderStyle}"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  HorizontalAlignment="Stretch"
+                  GridLinesVisibility="None">
+        </DataGrid>
+    </Grid>
+</Window>

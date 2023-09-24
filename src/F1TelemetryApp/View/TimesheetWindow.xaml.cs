@@ -1,18 +1,20 @@
 ﻿namespace F1TelemetryApp.View;
 
+using Model;
 using ViewModel;
 
 using System.Windows;
 using System.Threading;
 using System.ComponentModel;
 using System;
+using System.Windows.Input;
+using System.Windows.Controls;
 
 /// <summary>
 /// Interaction logic for TimesheetWindow.xaml
 /// </summary>
 public partial class TimesheetWindow : Window
 {
-    private TimesheetWindowViewModel _viewModel;
     private bool _isThreadAlive;
     private readonly Thread _uiThread;
     private readonly int _sleepTimeMs = 5000;
@@ -20,7 +22,6 @@ public partial class TimesheetWindow : Window
     public TimesheetWindow()
     {
         InitializeComponent();
-        _viewModel = (TimesheetWindowViewModel)DataContext;
 
         _isThreadAlive = true;
         _uiThread = new Thread(PositionOrderUpdateLoop);
@@ -49,6 +50,21 @@ public partial class TimesheetWindow : Window
             lock(this)
             {
                 Monitor.Wait(this, TimeSpan.FromMilliseconds(_sleepTimeMs));
+            }
+        }
+    }
+
+    private void TimesheetDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender != null && sender is DataGridRow row && row.DataContext is TimesheetDriver driver)
+        {
+            TimesheetDriverWindow w = new();
+            if (w.DataContext is TimesheetDriverWindowViewModel vm)
+            {
+                vm.TimesheetWindowViewModel = (TimesheetWindowViewModel)DataContext;
+                vm.DriverIndex = driver.ArrayIndex;
+                w.Title = $"{driver.Name} Timesheet";
+                w.Show();
             }
         }
     }
