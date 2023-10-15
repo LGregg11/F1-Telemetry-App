@@ -5,7 +5,7 @@ using Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class ObservableTimesheetDriverCollection : ObservableCollection<TimesheetDriver>
+public class ObservableDriverCollection : ObservableCollection<Driver>
 {
     private int _sessionBestLapDriverIndex;
     private LapTime _sessionBestLapTime;
@@ -13,7 +13,7 @@ public class ObservableTimesheetDriverCollection : ObservableCollection<Timeshee
     private List<int> _sessionBestSectorIndexes;
     private List<SectorTime> _sessionBestSectorTimes;
 
-    public ObservableTimesheetDriverCollection()
+    public ObservableDriverCollection()
     {
         ResetBestLap();
         ResetBestSectors();
@@ -26,8 +26,8 @@ public class ObservableTimesheetDriverCollection : ObservableCollection<Timeshee
             return;
 
         var driverBestLapTime = this[i].LapData.BestLapTime;
-        var sessionBestLapTime = _sessionBestLapTime.Time;
-        if (sessionBestLapTime > 0 && driverBestLapTime.Time >= _sessionBestLapTime.Time)
+        var sessionBestLapTime = _sessionBestLapTime.Value;
+        if (sessionBestLapTime > 0 && driverBestLapTime.Value >= _sessionBestLapTime.Value)
             return;
 
         this[_sessionBestLapDriverIndex].LapData.DisplayedLapData.LapTime.UpdateStatus(TimeStatus.PersonalBest);
@@ -42,8 +42,8 @@ public class ObservableTimesheetDriverCollection : ObservableCollection<Timeshee
             return;
 
         var driverBestSectorTime = this[i].LapData.BestSectorTimes[sector];
-        var sessionBestSectorTime = _sessionBestSectorTimes[sector].Time;
-        if (sessionBestSectorTime > 0 && driverBestSectorTime.Time >= sessionBestSectorTime)
+        var sessionBestSectorTime = _sessionBestSectorTimes[sector].Value;
+        if (sessionBestSectorTime > 0 && driverBestSectorTime.Value >= sessionBestSectorTime)
             return;
 
         this[_sessionBestSectorIndexes[sector]].LapData.DisplayedLapData.SectorTimes[sector].UpdateStatus(TimeStatus.PersonalBest);

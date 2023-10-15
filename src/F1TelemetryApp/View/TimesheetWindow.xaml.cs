@@ -56,13 +56,11 @@ public partial class TimesheetWindow : Window
 
     private void TimesheetDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender != null && sender is DataGridRow row && row.DataContext is TimesheetDriver driver)
+        if (sender != null && sender is DataGridRow row && row.DataContext is Driver driver)
         {
             TimesheetDriverWindow w = new();
             if (w.DataContext is TimesheetDriverWindowViewModel vm)
             {
-                vm.TimesheetWindowViewModel = (TimesheetWindowViewModel)DataContext;
-                vm.DriverIndex = driver.ArrayIndex;
                 w.Title = $"{driver.Name} Timesheet";
                 w.Show();
             }

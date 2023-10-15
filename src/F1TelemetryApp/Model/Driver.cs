@@ -3,90 +3,72 @@
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Models;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel;
 
 public class Driver : INotifyPropertyChanged
 {
-    public Driver(int index, ParticipantData p)
-    {
-        Index = index;
-        Name = p.name;
-        Nationality = p.nationality;
-        Team = p.teamId;
-        RaceNumber = p.raceNumber;
-        DriverId = p.driverId;
-    }
-    public int Index { get; private set; }
-    public string Name { get; private set; }
-    public Nationality Nationality { get; private set; }
-    public Team Team { get; private set; }
-    public int RaceNumber { get; private set; }
-    public AiControlled ControlledBy { get; private set; }
-    public DriverId DriverId { get; private set; }
-    public UdpSetting TelemetrySetting { get; set; } // If restricted, a lot of the data can be ignored.
-    public int GridPosition { get; set; } = 0;
-    public int Position { get; set; } = 0;
-    public int Laps { get; set; } = 0;
-    public Sector Sector { get; set; } = Sector.Sector1;
-    public List<LapHistoryData> LapTimes { get; set; } = new List<LapHistoryData>();
-    public int LastSector1Time { get; set; } = 0;
-    public int LastSector2Time { get; set; } = 0;
-    public int LastSector3Time { get; set; } = 0;
-    public int LastLapTime { get; set; } = 0;
-    public int CurrentLapTime { get; set; } = 0; // milliseconds
-    public int BestSector1Lap { get; set; } = 0; // lap
-    public int BestSector2Lap { get; set; } = 0; // lap
-    public int BestSector3Lap { get; set; } = 0; // lap
-    public int BestLapTimeLap { get; set; } = 0; // lap
-    public int Warnings { get; set; } = 0;
-    public int Penalties { get; set; } = 0;
-    public DriverStatus DriverStatus { get; set; } = DriverStatus.Unknown;
-    public ResultStatus ResultStatus { get; set; } = ResultStatus.Unknown;
+    private readonly int _numberOfSectors = 3;
 
+    public Driver(string name, byte arrayIndex)
+    {
+        Name = name;
+        ArrayIndex = arrayIndex;
+        LapData = new(_numberOfSectors);
+    }
+
+    public string Name { get; init; }
+    public byte ArrayIndex { get; init; }
+    public int Position { get; set; }
+    public TyreVisual CurrentTyre => LapData.CurrentLapData.Tyre;
+    public LapCollection LapData { get; set; }
+
+    public void UpdateLapHistoryData(int numLaps, LapHistoryData[] data)
+    {
+        if (numLaps == 0)
+        {
+            LapData.Clear();
+            return;
+        }
+
+        bool isNewLap = numLaps != LapData.Count;
+        if (isNewLap)
+        {
+            LapData.NewLap();
+
+            if (numLaps > 1)
+                LapData.UpdateLapData(numLaps - 2, data[numLaps - 2]);
+        }
+
+        LapData.UpdateLapData(numLaps - 1, data[numLaps - 1]);
+    }
+
+    public void UpdateTyreStintHistoryData(int numStints, TyreStintHistoryData[] data)
+    {
+        if (numStints == 0)
+            return;
+
+        var currentTyre = data[numStints - 1].tyreVisualCompound;
+        if (LapData.CurrentLapData.Tyre != currentTyre)
+            return;
+        
+        LapData.CurrentLapData.Tyre = currentTyre;
+        NotifyPropertyChanged();
+    }
+
+    public void SetPosition(int carPosition)
+    {
+        if (Position == carPosition)
+            return;
+
+        Position = carPosition;
+        NotifyPropertyChanged();
+    }
+
+    #region INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    public void ApplyCarLapData(CarLapData lapData)
-    {
-        //Position = lapData.carPosition;
-        //ResultStatus = lapData.resultStatus;
-        //Sector = lapData.sector;
-        //CurrentLapTime = Convert.ToInt32(lapData.currentLapTime);
-        //NotifyPropertyChanged();
-    }
-
-    public void ApplySessionHistory(SessionHistory history)
-    {
-        //if (history.lapHistoryData.Length < Index)
-        //    throw new IndexOutOfRangeException($"{Index} of Driver {Name} is out of range for the most recent SessionHistory packet");
-
-        //if (Laps < history.numLaps)
-        //{
-        //    // One final lap update before starting the new lap data
-        //    if (Laps >= 1)
-        //        LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
-        //    Laps = history.numLaps;
-        //    LapTimes.Add(new LapHistoryData { lapTime = 0, sector1Time = 0, sector2Time = 0, sector3Time = 0 });
-        //}
-
-        //// Just completely update the lap data
-        //BestSector1Lap = history.bestSector1LapNum;
-        //BestSector2Lap = history.bestSector2LapNum;
-        //BestSector3Lap = history.bestSector3LapNum;
-        //BestLapTimeLap = history.bestLapTimeLapNum;
-        //LapTimes[Laps - 1] = history.lapHistoryData[Laps - 1];
-
-        //LastSector1Time = LapTimes.Select(l => l.sector1Time).Where(t => t > 0).LastOrDefault();
-        //LastSector2Time = LapTimes.Select(l => l.sector2Time).Where(t => t > 0).LastOrDefault();
-        //LastSector3Time = LapTimes.Select(l => l.sector3Time).Where(t => t > 0).LastOrDefault();
-        //LastLapTime = Convert.ToInt32(LapTimes.Select(l => l.lapTime).Where(t => t > 0).LastOrDefault());
-        //NotifyPropertyChanged();
-    }
-
     private void NotifyPropertyChanged(string propertyName = "")
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+    #endregion
 }

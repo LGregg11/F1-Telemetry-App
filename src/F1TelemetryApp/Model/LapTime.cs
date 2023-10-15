@@ -1,18 +1,18 @@
 ﻿namespace F1TelemetryApp.Model;
 
-public class LapTime : TimeData<uint>
+public class LapTime : Time<uint>
 {
     public LapTime(uint time = 0)
     {
-        Time = time;
+        Value = time;
     }
 
     public override bool UpdateTime(uint time)
     {
-        if (time == 0 || Time == time)
+        if (time == 0 || Value == time)
             return false;
 
-        Time = time;
+        Value = time;
         return true;
     }
 }

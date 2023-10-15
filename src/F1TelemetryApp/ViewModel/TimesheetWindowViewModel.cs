@@ -8,7 +8,6 @@ using F1GameTelemetry.Models;
 using F1GameTelemetry.Readers;
 
 using log4net;
-using System;
 
 public class TimesheetWindowViewModel : BasePageViewModel
 {
@@ -21,8 +20,8 @@ public class TimesheetWindowViewModel : BasePageViewModel
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
     }
 
-    private ObservableTimesheetDriverCollection _drivers = new();
-    public ObservableTimesheetDriverCollection Drivers
+    private ObservableDriverCollection _drivers = new();
+    public ObservableDriverCollection Drivers
     {
         get => _drivers;
         set
@@ -81,7 +80,7 @@ public class TimesheetWindowViewModel : BasePageViewModel
                 if (string.IsNullOrEmpty(participantName))
                     return;
 
-                Drivers.Add(new TimesheetDriver(participantName.Replace("\0", string.Empty), i));
+                Drivers.Add(new Driver(participantName.Replace("\0", string.Empty), i));
             }
         });
 
@@ -126,7 +125,7 @@ public class TimesheetWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(Drivers));
     }
 
-    private void OnLapDataReceived(object sender, PacketEventArgs<LapData> e)
+    private void OnLapDataReceived(object sender, PacketEventArgs<F1GameTelemetry.Models.LapData> e)
     {
         // Only care about the position from this one for now
 

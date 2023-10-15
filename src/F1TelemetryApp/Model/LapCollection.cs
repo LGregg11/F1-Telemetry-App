@@ -1,4 +1,4 @@
-﻿namespace F1TelemetryApp.Model.Timesheet;
+﻿namespace F1TelemetryApp.Model;
 
 using Enums;
 
@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-public class LapDataCollection : List<TimesheetLapData>, INotifyPropertyChanged
+public class LapCollection : List<Lap>, INotifyPropertyChanged
 {
-    public LapDataCollection(int numSectors = 3)
+    public LapCollection(int numSectors = 3)
     {
         ResetBestLap();
         ResetBestSectors(numSectors);
@@ -25,9 +25,9 @@ public class LapDataCollection : List<TimesheetLapData>, INotifyPropertyChanged
     public List<int> BestSectorIndexes { get; private set; }
     public List<SectorTime> BestSectorTimes { get; private set; }
     public int Laps => Count;
-    public TimesheetLapData LastLapData { get; set; }
-    public TimesheetLapData CurrentLapData { get; set; }
-    public TimesheetLapData DisplayedLapData { get; set; }
+    public Lap LastLapData { get; set; }
+    public Lap CurrentLapData { get; set; }
+    public Lap DisplayedLapData { get; set; }
 
     public void NewLap()
     {
@@ -56,7 +56,7 @@ public class LapDataCollection : List<TimesheetLapData>, INotifyPropertyChanged
                 UpdateSectorStatus(index, s);
         }
 
-        DisplayedLapData = CurrentLapData.SectorTimes[0].Time > 0 ? CurrentLapData : LastLapData;
+        DisplayedLapData = CurrentLapData.SectorTimes[0].Value > 0 ? CurrentLapData : LastLapData;
 
         NotifyPropertyChanged();
     }
@@ -64,10 +64,10 @@ public class LapDataCollection : List<TimesheetLapData>, INotifyPropertyChanged
     public void UpdateLapStatus(int index)
     {
         var lapTime = this[index].LapTime;
-        if (lapTime.Time == 0)
+        if (lapTime.Value == 0)
             return;
 
-        if (BestLapTime.Time > 0 && lapTime.Time >= BestLapTime.Time)
+        if (BestLapTime.Value > 0 && lapTime.Value >= BestLapTime.Value)
         {
             this[index].LapTime.UpdateStatus(TimeStatus.NotPersonalBest);
             return;
@@ -84,10 +84,10 @@ public class LapDataCollection : List<TimesheetLapData>, INotifyPropertyChanged
     public void UpdateSectorStatus(int index, int s)
     {
         var sectorTime = this[index].SectorTimes[s];
-        if (sectorTime.Time == 0)
+        if (sectorTime.Value == 0)
             return;
 
-        if (BestSectorTimes[s].Time > 0 && sectorTime.Time >= BestSectorTimes[s].Time)
+        if (BestSectorTimes[s].Value > 0 && sectorTime.Value >= BestSectorTimes[s].Value)
         {
             this[index].SectorTimes[s].UpdateStatus(TimeStatus.NotPersonalBest);
             return;

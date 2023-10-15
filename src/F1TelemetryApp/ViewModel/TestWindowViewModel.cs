@@ -62,31 +62,12 @@ public class TestWindowViewModel : BasePageViewModel
         }
     }
 
-    private ObservableCollection<Driver> drivers = new();
-    public ObservableCollection<Driver> Drivers
-    {
-        get => drivers;
-        set
-        {
-            if (drivers != value)
-            {
-                drivers = value;
-            }
-        }
-    }
-
     public override void SetTelemetryReader()
     {
         SingletonTelemetryReader.MotionReceived += OnMotionReceived;
         SingletonTelemetryReader.CarDamageReceived += OnCarDamageReceived;
-        //SingletonTelemetryReader.CarSetupReceived += OnCarSetupReceived;
-        //SingletonTelemetryReader.CarStatusReceived += OnCarStatusReceived;
         SingletonTelemetryReader.CarTelemetryReceived += OnCarTelemetryReceived;
-        //SingletonTelemetryReader.FinalClassificationReceived += OnFinalClassificationReceived;
-        SingletonTelemetryReader.LapDataReceived += OnLapDataReceived;
         SingletonTelemetryReader.LobbyInfoReceived += OnLobbyInfoReceived;
-        SingletonTelemetryReader.ParticipantReceived += OnParticipantReceived;
-        SingletonTelemetryReader.SessionHistoryReceived += OnSessionHistoryReceived;
         SingletonTelemetryReader.SessionReceived += OnSessionReceived;
     }
 
@@ -237,33 +218,6 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(Steer));
     }
 
-    private void OnLapDataReceived(object? sender, PacketEventArgs<LapData> e)
-    {
-        var header = e.Header;
-        if (_myCarIndex < 0)
-            _myCarIndex = header.playerCarIndex;
-
-        var lapData = e.Packet;
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            for (int i = 0; i < lapData.carLapData.Length; i++)
-            {
-                Driver driver;
-                if (!TryGetDriver(i, out driver!)) continue;
-
-                driver.ApplyCarLapData(lapData.carLapData[i]); // Should change the dictionary driver value too (I think)
-                Drivers[i] = driver;
-            }
-        });
-        RaisePropertyChanged(nameof(Drivers));
-
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            _lapDataMessage.LastLapTime = lapData.carLapData[_myCarIndex].lastLapTime;
-        });
-        RaisePropertyChanged(nameof(LastLapTime));
-    }
-
     private void OnSessionReceived(object? sender, PacketEventArgs<Session> e)
     {
         var header = e.Header;
@@ -285,62 +239,6 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(TrackTemperature));
         RaisePropertyChanged(nameof(AirTemperature));
         RaisePropertyChanged(nameof(AiDifficulty));
-    }
-
-    private void OnParticipantReceived(object? sender, PacketEventArgs<Participant> e)
-    {
-        var header = e.Header;
-        if (_myCarIndex < 0)
-            _myCarIndex = header.playerCarIndex;
-
-        var participant = e.Packet;
-        var participants = new Dictionary<string, string>();
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            int i = 0;
-            foreach (var p in participant.participants.Where(p => p.name != string.Empty))
-            {
-                if (!string.IsNullOrEmpty(p.name) && !participants.ContainsKey(p.name))
-                    participants.Add(p.name, Enum.GetName(typeof(Nationality), p.nationality)!);
-
-                // Assume this is the first packet that is received per driver
-                // Also Assume this doesn't change during a session
-                if (!GetDriverIndexes().Contains(i))
-                    Drivers.Add(new Driver(i, p));
-
-                i++;
-            }
-            _participantMessage.Participants = participants;
-        });
-
-        RaisePropertyChanged(nameof(Participants));
-    }
-
-    private void OnSessionHistoryReceived(object? sender, PacketEventArgs<SessionHistory> e)
-    {
-        var header = e.Header;
-        if (_myCarIndex < 0)
-            _myCarIndex = header.playerCarIndex;
-
-        var history = e.Packet;
-        // TODO: Add converter for sector time like this (00.000)
-
-        var name = ((int)history.carIdx).ToString();
-        if (string.IsNullOrEmpty(name))
-        {
-            Log?.Warn("Name is blank in SessionHistory");
-            return;
-        }
-
-        Driver driver;
-        if (!TryGetDriver(history.carIdx, out driver!)) return;
-
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            driver.ApplySessionHistory(history);
-            Drivers[history.carIdx] = driver;
-        });
-        RaisePropertyChanged(nameof(Drivers));
     }
 
     private void OnLobbyInfoReceived(object? sender, PacketEventArgs<LobbyInfo> e)
@@ -383,25 +281,5 @@ public class TestWindowViewModel : BasePageViewModel
         RaisePropertyChanged(nameof(FrontLeftWingDamage));
         RaisePropertyChanged(nameof(FrontRightWingDamage));
     }
-
-    //private void OnCarSetupReceived(object? sender, PacketEventArgs<CarSetup> e)
-    //{
-    //    var setup = e.Packet;
-    //    App.Current.Dispatcher.Invoke(() =>
-    //    {
-    //        _carSetupMessage.BrakeBias = setup.carSetupData[_myCarIndex].brakeBias;
-    //        _carSetupMessage.FuelLoad = setup.carSetupData[_myCarIndex].fuelLoad;
-    //    });
-    //    RaisePropertyChanged(nameof(BrakeBias));
-    //    RaisePropertyChanged(nameof(FuelLoad));
-    //}
     #endregion
-
-    private int[] GetDriverIndexes() => Drivers.Select(d => d.Index).ToArray();
-
-    private bool TryGetDriver(int index, out Driver? driver)
-    {
-        driver = Drivers.FirstOrDefault(d => d.Index == index);
-        return driver != null;
-    }
 }
