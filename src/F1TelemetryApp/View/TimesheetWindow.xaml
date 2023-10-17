@@ -68,7 +68,7 @@
                 <DataGridTemplateColumn Header="Sector 1" Width="2*">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[0].Time, Converter={StaticResource telemetryConverter}}"
+                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[0].Value, Converter={StaticResource telemetryConverter}}"
                                        Foreground="{Binding LapData.DisplayedLapData.SectorTimes[0].Status, Converter={StaticResource sectorStatusColourConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -77,7 +77,7 @@
                 <DataGridTemplateColumn Header="Sector 2" Width="2*">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[1].Time, Converter={StaticResource telemetryConverter}}"
+                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[1].Value, Converter={StaticResource telemetryConverter}}"
                                        Foreground="{Binding LapData.DisplayedLapData.SectorTimes[1].Status, Converter={StaticResource sectorStatusColourConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -85,7 +85,7 @@
                 <DataGridTemplateColumn Header="Sector 3" Width="2*">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[2].Time, Converter={StaticResource telemetryConverter}}"
+                            <TextBlock Text="{Binding LapData.DisplayedLapData.SectorTimes[2].Value, Converter={StaticResource telemetryConverter}}"
                                        Foreground="{Binding LapData.DisplayedLapData.SectorTimes[2].Status, Converter={StaticResource sectorStatusColourConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -93,7 +93,7 @@
                 <DataGridTemplateColumn Header="Last Lap" Width="3*">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <TextBlock Text="{Binding LapData.LastLapData.LapTime.Time, Converter={StaticResource telemetryConverter}}"
+                            <TextBlock Text="{Binding LapData.LastLapData.LapTime.Value, Converter={StaticResource telemetryConverter}}"
                                        Foreground="{Binding LapData.LastLapData.LapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -101,7 +101,7 @@
                 <DataGridTemplateColumn Header="Best Lap" Width="3*">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <TextBlock Text="{Binding LapData.BestLapTime.Time, Converter={StaticResource telemetryConverter}}"
+                            <TextBlock Text="{Binding LapData.BestLapTime.Value, Converter={StaticResource telemetryConverter}}"
                                        Foreground="{Binding LapData.BestLapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
