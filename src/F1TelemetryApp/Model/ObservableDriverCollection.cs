@@ -25,16 +25,15 @@ public class ObservableDriverCollection : ObservableCollection<Driver>
         if (Count == 0)
             return;
 
-        var driverBestLapTime = this[i].LapData.BestLapTime;
-        var sessionBestLapTime = _sessionBestLapTime.Value;
-        if (sessionBestLapTime > 0 && driverBestLapTime.Value >= _sessionBestLapTime.Value)
+        var driverBestLapTime = this[i].LapData.BestLap.LapTime;
+        if (_sessionBestLapTime.Value > 0 && driverBestLapTime.Value >= _sessionBestLapTime.Value)
         {
             this[_sessionBestLapDriverIndex].LapData.DisplayedLapData.NotifyAll();
             this[i].LapData.DisplayedLapData.NotifyAll();
             return;
         }
 
-        this[_sessionBestLapDriverIndex].LapData.DisplayedLapData.UpdateLapStatus(TimeStatus.PersonalBest);
+        this[_sessionBestLapDriverIndex].LapData.BestLap.UpdateLapStatus(TimeStatus.PersonalBest);
         this[i].LapData.DisplayedLapData.UpdateLapStatus(TimeStatus.BestOfSession);
         _sessionBestLapTime = driverBestLapTime;
         _sessionBestLapDriverIndex = i;
@@ -45,16 +44,15 @@ public class ObservableDriverCollection : ObservableCollection<Driver>
         if (Count == 0)
             return;
 
-        var driverBestSectorTime = this[i].LapData.BestSectorTimes[sector];
-        var sessionBestSectorTime = _sessionBestSectorTimes[sector].Value;
-        if (sessionBestSectorTime > 0 && driverBestSectorTime.Value >= sessionBestSectorTime)
+        var driverBestSectorTime = this[i].LapData.BestSectorLap[sector].SectorTimes[sector];
+        if (_sessionBestSectorTimes[sector].Value > 0 && driverBestSectorTime.Value >= _sessionBestSectorTimes[sector].Value)
         {
             this[_sessionBestSectorIndexes[sector]].LapData.DisplayedLapData.NotifyAll();
             this[i].LapData.DisplayedLapData.NotifyAll();
             return;
         }
 
-        this[_sessionBestSectorIndexes[sector]].LapData.DisplayedLapData.UpdateSectorStatus(sector, TimeStatus.PersonalBest);
+        this[_sessionBestSectorIndexes[sector]].LapData.BestSectorLap[sector].UpdateSectorStatus(sector, TimeStatus.PersonalBest);
         this[i].LapData.DisplayedLapData.UpdateSectorStatus(sector, TimeStatus.BestOfSession);
 
         _sessionBestSectorTimes[sector] = driverBestSectorTime;

@@ -14,20 +14,17 @@ public class ObservableLapCollection : ObservableCollection<Lap>
     {
         ResetBestLap();
         ResetBestSectors(numSectors);
-
         LastLapData = new();
         CurrentLapData = new();
         DisplayedLapData = new();
     }
 
-    public int BestLapIndex { get; private set; }
-    public LapTime BestLapTime { get; private set; }
-    public List<int> BestSectorIndexes { get; private set; }
-    public List<SectorTime> BestSectorTimes { get; private set; }
     public int Laps => Count;
     public Lap LastLapData { get; set; }
     public Lap CurrentLapData { get; set; }
     public Lap DisplayedLapData { get; set; }
+    public Lap BestLap { get; set; }
+    public List<Lap> BestSectorLap { get; set; }
 
     public void NewLap()
     {
@@ -65,16 +62,15 @@ public class ObservableLapCollection : ObservableCollection<Lap>
         if (lapTime.Value == 0)
             return;
 
-        if (BestLapTime.Value > 0 && lapTime.Value >= BestLapTime.Value)
+        if (BestLap.LapTime.Value > 0 && lapTime.Value >= BestLap.LapTime.Value)
         {
             this[index].LapTime.UpdateStatus(TimeStatus.NotPersonalBest);
             return;
         }
 
-        this[BestLapIndex].UpdateLapStatus(TimeStatus.NotPersonalBest);
+        BestLap.UpdateLapStatus(TimeStatus.NotPersonalBest);
         this[index].UpdateLapStatus(TimeStatus.PersonalBest);
-        BestLapIndex = index;
-        BestLapTime = lapTime;
+        BestLap = this[index];
     }
 
     public void UpdateSectorStatus(int index, int s)
@@ -83,33 +79,27 @@ public class ObservableLapCollection : ObservableCollection<Lap>
         if (sectorTime.Value == 0)
             return;
 
-        if (BestSectorTimes[s].Value > 0 && sectorTime.Value >= BestSectorTimes[s].Value)
+        if (BestSectorLap[s].SectorTimes[s].Value > 0 && sectorTime.Value >= BestSectorLap[s].SectorTimes[s].Value)
         {
             this[index].UpdateSectorStatus(s, TimeStatus.NotPersonalBest);
             return;
         }
 
-        this[BestSectorIndexes[s]].UpdateSectorStatus(s, TimeStatus.NotPersonalBest);
+        BestSectorLap[s].UpdateSectorStatus(s, TimeStatus.NotPersonalBest);
         this[index].UpdateSectorStatus(s, TimeStatus.PersonalBest);
-        BestSectorIndexes[s] = index;
-        BestSectorTimes[s] = sectorTime;
+        BestSectorLap[s] = this[index];
     }
 
     private void ResetBestLap()
     {
-        BestLapIndex = 0;
-        BestLapTime = new();
+        BestLap = new();
     }
 
     private void ResetBestSectors(int numSectors)
     {
-        BestSectorIndexes = new(numSectors);
-        BestSectorTimes = new(numSectors);
+        BestSectorLap = new(numSectors);
 
         for (int i = 0; i < numSectors; i++)
-        {
-            BestSectorIndexes.Add(0);
-            BestSectorTimes.Add(new());
-        }
+            BestSectorLap.Add(new());
     }
 }
