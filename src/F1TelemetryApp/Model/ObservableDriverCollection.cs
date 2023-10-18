@@ -28,10 +28,14 @@ public class ObservableDriverCollection : ObservableCollection<Driver>
         var driverBestLapTime = this[i].LapData.BestLapTime;
         var sessionBestLapTime = _sessionBestLapTime.Value;
         if (sessionBestLapTime > 0 && driverBestLapTime.Value >= _sessionBestLapTime.Value)
+        {
+            this[_sessionBestLapDriverIndex].LapData.DisplayedLapData.NotifyAll();
+            this[i].LapData.DisplayedLapData.NotifyAll();
             return;
+        }
 
-        this[_sessionBestLapDriverIndex].LapData.DisplayedLapData.LapTime.UpdateStatus(TimeStatus.PersonalBest);
-        this[i].LapData.DisplayedLapData.LapTime.UpdateStatus(TimeStatus.BestOfSession);
+        this[_sessionBestLapDriverIndex].LapData.DisplayedLapData.UpdateLapStatus(TimeStatus.PersonalBest);
+        this[i].LapData.DisplayedLapData.UpdateLapStatus(TimeStatus.BestOfSession);
         _sessionBestLapTime = driverBestLapTime;
         _sessionBestLapDriverIndex = i;
     }
@@ -44,10 +48,14 @@ public class ObservableDriverCollection : ObservableCollection<Driver>
         var driverBestSectorTime = this[i].LapData.BestSectorTimes[sector];
         var sessionBestSectorTime = _sessionBestSectorTimes[sector].Value;
         if (sessionBestSectorTime > 0 && driverBestSectorTime.Value >= sessionBestSectorTime)
+        {
+            this[_sessionBestSectorIndexes[sector]].LapData.DisplayedLapData.NotifyAll();
+            this[i].LapData.DisplayedLapData.NotifyAll();
             return;
+        }
 
-        this[_sessionBestSectorIndexes[sector]].LapData.DisplayedLapData.SectorTimes[sector].UpdateStatus(TimeStatus.PersonalBest);
-        this[i].LapData.DisplayedLapData.SectorTimes[sector].UpdateStatus(TimeStatus.BestOfSession);
+        this[_sessionBestSectorIndexes[sector]].LapData.DisplayedLapData.UpdateSectorStatus(sector, TimeStatus.PersonalBest);
+        this[i].LapData.DisplayedLapData.UpdateSectorStatus(sector, TimeStatus.BestOfSession);
 
         _sessionBestSectorTimes[sector] = driverBestSectorTime;
         _sessionBestSectorIndexes[sector] = i;

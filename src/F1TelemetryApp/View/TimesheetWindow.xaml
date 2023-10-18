@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
         xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
         mc:Ignorable="d"
-        d:DesignHeight="450" Width="700"
+        Height="500" Width="600"
         Closed="OnWindowClosed"
         Title="Timesheet">
     <Window.DataContext>
@@ -32,7 +32,7 @@
                        Margin="5,0"
                        FontSize="12" />
             <TextBlock Grid.Row="0"
-                       Text="{Binding SessionTime}"
+                       Text="{Binding SessionTime.Value}"
                        Style="{StaticResource DefaultTextBlockStyle}"
                        Margin="5,0"
                        FontSize="12" />
@@ -101,8 +101,8 @@
                 <DataGridTemplateColumn Header="Best Lap" Width="3*">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <TextBlock Text="{Binding LapData.BestLapTime.Value, Converter={StaticResource telemetryConverter}}"
-                                       Foreground="{Binding LapData.BestLapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                            <TextBlock Text="{Binding LapData.BestLap.LapTime.Value, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapData.BestLap.LapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

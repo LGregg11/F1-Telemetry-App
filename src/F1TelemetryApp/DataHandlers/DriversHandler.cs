@@ -37,7 +37,7 @@ internal static class DriversHandler
         var driverIndex = data.carIdx;
         if (!CheckDriverExists(driverIndex)) return;
 
-        InvokeDispatch.InvokeAsync(() =>
+        InvokeDispatch.Invoke(() =>
         {
             var driver = Drivers[driverIndex];
             var lapOfFastestSectors = new int[_numSectors];
@@ -66,11 +66,8 @@ internal static class DriversHandler
     public static void UpdateLapData(LapData data)
     {
         // Only care about the position from this one for now
-        InvokeDispatch.InvokeAsync(() =>
+        InvokeDispatch.Invoke(() =>
         {
-            // TODO: Move this to GeneralDataHandler!
-            //SessionTime = (e.Header.sessionTime * 1000).ToTelemetryTime();
-
             for (int i = 0; i < Drivers.Count; i++)
                 Drivers[i].SetPosition(data.carLapData[i].carPosition);
         });

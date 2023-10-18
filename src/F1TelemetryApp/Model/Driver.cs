@@ -20,7 +20,7 @@ public class Driver : INotifyPropertyChanged
     public byte ArrayIndex { get; init; }
     public int Position { get; set; }
     public TyreVisual CurrentTyre => LapData.CurrentLapData.Tyre;
-    public LapCollection LapData { get; set; }
+    public ObservableLapCollection LapData { get; set; }
 
     public void UpdateLapHistoryData(int numLaps, LapHistoryData[] data)
     {
@@ -40,6 +40,8 @@ public class Driver : INotifyPropertyChanged
         }
 
         LapData.UpdateLapData(numLaps - 1, data[numLaps - 1]);
+        NotifyPropertyChanged(nameof(LapData));
+        NotifyPropertyChanged();
     }
 
     public void UpdateTyreStintHistoryData(int numStints, TyreStintHistoryData[] data)
@@ -52,6 +54,7 @@ public class Driver : INotifyPropertyChanged
             return;
         
         LapData.CurrentLapData.Tyre = currentTyre;
+        NotifyPropertyChanged(nameof(LapData));
         NotifyPropertyChanged();
     }
 
@@ -61,6 +64,7 @@ public class Driver : INotifyPropertyChanged
             return;
 
         Position = carPosition;
+        NotifyPropertyChanged(nameof(Position));
         NotifyPropertyChanged();
     }
 

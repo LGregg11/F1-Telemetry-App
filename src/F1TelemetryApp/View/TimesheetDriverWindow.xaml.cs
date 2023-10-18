@@ -9,10 +9,9 @@ using System.Windows;
 /// </summary>
 public partial class TimesheetDriverWindow : Window
 {
-    private TimesheetDriverWindowViewModel _viewModel;
-    public TimesheetDriverWindow()
+    public TimesheetDriverWindow(byte driverIndex=0)
     {
         InitializeComponent();
-        _viewModel = (TimesheetDriverWindowViewModel)DataContext;
+        ((TimesheetDriverWindowViewModel)DataContext).SubscribeToDriver(driverIndex);
     }
 }

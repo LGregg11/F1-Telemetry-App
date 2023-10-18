@@ -1,5 +1,7 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
+using DataHandlers;
+
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Events;
@@ -27,12 +29,14 @@ public class MainWindowViewModel : BindableBase
 
     private const int _port = 20777;
     private bool _isSubscribedToReader = false;
+    private static readonly AllDataHandler _dataHandler = new();
 
     public MainWindowViewModel()
     {
         log4net.Config.XmlConfigurator.Configure();
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
         Version = GameVersion.F12023;
+
         SingletonTelemetryReader.SetTelemetryListener(new TelemetryListener(_port));
         UpdateTelemetryConverter();
     }
@@ -50,7 +54,6 @@ public class MainWindowViewModel : BindableBase
 
         return versions;
     }
-
 
     private GameVersion _version;
     public GameVersion Version

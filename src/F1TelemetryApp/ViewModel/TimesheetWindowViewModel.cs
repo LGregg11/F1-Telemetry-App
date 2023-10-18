@@ -1,8 +1,10 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
+using DataHandlers;
 using Model;
 
 using log4net;
+using System.Linq;
 
 public class TimesheetWindowViewModel : BasePageViewModel
 {
@@ -12,19 +14,12 @@ public class TimesheetWindowViewModel : BasePageViewModel
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
     }
 
-    private ObservableDriverCollection _drivers = new();
-    public ObservableDriverCollection Drivers
-    {
-        get => _drivers;
-        set
-        {
-            if (_drivers != value)
-            {
-                _drivers = value;
-                RaisePropertyChanged(nameof(Drivers));
-            }
-        }
-    }
+    public static ObservableDriverCollection Drivers => DriversHandler.Drivers;
 
-    public string SessionTime { get; set; }
+    public static ObservableString SessionTime => GeneralDataHandler.SessionTime; // TODO: Why is this not updating on the view - Do I need INotifyPropertyChanged?
+
+    public override void SetTelemetryReader()
+    {
+        // Do nothing
+    }
 }

@@ -16,7 +16,7 @@ public class SectorStatusColourConverter : IValueConverter
 
         return (TimeStatus)value switch
         {
-            TimeStatus.NotPersonalBest => Brushes.Red,
+            TimeStatus.NotPersonalBest => Brushes.White,
             TimeStatus.PersonalBest => Brushes.Green,
             TimeStatus.BestOfSession => Brushes.Purple,
             _ => Brushes.White

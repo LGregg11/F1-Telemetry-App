@@ -58,12 +58,11 @@ public partial class TimesheetWindow : Window
     {
         if (sender != null && sender is DataGridRow row && row.DataContext is Driver driver)
         {
-            TimesheetDriverWindow w = new();
-            if (w.DataContext is TimesheetDriverWindowViewModel vm)
+            TimesheetDriverWindow w = new(driver.ArrayIndex)
             {
-                w.Title = $"{driver.Name} Timesheet";
-                w.Show();
-            }
+                Title = $"{driver.Name} Timesheet"
+            };
+            w.Show();
         }
     }
 }

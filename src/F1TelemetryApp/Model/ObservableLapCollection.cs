@@ -6,11 +6,11 @@ using F1GameTelemetry.Models;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 
-public class LapCollection : List<Lap>, INotifyPropertyChanged
+public class ObservableLapCollection : ObservableCollection<Lap>
 {
-    public LapCollection(int numSectors = 3)
+    public ObservableLapCollection(int numSectors = 3)
     {
         ResetBestLap();
         ResetBestSectors(numSectors);
@@ -38,14 +38,14 @@ public class LapCollection : List<Lap>, INotifyPropertyChanged
 
         if (Count > 1)
             LastLapData = this[Count - 2];
-
-        NotifyPropertyChanged();
     }
 
     public void UpdateLapData(int index, LapHistoryData lapHistoryData)
     {
         if (index > Count - 1)
             throw new Exception($"Invalid index: {index}");
+
+        this[index].UpdateLapNumber(Count);
 
         if (this[index].UpdateLapTime(lapHistoryData.lapTime))
             UpdateLapStatus(index);
@@ -57,8 +57,6 @@ public class LapCollection : List<Lap>, INotifyPropertyChanged
         }
 
         DisplayedLapData = CurrentLapData.SectorTimes[0].Value > 0 ? CurrentLapData : LastLapData;
-
-        NotifyPropertyChanged();
     }
 
     public void UpdateLapStatus(int index)
@@ -73,12 +71,10 @@ public class LapCollection : List<Lap>, INotifyPropertyChanged
             return;
         }
 
-        this[BestLapIndex].LapTime.UpdateStatus(TimeStatus.NotPersonalBest);
-        this[index].LapTime.UpdateStatus(TimeStatus.PersonalBest);
+        this[BestLapIndex].UpdateLapStatus(TimeStatus.NotPersonalBest);
+        this[index].UpdateLapStatus(TimeStatus.PersonalBest);
         BestLapIndex = index;
         BestLapTime = lapTime;
-
-        NotifyPropertyChanged();
     }
 
     public void UpdateSectorStatus(int index, int s)
@@ -89,16 +85,14 @@ public class LapCollection : List<Lap>, INotifyPropertyChanged
 
         if (BestSectorTimes[s].Value > 0 && sectorTime.Value >= BestSectorTimes[s].Value)
         {
-            this[index].SectorTimes[s].UpdateStatus(TimeStatus.NotPersonalBest);
+            this[index].UpdateSectorStatus(s, TimeStatus.NotPersonalBest);
             return;
         }
 
-        this[BestSectorIndexes[s]].SectorTimes[s].UpdateStatus(TimeStatus.NotPersonalBest);
-        this[index].SectorTimes[s].UpdateStatus(TimeStatus.PersonalBest);
+        this[BestSectorIndexes[s]].UpdateSectorStatus(s, TimeStatus.NotPersonalBest);
+        this[index].UpdateSectorStatus(s, TimeStatus.PersonalBest);
         BestSectorIndexes[s] = index;
         BestSectorTimes[s] = sectorTime;
-
-        NotifyPropertyChanged();
     }
 
     private void ResetBestLap()
@@ -117,15 +111,5 @@ public class LapCollection : List<Lap>, INotifyPropertyChanged
             BestSectorIndexes.Add(0);
             BestSectorTimes.Add(new());
         }
-
-        NotifyPropertyChanged();
     }
-
-    #region INotifyPropertyChanged
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void NotifyPropertyChanged(string propertyName = "")
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-    #endregion
 }

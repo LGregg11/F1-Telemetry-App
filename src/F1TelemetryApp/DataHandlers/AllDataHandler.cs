@@ -1,13 +1,8 @@
 ﻿namespace F1TelemetryApp.DataHandlers;
 
-using Model;
-
 using F1GameTelemetry.Events;
 using F1GameTelemetry.Models;
 using F1GameTelemetry.Readers;
-
-using System;
-using System.Threading.Tasks;
 
 /// <summary>
 /// A class that subscribes to the SingletonTelemetryReader class events and
@@ -51,6 +46,9 @@ internal class AllDataHandler
 
     private void OnLapDataReceived(object sender, PacketEventArgs<LapData> e)
     {
+        // Use lap data for header updates
+        GeneralDataHandler.UpdateHeader(e.Header);
+
         // Only care about the position from this one for now
         DriversHandler.UpdateLapData(e.Packet);
     }
