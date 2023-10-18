@@ -40,21 +40,21 @@ internal static class DriversHandler
         InvokeDispatch.Invoke(() =>
         {
             var driver = Drivers[driverIndex];
-            var lapOfFastestSectors = new int[_numSectors];
-            for (byte i = 0; i < _numSectors; i++)
-                lapOfFastestSectors[i] = driver.LapData.BestSectorIndexes[i];
+            var lapOfBestSectors = new int[_numSectors];
+            for (byte s = 0; s < _numSectors; s++)
+                lapOfBestSectors[s] = driver.LapData.BestSectorLap[s].LapNumber;
 
             Drivers[driverIndex].UpdateLapHistoryData(
                 data.numLaps,
                 data.lapHistoryData);
 
-            if (driver.LapData.BestLapIndex == data.bestLapTimeLapNum - 1)
+            if (data.bestLapTimeLapNum > 0 && driver.LapData.BestLap.LapNumber == data.bestLapTimeLapNum)
                 Drivers.UpdateFastestLap(driverIndex);
 
-            for (byte i = 0; i < _numSectors; i++)
+            for (byte s = 0; s < _numSectors; s++)
             {
-                if (lapOfFastestSectors[i] == data.bestSectorTimeLapNums[i] - 1)
-                    Drivers.UpdateFastestSector(i, driverIndex);
+                if (data.bestSectorTimeLapNums[s] > 0 && lapOfBestSectors[s] == data.bestSectorTimeLapNums[s])
+                    Drivers.UpdateFastestSector(s, driverIndex);
             }
 
             Drivers[driverIndex].UpdateTyreStintHistoryData(
