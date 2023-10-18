@@ -1,5 +1,7 @@
 ﻿namespace F1TelemetryApp.ViewModel;
 
+using DataHandlers;
+
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Events;
@@ -15,7 +17,6 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Linq;
 
 public class MainWindowViewModel : BindableBase
 {
@@ -28,12 +29,14 @@ public class MainWindowViewModel : BindableBase
 
     private const int _port = 20777;
     private bool _isSubscribedToReader = false;
+    private static readonly AllDataHandler _dataHandler = new();
 
     public MainWindowViewModel()
     {
         log4net.Config.XmlConfigurator.Configure();
         Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
-        Version = GameVersion.F12021;
+        Version = GameVersion.F12023;
+
         SingletonTelemetryReader.SetTelemetryListener(new TelemetryListener(_port));
         UpdateTelemetryConverter();
     }
@@ -51,7 +54,6 @@ public class MainWindowViewModel : BindableBase
 
         return versions;
     }
-
 
     private GameVersion _version;
     public GameVersion Version
@@ -211,6 +213,9 @@ public class MainWindowViewModel : BindableBase
         if (!SingletonTelemetryReader.IsListenerRunning)
         {
             Log?.Info("Starting Telemetry feed");
+            if (IsImportCheckboxChecked && string.IsNullOrEmpty(WarningMessage))
+                SingletonTelemetryReader.SetTelemetryListener(new TelemetryImporter(ImportTelemetryFilepath));
+
             SingletonTelemetryReader.StartListener();
             RaisePropertyChanged(nameof(IsExportCheckboxEnabled));
             RaisePropertyChanged(nameof(IsImportCheckboxEnabled));
@@ -238,13 +243,13 @@ public class MainWindowViewModel : BindableBase
             return;
 
         ImportTelemetryFilepath = dialog.FileName;
-        SingletonTelemetryReader.SetTelemetryListener(new TelemetryImporter(ImportTelemetryFilepath));
         CheckWarnings();
     }
 
     private void OnSessionReceived(object? sender, PacketEventArgs<Session> e)
     {
         var session = e.Packet;
+
         App.Current.Dispatcher.Invoke(() =>
         {
             TrackName = Enum.GetName(typeof(Track), session.trackId)!;
@@ -252,6 +257,7 @@ public class MainWindowViewModel : BindableBase
             TrackTemperature = $"{Convert.ToInt16(session.trackTemperature)}";
             AirTemperature = $"{Convert.ToInt16(session.airTemperature)}";
         });
+        
         RaisePropertyChanged(nameof(TrackName));
         RaisePropertyChanged(nameof(WeatherStatus));
         RaisePropertyChanged(nameof(TrackTemperature));

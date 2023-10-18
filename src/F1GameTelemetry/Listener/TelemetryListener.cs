@@ -11,6 +11,7 @@ public class TelemetryListener : ITelemetryListener
     private readonly int _port;
     private IUdpClient? _client;
     private Thread? _listenerThread;
+    private bool _keepThreadRunning;
 
     public TelemetryListener(int port) : this(port, null)
     {
@@ -24,7 +25,7 @@ public class TelemetryListener : ITelemetryListener
             client = CreateClient();
         _client = client;
 
-        _listenerThread = CreateThread();
+        _keepThreadRunning = true;
     }
 
     public event TelemetryEventHandler? TelemetryReceived;
@@ -39,6 +40,7 @@ public class TelemetryListener : ITelemetryListener
         if (_client == null)
             _client = CreateClient();
 
+        _keepThreadRunning = true;
         _listenerThread = CreateThread();
         _listenerThread.Start();
     }
@@ -49,6 +51,7 @@ public class TelemetryListener : ITelemetryListener
             return;
 
         _client?.Close();
+        _keepThreadRunning = false;
         _listenerThread?.Join();
         _client = null;
     }
@@ -57,7 +60,7 @@ public class TelemetryListener : ITelemetryListener
     {
         IPEndPoint ep = new(IPAddress.Any, _port);
 
-        while (true)
+        while (_keepThreadRunning)
         {
             try
             {
@@ -73,7 +76,7 @@ public class TelemetryListener : ITelemetryListener
         }
     }
 
-    public Thread CreateThread() => new(new ThreadStart(TelemetrySubscriber))
+    public Thread CreateThread() => new(TelemetrySubscriber)
     {
         Name = "Telemetry Listener Thread"
     };

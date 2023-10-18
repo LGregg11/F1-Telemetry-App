@@ -8,12 +8,18 @@
     <Compile Update="View\LapTelemetryWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\TimesheetWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\TelemetryGraph.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\LapTelemetryWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\TimesheetWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

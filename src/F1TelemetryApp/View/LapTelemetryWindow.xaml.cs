@@ -35,14 +35,14 @@ public partial class LapTelemetryWindow : Window
 
         foreach (var key in _checkboxMap.Keys)
         {
-            if (!_viewModel.GraphPointCollectionMap.ContainsKey(key))
-                _checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
+            //if (!_viewModel.GraphPointCollectionMap.ContainsKey(key))
+            //    _checkboxMap[key].Visibility = System.Windows.Visibility.Hidden;
         }
 
         UpdateGraphMap();
         UpdateGrid();
 
-        _viewModel.LapUpdated += OnLapUpdated;
+        //_viewModel.LapUpdated += OnLapUpdated;
     }
 
     private void OnLapUpdated(object? sender, EventArgs e)
@@ -58,8 +58,8 @@ public partial class LapTelemetryWindow : Window
 
         foreach (var key in _checkboxMap.Keys)
         {
-            if (vm.GraphPointCollectionMap.ContainsKey(key))
-                _graphMap.Add(_checkboxMap[key], CreateTelemetryGraph(key));
+            //if (vm.GraphPointCollectionMap.ContainsKey(key))
+            //    _graphMap.Add(_checkboxMap[key], CreateTelemetryGraph(key));
         }
     }
 
@@ -69,7 +69,7 @@ public partial class LapTelemetryWindow : Window
 
         var graph = new TelemetryGraph
         {
-            DataSeries = vm.GraphPointCollectionMap[type],
+            //DataSeries = vm.GraphPointCollectionMap[type],
         };
         graph.YAxis.MinValue = 0;
 
@@ -115,11 +115,11 @@ public partial class LapTelemetryWindow : Window
 
     private void NewLapButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        _viewModel.DebugNewLap();
+        //_viewModel.DebugNewLap();
     }
 
     private void LapsComboBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
     {
-        _viewModel.RedrawLaps();
+        //_viewModel.RedrawLaps();
     }
 }

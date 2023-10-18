@@ -29,8 +29,8 @@ public struct FinalClassificationData
     public byte numberTyreStints;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-    public TyreCompoundType[] tyreStintsActual; // Max expected length = 8
+    public TyreCompound[] tyreStintsActual; // Max expected length = 8
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-    public TyreVisualType[] tyreStintsVisual; // Max expected length = 8
+    public TyreVisual[] tyreStintsVisual; // Max expected length = 8
 }

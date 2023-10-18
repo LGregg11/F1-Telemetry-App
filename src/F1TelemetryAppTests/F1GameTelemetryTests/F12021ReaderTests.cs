@@ -3,7 +3,6 @@
 using F1GameTelemetry.Enums;
 using F1GameTelemetry.Converters;
 using F1GameTelemetry.Packets.F12021;
-using F1GameTelemetry.Converters.F12021;
 
 using NUnit.Framework;
 using System;
@@ -272,7 +271,7 @@ public class F12021ReaderTests
 
         // Assert
         Assert.AreEqual(typeof(CarStatus), result.GetType());
-        Assert.AreEqual(TyreVisualType.Wet, result.carStatusData[0].visualTyreCompound);
+        Assert.AreEqual(TyreVisual.Wet, result.carStatusData[0].visualTyreCompound);
     }
 
     #endregion
@@ -313,7 +312,7 @@ public class F12021ReaderTests
         // Assert
         Assert.AreEqual(typeof(FinalClassification), result.GetType());
         Assert.AreEqual(20, (int)result.numberCars);
-        Assert.AreEqual(TyreVisualType.Soft, result.finalClassificationData[0].tyreStintsVisual[0]);
+        Assert.AreEqual(TyreVisual.Soft, result.finalClassificationData[0].tyreStintsVisual[0]);
     }
 
     #endregion

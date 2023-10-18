@@ -9,7 +9,9 @@
         xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
-        Title="F1 Telemetry" Width="800" Height="600">
+        Width="800" Height="600"
+        Closed="OnWindowClosed"
+        Title="F1 Telemetry">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
@@ -158,14 +160,22 @@
             <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource MainWindowDataTextBlockStyle}" Text="{Binding AirTemperature}"/>
         </Grid>
 
-        <Button
+        <StackPanel
             Grid.Row="2"
-            Grid.Column="1"
-            Content="Lap Telemetry"
-            Click="OpenTelemetryWindow_Click"
-            Style="{StaticResource DefaultBtnStyle}"
-            Margin="5" 
-            FontSize="15"/>
+            Grid.Column="1">
+            <Button
+                Content="Timesheet"
+                Click="OpenTimesheetWindow_Click"
+                Style="{StaticResource DefaultBtnStyle}"
+                Margin="5" 
+                FontSize="15"/>
+            <Button
+                Content="Lap Telemetry"
+                Click="OpenTelemetryWindow_Click"
+                Style="{StaticResource DefaultBtnStyle}"
+                Margin="5"
+                FontSize="15"/>
+        </StackPanel>
 
         <!--<Grid Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource DefaultGridStyle}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="30" Margin="0,5">

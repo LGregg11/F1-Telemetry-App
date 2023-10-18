@@ -29,7 +29,7 @@ public struct FinalClassificationData
         byte penalitesTime,
         byte numberPenalties,
         byte numberTyreStints,
-        TyreVisualType[] tyreStintsVisual)
+        TyreVisual[] tyreStintsVisual)
     {
         this.position = position;
         this.numberLaps = numberLaps;
@@ -56,5 +56,5 @@ public struct FinalClassificationData
     public byte penalitesTime; // Total in seconds
     public byte numberPenalties;
     public byte numberTyreStints;
-    public TyreVisualType[] tyreStintsVisual;
+    public TyreVisual[] tyreStintsVisual;
 }

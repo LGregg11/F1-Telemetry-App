@@ -4,5 +4,7 @@ obj/
 
 packages/
 
+TestData/
+
 *.docx
 credentials.txt

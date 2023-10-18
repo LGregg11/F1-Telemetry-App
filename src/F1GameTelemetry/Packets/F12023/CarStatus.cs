@@ -27,8 +27,8 @@ public struct CarStatusData
     public byte maxGears;
     public byte drsAllowed;
     public ushort drsActivationDistance;
-    public TyreCompoundType actualTyreCompound;
-    public TyreVisualType visualTyreCompound;
+    public TyreCompound actualTyreCompound;
+    public TyreVisual visualTyreCompound;
     public byte tyresAgeLaps;
     public FiaFlagType vehicleFiaFlags;
     public float enginePowerICE; // New to 2023 - Watts

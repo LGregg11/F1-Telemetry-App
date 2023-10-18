@@ -5,7 +5,7 @@ using Models;
 using Packet = Packets.F12023;
 
 using System;
-
+using System.Text;
 
 public class TelemetryConverter2023 : BaseTelemetryConverter
 {
@@ -146,7 +146,7 @@ public class TelemetryConverter2023 : BaseTelemetryConverter
                 participant.teamId,
                 participant.raceNumber,
                 participant.nationality,
-                participant.name
+                Encoding.UTF8.GetString(participant.name)
                 );
         }
 
@@ -238,7 +238,8 @@ public class TelemetryConverter2023 : BaseTelemetryConverter
                 player.aiControlled,
                 player.teamId,
                 player.nationality,
-                player.name);
+                Encoding.UTF8.GetString(player.name)
+                );
         }
 
         return new LobbyInfo(packet.numPlayers, lobbyInfoData);
@@ -259,7 +260,8 @@ public class TelemetryConverter2023 : BaseTelemetryConverter
                 new FourAxleByte(data.brakeDamage),
                 data.frontLeftWingDamage,
                 data.frontRightWingDamage,
-                data.rearWingDamage);
+                data.rearWingDamage
+                );
         }
 
         return new CarDamage(carDamageData);

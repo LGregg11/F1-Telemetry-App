@@ -1,0 +1,104 @@
+﻿<Window x:Class="F1TelemetryApp.View.TimesheetDriverWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:F1TelemetryApp.View"
+        xmlns:vm="clr-namespace:F1TelemetryApp.ViewModel"
+        xmlns:conv="clr-namespace:F1TelemetryApp.Converters"
+        mc:Ignorable="d"
+        Height="250" Width="500">
+    <Window.DataContext>
+        <vm:TimesheetDriverWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <conv:EnumConverter x:Key="enumConverter"/>
+        <conv:TelemetryConverter x:Key="telemetryConverter"/>
+        <conv:TyreColourConverter x:Key="tyreColourConverter"/>
+        <conv:SectorStatusColourConverter x:Key="sectorStatusColourConverter"/>
+    </Window.Resources>
+    <Grid Background="{StaticResource PrimaryBackground}" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Grid.Row="0"
+                       Text="Pos: "
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="{Binding Position.Value}"
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="Laps: "
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+            <TextBlock Grid.Row="0"
+                       Text="{Binding Laps.Value}"
+                       Style="{StaticResource DefaultTextBlockStyle}"
+                       Margin="5,0"
+                       FontSize="12" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding LapData}"
+                  FontSize="12"
+                  Style="{StaticResource DefaultDataGridStyle}"
+                  RowStyle="{StaticResource DefaultDataGridRowStyle}"
+                  ColumnHeaderStyle="{StaticResource DefaultDataGridColumnHeaderStyle}"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  HorizontalAlignment="Stretch"
+                  GridLinesVisibility="None">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Lap" Binding="{Binding LapNumber}" Width="*"/>
+                <DataGridTemplateColumn Header="Tyre" Width="1*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Tyre, Converter={StaticResource enumConverter}}"
+                                       Foreground="{Binding Tyre, Converter={StaticResource tyreColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Sector 1" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding SectorTimes[0].Value, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding SectorTimes[0].Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Sector 2" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding SectorTimes[1].Value, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding SectorTimes[1].Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Sector 3" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding SectorTimes[2].Value, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding SectorTimes[2].Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Lap Time" Width="3*">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LapTime.Value, Converter={StaticResource telemetryConverter}}"
+                                       Foreground="{Binding LapTime.Status, Converter={StaticResource sectorStatusColourConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

@@ -26,8 +26,8 @@ public struct ParticipantData
     public byte raceNumber;
     public Nationality nationality;
 
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)]
-    public string name; // UTF-8 format
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
+    public byte[] name; // UTF-8 format
 
     public UdpSetting yourTelemetry;
 }
