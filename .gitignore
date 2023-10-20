@@ -9,6 +9,7 @@ TestData/
 Library/
 Logs/
 UserSettings/
+Temp/
 
 .vsconfig
 
