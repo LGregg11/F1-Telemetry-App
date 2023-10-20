@@ -6,5 +6,12 @@ packages/
 
 TestData/
 
+Library/
+Logs/
+UserSettings/
+Temp/
+
+.vsconfig
+
 *.docx
 credentials.txt
