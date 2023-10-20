@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
+    using System.Text;
     using System.Threading;
 
 #nullable enable
@@ -17,7 +18,7 @@
         public ImporterClient(string filepath)
         {
             _filepath = filepath;
-            _streamReader = new StreamReader(File.OpenRead(_filepath), null, true, -1, true);
+            _streamReader = new StreamReader(File.OpenRead(_filepath), Encoding.UTF8);
         }
 
         public void Close()
