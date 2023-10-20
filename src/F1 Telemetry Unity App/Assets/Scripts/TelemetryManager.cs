@@ -26,8 +26,9 @@ public class TelemetryManager : MonoBehaviour
         participantPacketTally = 0;
         SingletonTelemetryReader.ParticipantReceived += (o, e) =>
         {
+            var sessionTime = e.Header.sessionTime.ToTelemetryTime().ToString();
             participantPacketTally++;
-            Debug.Log($"Participant packet {participantPacketTally} received");
+            Debug.Log($"Participant packet {participantPacketTally} received - session time: {sessionTime}");
         };
     }
 
